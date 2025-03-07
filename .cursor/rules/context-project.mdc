@@ -1,0 +1,54 @@
+---
+description: Ce projet est une plateforme web permettant aux freelances de réserver des espaces de coworking selon leurs besoins. Conçu avec Laravel pour le backoffice et Vue.js pour le front, le système repose sur une API développée avec API Platform, assurant une séparation claire entre les deux parties.  Grâce à une interface intuitive, les utilisateurs peuvent consulter les espaces disponibles, sélectionner une plage horaire et effectuer une réservation en quelques clics. Le système gère plusieurs rôles :  Visiteurs : réservent des espaces. Loueurs : réservent et ajoutent des espaces au catalogue. Administrateurs : supervisent les réservations et assurent la sécurité des données. L’authentification est simplifiée via Laravel Breeze, et une gestion stricte des permissions garantit un accès sécurisé aux différentes fonctionnalités.  Cette solution vise à optimiser l'occupation des espaces de coworking, offrant aux freelances une meilleure flexibilité pour travailler dans un environnement adapté à leurs besoins. 🚀
+globs: 
+alwaysApply: false
+---
+
+# Cursor Rules: Site de Réservation d'Espaces de Coworking
+
+## Contexte du Projet
+Ce projet est une plateforme permettant aux freelances de réserver des espaces de coworking pour une période définie dans la journée. Il comprend un **backoffice en Laravel** et un **front en Vue.js** relié via **API Platform**.
+
+## Base de Données
+Le modèle de données repose sur les tables suivantes :
+
+### Tables principales
+- **User** : Gère les utilisateurs et leurs rôles.
+- **Category** : {id, name, slug, created_at, updated_at} - Catégories des produits.
+- **Commande** : {id, prix, id_user, created_at, updated_at} - Suivi des commandes.
+- **Produit** : {id, nom, description, prix, image, disponibilité (DateTime pour la date de début et de fin), created_at, updated_at} - Espaces disponibles à la réservation.
+
+### Tables pivots
+- **category_produit** : Relation entre catégories et produits.
+- **produit_commande** : Relation entre produits et commandes.
+
+## Authentification
+L'authentification est gérée via **Laravel Breeze**.
+
+## Rôles et Permissions
+Trois rôles sont définis :
+- **ROLE_VISITEUR** : Peut réserver un espace.
+- **ROLE_LOUEUR** : Peut réserver un espace et ajouter des produits au catalogue via le backoffice.
+- **ROLE_ADMIN** : Accès complet au CRUD et gestion de la sécurité.
+
+## API
+Une **API** est développée avec **API Platform** pour interagir avec le front en **Vue.js**, garantissant une séparation entre le backend et le frontend.
+
+## Workflow de Réservation
+1. L'utilisateur (Visiteur ou Loueur) sélectionne un espace disponible.
+2. Il choisit une période (DateTime pour début et fin de la réservation).
+3. **Une seule réservation est possible pour une même période donnée.**
+4. La réservation est enregistrée dans la table **Commande**.
+5. Un administrateur peut superviser les réservations via le backoffice.
+
+## Accès API
+L'API permet les actions suivantes selon les rôles :
+- **Visiteur** : Accès aux produits et création de réservations.
+- **Loueur** : Accès aux produits, création de réservations et ajout de nouveaux produits.
+- **Admin** : Accès complet (CRUD sur toutes les entités).
+
+## Sécurité et Gestion des Accès
+- Les rôles et permissions sont gérés via **Laravel Breeze**.
+- L'API est sécurisée pour éviter tout accès non autorisé aux données sensibles.
+- Seul un admin peut modifier ou supprimer des réservations existantes.
+- **Les produits ajoutés par un loueur sont immédiatement visibles sans validation.**
