@@ -5,7 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
+use ApiPlatform\Metadata\ApiResource;
 
+#[ApiResource]
 class Produit extends Model
 {
     use HasFactory;
