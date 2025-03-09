@@ -5,6 +5,7 @@ use App\Http\Controllers\ProduitController;
 use App\Http\Controllers\CommandeController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -44,6 +45,43 @@ Route::middleware(['auth', 'role:ROLE_LOUEUR,ROLE_ADMIN'])->group(function () {
 Route::middleware(['auth', 'role:ROLE_ADMIN'])->group(function () {
     // Gestion des catégories
     Route::resource('categories', CategoryController::class);
+});
+
+// Routes d'authentification JWT
+Route::group(['prefix' => 'api'], function () {
+    // Route unique pour le login JWT
+    Route::post('auth/login', [AuthController::class, 'login']);
+
+    Route::group(['middleware' => 'auth:api'], function () {
+        Route::post('logout', [AuthController::class, 'logout']);
+        Route::post('refresh', [AuthController::class, 'refresh']);
+        Route::get('me', [AuthController::class, 'me']);
+
+        // Routes API pour les produits
+        Route::get('produits', [ProduitController::class, 'apiIndex']);
+        Route::get('produits/{produit}', [ProduitController::class, 'apiShow']);
+
+        // Routes API pour les commandes
+        Route::get('commandes', [CommandeController::class, 'apiIndex']);
+        Route::post('commandes', [CommandeController::class, 'apiStore']);
+        Route::get('commandes/{commande}', [CommandeController::class, 'apiShow']);
+
+        // Routes API réservées aux loueurs et admins
+        Route::middleware(['role:ROLE_LOUEUR,ROLE_ADMIN'])->group(function () {
+            Route::post('produits', [ProduitController::class, 'apiStore']);
+            Route::put('produits/{produit}', [ProduitController::class, 'apiUpdate']);
+            Route::delete('produits/{produit}', [ProduitController::class, 'apiDestroy']);
+        });
+
+        // Routes API réservées aux admins
+        Route::middleware(['role:ROLE_ADMIN'])->group(function () {
+            Route::get('categories', [CategoryController::class, 'apiIndex']);
+            Route::post('categories', [CategoryController::class, 'apiStore']);
+            Route::get('categories/{category}', [CategoryController::class, 'apiShow']);
+            Route::put('categories/{category}', [CategoryController::class, 'apiUpdate']);
+            Route::delete('categories/{category}', [CategoryController::class, 'apiDestroy']);
+        });
+    });
 });
 
 require __DIR__ . '/auth.php';

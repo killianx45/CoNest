@@ -4,21 +4,52 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class CheckRole
 {
     /**
      * Handle an incoming request.
      *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \Closure  $next
+     * @param  string  ...$roles
+     * @return mixed
      */
-    public function handle(Request $request, Closure $next, ...$roles): Response
+    public function handle(Request $request, Closure $next, ...$roles)
     {
-        if (!$request->user() || !in_array($request->user()->role, $roles)) {
-            abort(403, 'Accès non autorisé.');
+        $user = Auth::guard('api')->user();
+
+        if (!$user) {
+            Log::warning('CheckRole: Utilisateur non authentifié');
+            return response()->json(['error' => 'Non authentifié'], 401);
         }
 
-        return $next($request);
+        Log::info('CheckRole: Vérification des rôles', [
+            'user_role' => $user->role,
+            'required_roles' => $roles
+        ]);
+
+        // Si l'utilisateur est admin, il a accès à tout
+        if ($user->role === 'ROLE_ADMIN') {
+            return $next($request);
+        }
+
+        // Vérifier si l'utilisateur a l'un des rôles requis
+        foreach ($roles as $role) {
+            if ($user->role === $role) {
+                return $next($request);
+            }
+        }
+
+        Log::warning('CheckRole: Accès refusé - rôle insuffisant', [
+            'user_role' => $user->role,
+            'required_roles' => $roles
+        ]);
+
+        return response()->json([
+            'error' => 'Accès non autorisé. Vous n\'avez pas les permissions nécessaires.'
+        ], 403);
     }
 }
