@@ -19,11 +19,24 @@ class CheckRole
      */
     public function handle(Request $request, Closure $next, ...$roles)
     {
-        $user = Auth::guard('api')->user();
+        // Vérifier d'abord le guard web (pour les routes web)
+        $user = Auth::user();
+
+        // Si l'utilisateur n'est pas trouvé dans le guard web, essayer le guard API
+        if (!$user) {
+            $user = Auth::guard('api')->user();
+        }
 
         if (!$user) {
             Log::warning('CheckRole: Utilisateur non authentifié');
-            return response()->json(['error' => 'Non authentifié'], 401);
+
+            // Si c'est une requête API, renvoyer une réponse JSON
+            if ($request->expectsJson() || $request->is('api/*')) {
+                return response()->json(['error' => 'Non authentifié'], 401);
+            }
+
+            // Sinon, rediriger vers la page de connexion
+            return redirect()->route('login');
         }
 
         Log::info('CheckRole: Vérification des rôles', [
@@ -48,8 +61,14 @@ class CheckRole
             'required_roles' => $roles
         ]);
 
-        return response()->json([
-            'error' => 'Accès non autorisé. Vous n\'avez pas les permissions nécessaires.'
-        ], 403);
+        // Si c'est une requête API, renvoyer une réponse JSON
+        if ($request->expectsJson() || $request->is('api/*')) {
+            return response()->json([
+                'error' => 'Accès non autorisé. Vous n\'avez pas les permissions nécessaires.'
+            ], 403);
+        }
+
+        // Sinon, rediriger vers une page d'erreur ou la page d'accueil
+        return redirect()->route('dashboard')->with('error', 'Accès non autorisé. Vous n\'avez pas les permissions nécessaires.');
     }
 }
