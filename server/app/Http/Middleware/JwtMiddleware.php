@@ -25,6 +25,7 @@ class JwtMiddleware
         'api/.well-known',
         'api/refresh',
         'api/graphql',
+        'api/auth/register',
     ];
 
     /**

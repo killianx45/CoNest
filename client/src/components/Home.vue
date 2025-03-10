@@ -1,6 +1,7 @@
 <script lang="ts">
 import type { Produit } from '@/services/api'
 import { getAllProduits } from '@/services/api'
+import { useRouter } from 'vue-router'
 import HeaderComponent from './Header.vue'
 import NavBar from './NavBar.vue'
 
@@ -9,6 +10,13 @@ export default {
   components: {
     NavBar,
     HeaderComponent,
+  },
+  setup() {
+    const router = useRouter()
+
+    return {
+      router,
+    }
   },
   data() {
     return {
@@ -20,6 +28,9 @@ export default {
   methods: {
     formatPrix(prix: string | number): string {
       return typeof prix === 'string' ? prix : prix.toString()
+    },
+    voirProduit(produitId: number) {
+      this.router.push(`/produit/${produitId}`)
     },
   },
   async mounted() {
@@ -59,7 +70,8 @@ export default {
         <div
           v-for="produit in produits"
           :key="produit.id"
-          class="p-4 transition-shadow border rounded shadow hover:shadow-lg"
+          class="p-4 transition-shadow border rounded shadow cursor-pointer hover:shadow-lg"
+          @click="voirProduit(produit.id)"
         >
           <div class="flex flex-col h-full">
             <div v-if="produit.image" class="mb-2">

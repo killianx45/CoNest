@@ -12,32 +12,18 @@ const router = createRouter({
     {
       path: '/login',
       name: 'login',
-      component: () => import('../Login.vue'),
+      component: () => import('../views/Login.vue'),
     },
     {
       path: '/register',
       name: 'register',
-      component: () => import('../Register.vue'),
+      component: () => import('../views/Register.vue'),
     },
     {
-      path: '/louer',
-      name: 'louer',
-      component: () => import('../Louer.vue'),
-    },
-    {
-      path: '/contact',
-      name: 'contact',
-      component: () => import('../Contact.vue'),
-    },
-    {
-      path: '/carte',
-      name: 'carte',
-      component: () => import('../Carte.vue'),
-    },
-    {
-      path: '/favoris',
-      name: 'favoris',
-      component: () => import('../Favoris.vue'),
+      path: '/produit/:id',
+      name: 'produit',
+      component: () => import('../views/OneProduit.vue'),
+      props: true,
     },
   ],
 })
