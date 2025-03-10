@@ -71,6 +71,12 @@ class JwtMiddleware
             return $next($request);
         }
 
+        // Autoriser l'accès à la route GET api/produits sans token
+        if ($currentPath === 'api/produits' && $request->isMethod('GET')) {
+            Log::info('JwtMiddleware: Accès autorisé à la liste des produits sans token');
+            return $next($request);
+        }
+
         // Autoriser l'accès aux routes publiques
         foreach ($this->exceptRoutes as $route) {
             if (str_starts_with($currentPath, $route)) {

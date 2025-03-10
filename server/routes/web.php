@@ -51,6 +51,7 @@ Route::middleware(['auth', 'role:ROLE_ADMIN'])->group(function () {
 Route::group(['prefix' => 'api'], function () {
     // Route unique pour le login JWT
     Route::post('auth/login', [AuthController::class, 'login']);
+    Route::get('produits', [ProduitController::class, 'apiIndex']);
 
     Route::group(['middleware' => 'auth:api'], function () {
         Route::post('logout', [AuthController::class, 'logout']);
@@ -58,7 +59,6 @@ Route::group(['prefix' => 'api'], function () {
         Route::get('me', [AuthController::class, 'me']);
 
         // Routes API pour les produits
-        Route::get('produits', [ProduitController::class, 'apiIndex']);
         Route::get('produits/{produit}', [ProduitController::class, 'apiShow']);
 
         // Routes API pour les commandes

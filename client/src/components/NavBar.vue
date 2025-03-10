@@ -6,11 +6,11 @@ export default {
       currentLanguage: 'FR',
       isMenuOpen: false,
       menuItems: [
-        { text: 'louer', url: '#' },
-        { text: 'contact', url: '#' },
-        { text: 'carte', url: '#' },
-        { text: 'favoris', url: '#' },
-        { text: 'mon compte', url: '#' },
+        { text: 'louer', route: '#' },
+        { text: 'contact', route: '#' },
+        { text: 'carte', route: '#' },
+        { text: 'favoris', route: '#' },
+        { text: 'mon compte', route: '/login' },
       ],
     }
   },
@@ -29,7 +29,9 @@ export default {
   <nav class="fixed top-0 left-0 w-full bg-white shadow-md z-[1000]">
     <!-- Menu mobile -->
     <div class="flex items-center justify-between p-2 md:hidden">
-      <img src="../assets/logo_CoNest.svg" alt="Conest logo" class="h-8 m-1" />
+      <router-link to="/">
+        <img src="../assets/logo_CoNest.svg" alt="Conest logo" class="h-8 m-1" />
+      </router-link>
       <button @click="toggleMenu" class="p-2 focus:outline-none">
         <span class="block w-6 h-0.5 bg-gray-800 mb-1"></span>
         <span class="block w-6 h-0.5 bg-gray-800 mb-1"></span>
@@ -51,7 +53,9 @@ export default {
           class="p-2 border-b border-gray-200"
           :class="{ 'border-b-0': index === menuItems.length - 1 }"
         >
-          <a :href="item.url" class="no-underline text-[#333] font-bold block">{{ item.text }}</a>
+          <router-link :to="item.route" class="no-underline text-[#333] font-bold block">{{
+            item.text
+          }}</router-link>
         </li>
         <li class="p-2">
           <button
@@ -67,7 +71,9 @@ export default {
     <!-- Menu desktop -->
     <ul class="hidden md:flex list-none m-0 p-[0.2rem] justify-between items-center">
       <div class="flex items-center gap-4 p-2 left-menu">
-        <img src="../assets/logo_CoNest.svg" alt="Conest logo" class="h-10 m-2" />
+        <router-link to="/">
+          <img src="../assets/logo_CoNest.svg" alt="Conest logo" class="h-10 m-2" />
+        </router-link>
         <button
           type="button"
           class="bg-[#ff5a5f] hover:bg-[#ff4245] text-white border-none py-2 px-4 rounded-[50px] cursor-pointer annonce-button"
@@ -79,7 +85,9 @@ export default {
           :key="index"
           class="m-0 hover:border-b-2 hover:border-[#333] transition-all duration-300"
         >
-          <a :href="item.url" class="no-underline text-[#333] font-bold">{{ item.text }}</a>
+          <router-link :to="item.route" class="no-underline text-[#333] font-bold">{{
+            item.text
+          }}</router-link>
         </li>
       </div>
       <div class="flex items-center gap-4 p-2 right-menu">
@@ -88,7 +96,9 @@ export default {
           :key="index + 3"
           class="m-0 hover:border-b-2 hover:border-[#333] transition-all duration-300"
         >
-          <a :href="item.url" class="no-underline text-[#333] font-bold">{{ item.text }}</a>
+          <router-link :to="item.route" class="no-underline text-[#333] font-bold">{{
+            item.text
+          }}</router-link>
         </li>
         <li class="m-0">
           <button
