@@ -76,9 +76,7 @@ export default {
           </div>
           <div v-if="isAccountMenuOpen" class="pl-4 mt-2">
             <div v-if="isLoggedIn" class="flex flex-col">
-              <router-link to="/commande" class="no-underline text-[#333] py-2">
-                Commande
-              </router-link>
+              <router-link to="#" class="no-underline text-[#333] py-2"> Commande </router-link>
               <button
                 @click="handleLogout"
                 class="no-underline text-[#333] text-left py-2 bg-transparent border-none"
@@ -138,7 +136,7 @@ export default {
             class="absolute right-0 z-10 w-48 py-1 mt-2 bg-white rounded-md shadow-lg"
           >
             <div v-if="isLoggedIn">
-              <router-link to="/commande" class="block px-4 py-2 text-[#333] hover:bg-gray-100">
+              <router-link to="#" class="block px-4 py-2 text-[#333] hover:bg-gray-100">
                 Commande
               </router-link>
               <button
