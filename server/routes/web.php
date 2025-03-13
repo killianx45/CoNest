@@ -63,9 +63,9 @@ Route::group(['prefix' => 'api'], function () {
         Route::get('produits/{produit}', [ProduitController::class, 'apiShow']);
 
         // Routes API pour les commandes
-        Route::get('commandes', [CommandeController::class, 'apiIndex']);
         Route::post('commandes', [CommandeController::class, 'apiStore']);
-        Route::get('commandes/{commande}', [CommandeController::class, 'apiShow']);
+        Route::get('commandes_complete/{id}', [CommandeController::class, 'getCommandeComplete']);
+        Route::get('commandes_complete', [CommandeController::class, 'getAllCommandesComplete']);
 
         // Routes API réservées aux loueurs et admins
         Route::middleware(['role:ROLE_LOUEUR,ROLE_ADMIN'])->group(function () {

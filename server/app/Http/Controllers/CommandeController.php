@@ -191,4 +191,85 @@ class CommandeController extends Controller
         $commande->prix = $prixTotal;
         $commande->save();
     }
+
+    /**
+     * API: Get all commandes with complete pivot data
+     */
+    public function getAllCommandesComplete()
+    {
+        $user = Auth::user();
+        if ($user->role === 'ROLE_USER') {
+            $commandes = Commande::with(['produits' => function ($query) {
+                $query->withPivot('date_reservation', 'heure_debut', 'heure_fin');
+            }, 'client'])->where('id_user', $user->id)->get();
+        } else {
+            $commandes = Commande::with(['produits' => function ($query) {
+                $query->withPivot('date_reservation', 'heure_debut', 'heure_fin');
+            }, 'client'])->get();
+        }
+        $results = [];
+        foreach ($commandes as $commande) {
+            $produits = [];
+            foreach ($commande->produits as $produit) {
+                $produitData = $produit->toArray();
+                $produitData['pivot'] = [
+                    'date_reservation' => $produit->pivot->date_reservation,
+                    'heure_debut' => $produit->pivot->heure_debut,
+                    'heure_fin' => $produit->pivot->heure_fin
+                ];
+                $produits[] = $produitData;
+            }
+
+            $results[] = [
+                'id' => $commande->id,
+                'prix' => $commande->prix,
+                'id_user' => $commande->id_user,
+                'client' => $commande->client ? $commande->client->toArray() : null,
+                'produits' => $produits,
+                'createdAt' => $commande->created_at,
+                'updatedAt' => $commande->updated_at
+            ];
+        }
+
+        return response()->json([
+            '@context' => '/api/contexts/Commande',
+            '@id' => '/api/commandes',
+            '@type' => 'Collection',
+            'totalItems' => count($results),
+            'member' => $results
+        ]);
+    }
+
+    /**
+     * API: Get a complete commande with pivot data
+     */
+    public function getCommandeComplete(string $id)
+    {
+        $commande = Commande::with(['produits' => function ($query) {
+            $query->withPivot('date_reservation', 'heure_debut', 'heure_fin');
+        }, 'client'])->findOrFail($id);
+
+        $produits = [];
+        foreach ($commande->produits as $produit) {
+            $produitData = $produit->toArray();
+            $produitData['pivot'] = [
+                'date_reservation' => $produit->pivot->date_reservation,
+                'heure_debut' => $produit->pivot->heure_debut,
+                'heure_fin' => $produit->pivot->heure_fin
+            ];
+            $produits[] = $produitData;
+        }
+
+        $result = [
+            'id' => $commande->id,
+            'prix' => $commande->prix,
+            'id_user' => $commande->id_user,
+            'client' => $commande->client ? $commande->client->toArray() : null,
+            'produits' => $produits,
+            'createdAt' => $commande->created_at,
+            'updatedAt' => $commande->updated_at
+        ];
+
+        return response()->json($result);
+    }
 }

@@ -6,7 +6,7 @@ const TOKEN_KEY = 'auth_token'
 export const api = axios.create({
   baseURL: API_URL,
   headers: {
-    'Content-Type': 'application/json',
+    'Content-Type': 'application/ld+json',
     Accept: 'application/ld+json',
   },
 })
@@ -18,6 +18,9 @@ export const setupInterceptors = () => {
       if (token) {
         config.headers.Authorization = `Bearer ${token}`
       }
+      // S'assurer que les headers sont toujours présents
+      config.headers['Content-Type'] = 'application/ld+json'
+      config.headers.Accept = 'application/ld+json'
       return config
     },
     (error) => {
@@ -58,8 +61,25 @@ export interface User {
   password: string
   roles: string[]
   telephone: string
-  nom: string
-  prenom: string
+  name: string
+  createdAt?: string
+  updatedAt?: string
+}
+
+export interface Commande {
+  id: number
+  prix: number
+  id_user: number
+  client?: User
+  produits?: Array<
+    Produit & {
+      pivot?: {
+        date_reservation: string
+        heure_debut: string
+        heure_fin: string
+      }
+    }
+  >
   createdAt?: string
   updatedAt?: string
 }
@@ -187,5 +207,45 @@ export const getCurrentUser = async (): Promise<User | null> => {
       logout()
     }
     return null
+  }
+}
+
+// COMMANDES
+export interface CommandeCreateData {
+  produits: number[]
+  dates: string[]
+  heures_debut: string[]
+  heures_fin: string[]
+}
+
+export const getAllCommandes = async (): Promise<Commande[]> => {
+  try {
+    const response = await api.get<ApiResponse<Commande>>('/commandes_complete')
+    if (response.data && response.data.member) {
+      return response.data.member
+    }
+    return response.data as unknown as Commande[]
+  } catch (error) {
+    console.error('Erreur lors de la récupération des commandes:', error)
+    throw error
+  }
+}
+
+export const getCommandeById = async (id: number): Promise<Commande> => {
+  try {
+    const response = await api.get<Commande>(`/commandes_complete/${id}`)
+    return response.data
+  } catch (error) {
+    console.error(`Erreur lors de la récupération de la commande ${id}:`, error)
+    throw error
+  }
+}
+
+export const deleteCommande = async (id: number): Promise<void> => {
+  try {
+    await api.delete(`/commandes/${id}`)
+  } catch (error) {
+    console.error(`Erreur lors de la suppression de la commande ${id}:`, error)
+    throw error
   }
 }
