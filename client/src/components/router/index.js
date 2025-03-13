@@ -37,12 +37,12 @@ const router = createRouter({
       props: true,
     },
     {
-      path: '/commande/create',
-      name: 'createCommande',
-      component: () => import('../views/commandes/CreateCommande.vue'),
+      path: '/commandes',
+      name: 'allCommandes',
+      component: () => import('../views/commandes/AllCommande.vue'),
     },
     {
-      path: '/commande/:id',
+      path: '/commandes/:id',
       name: 'showCommande',
       component: () => import('../views/commandes/ShowCommande.vue'),
       props: true,
