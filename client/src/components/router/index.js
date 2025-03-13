@@ -22,7 +22,29 @@ const router = createRouter({
     {
       path: '/produit/:id',
       name: 'produit',
-      component: () => import('../views/OneProduit.vue'),
+      component: () => import('../views/produits/ShowProduit.vue'),
+      props: true,
+    },
+    {
+      path: '/produit/create',
+      name: 'createProduit',
+      component: () => import('../views/produits/CreateProduit.vue'),
+    },
+    {
+      path: '/produit/:id/edit',
+      name: 'editProduit',
+      component: () => import('../views/produits/EditProduit.vue'),
+      props: true,
+    },
+    {
+      path: '/commande/create',
+      name: 'createCommande',
+      component: () => import('../views/commandes/CreateCommande.vue'),
+    },
+    {
+      path: '/commande/:id',
+      name: 'showCommande',
+      component: () => import('../views/commandes/ShowCommande.vue'),
       props: true,
     },
   ],

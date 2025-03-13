@@ -3,10 +3,10 @@ import type { Produit } from '@/services/api'
 import { getProduitById, isAuthenticated } from '@/services/api'
 import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import NavBar from '../NavBar.vue'
+import NavBar from '../../NavBar.vue'
 
 export default {
-  name: 'OneProduitPage',
+  name: 'ShowProduitPage',
   components: {
     NavBar,
   },
