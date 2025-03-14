@@ -114,6 +114,13 @@ export default {
           >
             Ajouter au panier
           </button>
+          <router-link :to="`/produit/${produit.id}/edit`">
+            <button
+              class="px-6 py-2 mt-auto font-semibold text-white transition-colors bg-blue-600 rounded-lg hover:bg-blue-700"
+            >
+              Modifier
+            </button>
+          </router-link>
         </div>
       </div>
 

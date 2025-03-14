@@ -9,6 +9,23 @@ use Illuminate\Support\Str;
 class CategoryController extends Controller
 {
     /**
+     * API: Display a listing of the resource.
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function apiIndex()
+    {
+        $categories = Category::all();
+        return response()->json([
+            '@context' => '/api/contexts/Category',
+            '@id' => '/api/categories',
+            '@type' => 'hydra:Collection',
+            'totalItems' => count($categories),
+            'member' => $categories
+        ]);
+    }
+
+    /**
      * Display a listing of the resource.
      */
     public function index()
