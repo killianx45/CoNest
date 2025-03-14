@@ -1,57 +1,42 @@
-<script lang="ts">
+<script setup lang="ts">
 import type { Produit } from '@/services/api'
 import { getAllProduits } from '@/services/api'
+import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import HeaderComponent from './Header.vue'
+import Header from './Header.vue'
 import NavBar from './NavBar.vue'
 
-export default {
-  name: 'HomePage',
-  components: {
-    NavBar,
-    HeaderComponent,
-  },
-  setup() {
-    const router = useRouter()
+const router = useRouter()
+const produits = ref<Produit[]>([])
+const loading = ref(true)
+const error = ref<string | null>(null)
 
-    return {
-      router,
-    }
-  },
-  data() {
-    return {
-      produits: [] as Produit[],
-      loading: true,
-      error: null as string | null,
-    }
-  },
-  methods: {
-    formatPrix(prix: string | number): string {
-      return typeof prix === 'string' ? prix : prix.toString()
-    },
-    voirProduit(produitId: number) {
-      this.router.push(`/produit/${produitId}`)
-    },
-  },
-  async mounted() {
-    try {
-      this.loading = true
-      this.produits = await getAllProduits()
-      this.loading = false
-    } catch (error) {
-      this.loading = false
-      this.error = 'Erreur lors du chargement des produits'
-      console.error('Erreur lors du chargement des produits:', error)
-    }
-  },
+function formatPrix(prix: string | number): string {
+  return typeof prix === 'string' ? prix : prix.toString()
 }
+
+function voirProduit(produitId: number) {
+  router.push(`/produit/${produitId}`)
+}
+
+onMounted(async () => {
+  try {
+    loading.value = true
+    produits.value = await getAllProduits()
+    loading.value = false
+  } catch (error) {
+    loading.value = false
+    error.value = 'Erreur lors du chargement des produits'
+    console.error('Erreur lors du chargement des produits:', error)
+  }
+})
 </script>
 
 <template>
   <div class="flex flex-col items-center justify-center min-h-screen">
     <NavBar />
     <div class="mt-20">
-      <HeaderComponent />
+      <Header />
     </div>
     <div class="w-full max-w-4xl px-4 mt-8">
       <h2 class="mb-4 text-xl font-bold">Aperçu des offres</h2>

@@ -1,50 +1,39 @@
-<script lang="ts">
-import { isAuthenticated, logout } from '@/services/api'
+<script setup lang="ts">
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { isAuthenticated, logout } from '@/services/api'
 
-export default {
-  name: 'NavBar',
-  setup() {
-    const router = useRouter()
-    return { router }
-  },
-  data() {
-    return {
-      currentLanguage: 'FR',
-      isMenuOpen: false,
-      isAccountMenuOpen: false,
-      menuItems: [
-        { text: 'louer', route: '#' },
-        { text: 'contact', route: '#' },
-        { text: 'carte', route: '#' },
-      ],
-    }
-  },
-  computed: {
-    isLoggedIn() {
-      return isAuthenticated()
-    },
-  },
-  methods: {
-    toggleLanguage() {
-      this.currentLanguage = this.currentLanguage === 'FR' ? 'EN' : 'FR'
-    },
-    toggleMenu() {
-      this.isMenuOpen = !this.isMenuOpen
-    },
-    toggleAccountMenu() {
-      this.isAccountMenuOpen = !this.isAccountMenuOpen
-    },
-    async handleLogout() {
-      try {
-        await logout()
-        this.router.push('/')
-        window.location.reload()
-      } catch (error) {
-        console.error('Erreur lors de la déconnexion:', error)
-      }
-    },
-  },
+const router = useRouter()
+const currentLanguage = ref('FR')
+const isMenuOpen = ref(false)
+const isAccountMenuOpen = ref(false)
+const menuItems = ref([
+  { text: 'contact', route: '#' },
+  { text: 'carte', route: '#' },
+])
+
+const isLoggedIn = computed(() => isAuthenticated())
+
+function toggleLanguage() {
+  currentLanguage.value = currentLanguage.value === 'FR' ? 'EN' : 'FR'
+}
+
+function toggleMenu() {
+  isMenuOpen.value = !isMenuOpen.value
+}
+
+function toggleAccountMenu() {
+  isAccountMenuOpen.value = !isAccountMenuOpen.value
+}
+
+async function handleLogout() {
+  try {
+    await logout()
+    router.push('/')
+    window.location.reload()
+  } catch (error) {
+    console.error('Erreur lors de la déconnexion:', error)
+  }
 }
 </script>
 

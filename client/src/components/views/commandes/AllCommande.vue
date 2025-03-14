@@ -1,75 +1,59 @@
-<script lang="ts">
-import { defineComponent, onMounted, ref } from 'vue'
+<script setup lang="ts">
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import type { Commande } from '../../../services/api'
 import { getAllCommandes } from '../../../services/api'
 import NavBar from '../../NavBar.vue'
 
-export default defineComponent({
-  name: 'AllCommande',
-  components: { NavBar },
-  setup() {
-    const router = useRouter()
-    const commandes = ref<Commande[]>([])
-    const loading = ref(true)
-    const error = ref<string | null>(null)
+const router = useRouter()
+const commandes = ref<Commande[]>([])
+const loading = ref(true)
+const error = ref<string | null>(null)
 
-    onMounted(async () => {
-      try {
-        commandes.value = await getAllCommandes()
-      } catch (err) {
-        error.value = 'Erreur lors du chargement des commandes'
-        console.error(err)
-      } finally {
-        loading.value = false
-      }
-    })
-
-    const voirCommande = (id: number) => {
-      router.push(`/commandes/${id}`)
-    }
-
-    const formatDate = (commande: Commande) => {
-      if (
-        !commande.produits ||
-        commande.produits.length === 0 ||
-        !commande.produits[0].pivot?.date_reservation
-      ) {
-        return '-'
-      }
-      return new Date(commande.produits[0].pivot.date_reservation).toLocaleDateString()
-    }
-
-    const getHoraires = (commande: Commande) => {
-      if (!commande.produits || commande.produits.length === 0 || !commande.produits[0].pivot) {
-        return { debut: null, fin: null }
-      }
-
-      const pivot = commande.produits[0].pivot
-      return {
-        debut: pivot.heure_debut || null,
-        fin: pivot.heure_fin || null,
-      }
-    }
-
-    const getEspaceName = (commande: Commande) => {
-      if (!commande.produits || commande.produits.length === 0) {
-        return '-'
-      }
-      return commande.produits[0].nom || '-'
-    }
-
-    return {
-      commandes,
-      loading,
-      error,
-      voirCommande,
-      formatDate,
-      getHoraires,
-      getEspaceName,
-    }
-  },
+onMounted(async () => {
+  try {
+    commandes.value = await getAllCommandes()
+  } catch (err) {
+    error.value = 'Erreur lors du chargement des commandes'
+    console.error(err)
+  } finally {
+    loading.value = false
+  }
 })
+
+const voirCommande = (id: number) => {
+  router.push(`/commandes/${id}`)
+}
+
+const formatDate = (commande: Commande) => {
+  if (
+    !commande.produits ||
+    commande.produits.length === 0 ||
+    !commande.produits[0].pivot?.date_reservation
+  ) {
+    return '-'
+  }
+  return new Date(commande.produits[0].pivot.date_reservation).toLocaleDateString()
+}
+
+const getHoraires = (commande: Commande) => {
+  if (!commande.produits || commande.produits.length === 0 || !commande.produits[0].pivot) {
+    return { debut: null, fin: null }
+  }
+
+  const pivot = commande.produits[0].pivot
+  return {
+    debut: pivot.heure_debut || null,
+    fin: pivot.heure_fin || null,
+  }
+}
+
+const getEspaceName = (commande: Commande) => {
+  if (!commande.produits || commande.produits.length === 0) {
+    return '-'
+  }
+  return commande.produits[0].nom || '-'
+}
 </script>
 
 <template>
@@ -84,18 +68,15 @@ export default defineComponent({
         Nouvelle réservation
       </router-link>
     </div>
-
     <div v-if="loading" class="py-8 text-center">
       <div
         class="inline-block w-8 h-8 border-t-2 border-b-2 border-orange-500 rounded-full animate-spin"
       ></div>
       <p class="mt-2 text-gray-600">Chargement des réservations...</p>
     </div>
-
     <div v-else-if="error" class="p-4 mb-4 text-red-700 bg-red-100 border-l-4 border-red-500">
       {{ error }}
     </div>
-
     <div v-else-if="commandes.length === 0" class="py-8 text-center">
       <p class="text-gray-600">Vous n'avez pas encore de réservations.</p>
       <router-link
@@ -105,7 +86,6 @@ export default defineComponent({
         Créer votre première réservation
       </router-link>
     </div>
-
     <div v-else class="overflow-x-auto">
       <table class="min-w-full bg-white">
         <thead class="bg-orange-50">
