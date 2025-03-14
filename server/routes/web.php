@@ -54,27 +54,28 @@ Route::group(['prefix' => 'api'], function () {
     Route::get('produits', [ProduitController::class, 'apiIndex']);
     Route::post('auth/register', [AuthController::class, 'register']);
 
+    // Route personnalisée pour la création de commandes (en dehors d'API Platform)
+
+
     Route::group(['middleware' => 'auth:api'], function () {
         Route::post('logout', [AuthController::class, 'logout']);
         Route::post('refresh', [AuthController::class, 'refresh']);
         Route::get('me', [AuthController::class, 'me']);
-
-        // Routes API pour les produits
         Route::get('produits/{produit}', [ProduitController::class, 'apiShow']);
 
-        // Routes API pour les commandes
         Route::post('commandes', [CommandeController::class, 'apiStore']);
         Route::get('commandes_complete/{id}', [CommandeController::class, 'getCommandeComplete']);
         Route::get('commandes_complete', [CommandeController::class, 'getAllCommandesComplete']);
+        Route::post('commandes/verifier-disponibilite', [CommandeController::class, 'apiVerifierDisponibilite']);
+        Route::post('commandes/create', [CommandeController::class, 'apiStore'])->middleware('auth:api');
 
-        // Routes API réservées aux loueurs et admins
+
         Route::middleware(['role:ROLE_LOUEUR,ROLE_ADMIN'])->group(function () {
             Route::post('produits', [ProduitController::class, 'apiStore']);
             Route::put('produits/{produit}', [ProduitController::class, 'apiUpdate']);
             Route::delete('produits/{produit}', [ProduitController::class, 'apiDestroy']);
         });
 
-        // Routes API réservées aux admins
         Route::middleware(['role:ROLE_ADMIN'])->group(function () {
             Route::get('categories', [CategoryController::class, 'apiIndex']);
             Route::post('categories', [CategoryController::class, 'apiStore']);
