@@ -249,3 +249,44 @@ export const deleteCommande = async (id: number): Promise<void> => {
     throw error
   }
 }
+
+export const createCommande = async (commandeData: CommandeCreateData): Promise<Commande> => {
+  try {
+    if (!isAuthenticated()) {
+      throw new Error('Vous devez être connecté pour créer une commande')
+    }
+
+    const response = await api.post<Commande>('/commandes/create', commandeData)
+    return response.data
+  } catch (error) {
+    console.error('Erreur lors de la création de la commande:', error)
+    if (axios.isAxiosError(error) && error.response?.status === 401) {
+      await logout()
+      throw new Error('Votre session a expiré. Veuillez vous reconnecter.')
+    }
+    if (axios.isAxiosError(error) && error.response?.status === 400) {
+      throw new Error(error.response.data.message || 'Erreur de validation des données')
+    }
+    throw error
+  }
+}
+
+export const verifierDisponibilite = async (
+  produitId: number,
+  date: string,
+  heureDebut: string,
+  heureFin: string,
+): Promise<boolean> => {
+  try {
+    const response = await api.post('/commandes/verifier-disponibilite', {
+      produit_id: produitId,
+      date,
+      heure_debut: heureDebut,
+      heure_fin: heureFin,
+    })
+    return response.data.disponible
+  } catch (error) {
+    console.error('Erreur lors de la vérification de disponibilité:', error)
+    return false
+  }
+}

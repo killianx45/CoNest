@@ -6,6 +6,7 @@ use App\Models\Commande;
 use App\Models\Produit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class CommandeController extends Controller
 {
@@ -271,5 +272,119 @@ class CommandeController extends Controller
         ];
 
         return response()->json($result);
+    }
+
+    /**
+     * API: Vérifier la disponibilité d'un créneau horaire
+     */
+    public function apiVerifierDisponibilite(Request $request)
+    {
+        $request->validate([
+            'produit_id' => 'required|exists:produits,id',
+            'date' => 'required|date',
+            'heure_debut' => 'required',
+            'heure_fin' => 'required',
+        ]);
+
+        $produit = Produit::find($request->produit_id);
+        $date = $request->date;
+        $heureDebut = $request->heure_debut;
+        $heureFin = $request->heure_fin;
+
+        // Vérifier si le produit est disponible à cette date
+        if (!$produit->estDansDisponibilite($date)) {
+            return response()->json([
+                'disponible' => false,
+                'message' => "L'espace n'est pas disponible à la date sélectionnée."
+            ]);
+        }
+
+        // Vérifier si le créneau horaire est disponible
+        $disponible = $produit->estDisponible($date, $heureDebut, $heureFin);
+
+        return response()->json([
+            'disponible' => $disponible,
+            'message' => $disponible ? "Créneau disponible" : "Ce créneau est déjà réservé."
+        ]);
+    }
+
+    /**
+     * API: Créer une nouvelle commande
+     */
+    public function apiStore(Request $request)
+    {
+        try {
+            $request->validate([
+                'produits' => 'required|array',
+                'produits.*' => 'exists:produits,id',
+                'dates' => 'required|array',
+                'dates.*' => 'required|date',
+                'heures_debut' => 'required|array',
+                'heures_debut.*' => 'required',
+                'heures_fin' => 'required|array',
+                'heures_fin.*' => 'required',
+            ]);
+
+            $produits = $request->produits;
+            $dates = $request->dates;
+            $heuresDebut = $request->heures_debut;
+            $heuresFin = $request->heures_fin;
+
+            // Vérifier la disponibilité de tous les créneaux
+            $erreur = $this->verifierDisponibiliteTousCreneaux($produits, $dates, $heuresDebut, $heuresFin);
+            if ($erreur) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $erreur
+                ], 400);
+            }
+
+            // Créer la commande
+            $commande = new Commande();
+            $commande->id_user = Auth::id();
+            $commande->prix = 0;
+            $commande->save();
+
+            // Attacher les produits et calculer le prix
+            $this->attacherProduitsEtCalculerPrix($commande, $produits, $dates, $heuresDebut, $heuresFin);
+
+            // Récupérer la commande complète avec les relations
+            $commandeComplete = Commande::with(['produits' => function ($query) {
+                $query->withPivot('date_reservation', 'heure_debut', 'heure_fin');
+            }, 'client'])->findOrFail($commande->id);
+
+            // Formater la réponse
+            $produitsData = [];
+            foreach ($commandeComplete->produits as $produit) {
+                $produitData = $produit->toArray();
+                $produitData['pivot'] = [
+                    'date_reservation' => $produit->pivot->date_reservation,
+                    'heure_debut' => $produit->pivot->heure_debut,
+                    'heure_fin' => $produit->pivot->heure_fin
+                ];
+                $produitsData[] = $produitData;
+            }
+
+            $result = [
+                'id' => $commandeComplete->id,
+                'prix' => $commandeComplete->prix,
+                'id_user' => $commandeComplete->id_user,
+                'client' => $commandeComplete->client ? $commandeComplete->client->toArray() : null,
+                'produits' => $produitsData,
+                'createdAt' => $commandeComplete->created_at,
+                'updatedAt' => $commandeComplete->updated_at
+            ];
+
+            return response()->json($result);
+        } catch (\Exception $e) {
+            // Log l'erreur pour le débogage
+            error_log('Erreur lors de la création de la commande: ' . $e->getMessage());
+            error_log($e->getTraceAsString());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Une erreur est survenue lors de la création de la commande: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }
