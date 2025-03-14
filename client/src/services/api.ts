@@ -54,13 +54,27 @@ export interface Produit {
   commandes?: string[]
   categories?: any[]
 }
+export interface ProduitCreateData {
+  nom: string
+  description: string
+  prix: number
+  image: File
+  categories: number[]
+  date_debut: string
+  date_fin: string
+}
+
+export interface ProduitUpdateData extends ProduitCreateData {
+  id: number
+  image_changed: boolean
+}
 
 export interface User {
   id: number
   email: string
-  password: string
-  roles: string[]
-  telephone: string
+  password?: string
+  role: string
+  telephone?: string
   name: string
   createdAt?: string
   updatedAt?: string
@@ -80,6 +94,14 @@ export interface Commande {
       }
     }
   >
+  createdAt?: string
+  updatedAt?: string
+}
+
+export interface Category {
+  id: number
+  name: string
+  description?: string
   createdAt?: string
   updatedAt?: string
 }
@@ -121,6 +143,8 @@ export const getAllProduits = async (): Promise<Produit[]> => {
   }
 }
 
+// PRODUITS
+
 export const getProduitById = async (id: number): Promise<Produit> => {
   try {
     const response = await api.get<Produit>(`/produits/${id}`)
@@ -130,6 +154,122 @@ export const getProduitById = async (id: number): Promise<Produit> => {
     throw error
   }
 }
+
+export const createProduit = async (produitData: ProduitCreateData): Promise<Produit> => {
+  try {
+    if (!isAuthenticated()) {
+      throw new Error('Vous devez être connecté pour créer un produit')
+    }
+
+    // Créer un FormData pour envoyer le fichier image
+    const formData = new FormData()
+    formData.append('nom', produitData.nom)
+    formData.append('description', produitData.description)
+    formData.append('prix', produitData.prix.toString())
+    formData.append('image', produitData.image)
+    formData.append('date_debut', produitData.date_debut)
+    formData.append('date_fin', produitData.date_fin)
+
+    // Ajouter les catégories
+    produitData.categories.forEach((categoryId) => {
+      formData.append('categories[]', categoryId.toString())
+    })
+
+    // Configurer les en-têtes pour FormData
+    const config = {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        Accept: 'application/ld+json',
+        Authorization: `Bearer ${localStorage.getItem(TOKEN_KEY)}`,
+      },
+    }
+
+    const response = await api.post<Produit>('/produits/create', formData, config)
+    return response.data
+  } catch (error) {
+    console.error('Erreur lors de la création du produit:', error)
+    if (axios.isAxiosError(error) && error.response?.status === 401) {
+      await logout()
+      throw new Error('Votre session a expiré. Veuillez vous reconnecter.')
+    }
+    if (axios.isAxiosError(error) && error.response?.status === 400) {
+      throw new Error(error.response.data.message || 'Erreur de validation des données')
+    }
+    throw error
+  }
+}
+
+export const updateProduit = async (produitData: ProduitUpdateData): Promise<Produit> => {
+  try {
+    if (!isAuthenticated()) {
+      throw new Error('Vous devez être connecté pour modifier un produit')
+    }
+
+    // Créer un FormData pour envoyer le fichier image
+    const formData = new FormData()
+
+    // Ajouter les champs de base
+    formData.append('nom', produitData.nom)
+    formData.append('description', produitData.description)
+    formData.append('prix', produitData.prix.toString())
+    formData.append('date_debut', produitData.date_debut)
+    formData.append('date_fin', produitData.date_fin)
+    formData.append('image_changed', produitData.image_changed ? '1' : '0')
+
+    // Ajouter l'image seulement si elle a été modifiée
+    if (produitData.image_changed && produitData.image) {
+      formData.append('image', produitData.image)
+    }
+
+    // Ajouter les catégories
+    if (produitData.categories && produitData.categories.length > 0) {
+      // Utiliser categories[] pour que Laravel reconnaisse cela comme un tableau
+      produitData.categories.forEach((categoryId) => {
+        formData.append('categories[]', categoryId.toString())
+      })
+    }
+
+    // Configurer les en-têtes pour FormData
+    const config = {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        Accept: 'application/json',
+        Authorization: `Bearer ${localStorage.getItem(TOKEN_KEY)}`,
+      },
+    }
+
+    // Utiliser la nouvelle route POST au lieu de PUT
+    const response = await axios.post<Produit>(
+      `${API_URL}/produits/update/${produitData.id}`,
+      formData,
+      config,
+    )
+
+    return response.data
+  } catch (error) {
+    console.error('Erreur lors de la modification du produit:', error)
+    if (axios.isAxiosError(error) && error.response?.status === 401) {
+      await logout()
+      throw new Error('Votre session a expiré. Veuillez vous reconnecter.')
+    }
+    if (axios.isAxiosError(error) && error.response?.status === 400) {
+      const errorMessage = error.response.data?.message || 'Erreur de validation des données'
+      throw new Error(errorMessage)
+    }
+    if (axios.isAxiosError(error) && error.response?.status === 403) {
+      throw new Error("Vous n'avez pas les droits nécessaires pour modifier ce produit.")
+    }
+    if (axios.isAxiosError(error) && error.response?.status === 500) {
+      const errorMessage =
+        error.response.data?.message ||
+        'Une erreur serveur est survenue lors de la modification du produit.'
+      throw new Error(errorMessage)
+    }
+    throw error
+  }
+}
+
+// USERS
 
 export const register = async (
   email: string,
@@ -198,8 +338,7 @@ export const getCurrentUser = async (): Promise<User | null> => {
       return null
     }
 
-    const response = await api.get<User>('/auth/me')
-
+    const response = await api.get<User>('/me')
     return response.data
   } catch (error) {
     console.error('Erreur lors de la récupération des informations utilisateur:', error)
@@ -288,5 +427,30 @@ export const verifierDisponibilite = async (
   } catch (error) {
     console.error('Erreur lors de la vérification de disponibilité:', error)
     return false
+  }
+}
+
+// CATEGORIES
+
+export const getAllCategories = async (): Promise<Category[]> => {
+  try {
+    const response = await api.get<ApiResponse<Category>>('/categories')
+    if (response.data && response.data.member) {
+      return response.data.member
+    }
+    return response.data as unknown as Category[]
+  } catch (error) {
+    console.error('Erreur lors de la récupération des catégories:', error)
+    if (axios.isAxiosError(error)) {
+      if (error.response?.status === 401) {
+        throw new Error('Vous devez être connecté pour accéder aux catégories.')
+      } else if (error.response?.status === 403) {
+        throw new Error(
+          "Vous n'avez pas les droits nécessaires pour accéder aux catégories. Seuls les loueurs et administrateurs peuvent y accéder.",
+        )
+      }
+    }
+
+    throw new Error('Erreur lors de la récupération des catégories. Veuillez réessayer.')
   }
 }

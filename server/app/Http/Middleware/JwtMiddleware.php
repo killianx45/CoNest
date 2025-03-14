@@ -41,6 +41,7 @@ class JwtMiddleware
         'ROLE_LOUEUR' => [
             'api/produits',
             'api/commandes',
+            'api/categories',
         ],
         'ROLE_USER' => [
             'api/produits',

@@ -62,12 +62,14 @@ export default {
     </div>
 
     <div :class="{ hidden: !isMenuOpen }" class="py-2 bg-white md:hidden">
-      <button
-        type="button"
-        class="bg-[#ff5a5f] hover:bg-[#ff4245] text-white border-none py-2 px-4 rounded-[50px] cursor-pointer w-[90%] mx-auto block mb-2"
-      >
-        + mettre une annonce
-      </button>
+      <router-link to="/produit/create">
+        <button
+          type="button"
+          class="bg-[#ff5a5f] hover:bg-[#ff4245] text-white border-none py-2 px-4 rounded-[50px] cursor-pointer w-[90%] mx-auto block mb-2"
+        >
+          + mettre une annonce
+        </button>
+      </router-link>
       <ul class="p-0 m-0 list-none">
         <li class="p-2 border-b border-gray-200">
           <div @click="toggleAccountMenu" class="flex items-center justify-between cursor-pointer">
@@ -108,12 +110,14 @@ export default {
         <router-link to="/">
           <img src="../assets/logo_CoNest.svg" alt="Conest logo" class="h-10 m-2" />
         </router-link>
-        <button
-          type="button"
-          class="bg-[#ff5a5f] hover:bg-[#ff4245] text-white border-none py-2 px-4 rounded-[50px] cursor-pointer annonce-button"
-        >
-          + mettre une annonce
-        </button>
+        <router-link to="/produit/create">
+          <button
+            type="button"
+            class="bg-[#ff5a5f] hover:bg-[#ff4245] text-white border-none py-2 px-4 rounded-[50px] cursor-pointer annonce-button"
+          >
+            + mettre une annonce
+          </button>
+        </router-link>
         <li
           v-for="(item, index) in menuItems.slice(0, 3)"
           :key="index"

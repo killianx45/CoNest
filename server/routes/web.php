@@ -72,17 +72,20 @@ Route::group(['prefix' => 'api'], function () {
 
         Route::middleware(['role:ROLE_LOUEUR,ROLE_ADMIN'])->group(function () {
             Route::post('produits', [ProduitController::class, 'apiStore']);
-            Route::put('produits/{produit}', [ProduitController::class, 'apiUpdate']);
+            Route::post('produits/update/{produit}', [ProduitController::class, 'apiUpdate']);
             Route::delete('produits/{produit}', [ProduitController::class, 'apiDestroy']);
+            Route::get('categories', [CategoryController::class, 'apiIndex']);
         });
 
         Route::middleware(['role:ROLE_ADMIN'])->group(function () {
-            Route::get('categories', [CategoryController::class, 'apiIndex']);
             Route::post('categories', [CategoryController::class, 'apiStore']);
             Route::get('categories/{category}', [CategoryController::class, 'apiShow']);
             Route::put('categories/{category}', [CategoryController::class, 'apiUpdate']);
             Route::delete('categories/{category}', [CategoryController::class, 'apiDestroy']);
         });
+
+        // Routes API pour les produits
+        Route::post('produits/create', [ProduitController::class, 'apiStore'])->middleware('role:ROLE_LOUEUR,ROLE_ADMIN');
     });
 });
 
