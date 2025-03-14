@@ -1,52 +1,42 @@
-<script lang="ts">
-import { login } from '@/services/api'
-import { defineComponent } from 'vue'
+<script setup lang="ts">
+import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { login } from '@/services/api'
 
-export default defineComponent({
-  name: 'Login',
-  data() {
-    return {
-      email: '',
-      password: '',
-      errorMessage: '',
-      isLoading: false,
-      redirectPath: '/',
-    }
-  },
-  setup() {
-    const router = useRouter()
-    const route = useRoute()
-    return { router, route }
-  },
-  mounted() {
-    if (this.route.query.redirect) {
-      this.redirectPath = this.route.query.redirect as string
-    }
-  },
-  methods: {
-    async handleSubmit() {
-      this.isLoading = true
-      this.errorMessage = ''
+const router = useRouter()
+const route = useRoute()
+const email = ref('')
+const password = ref('')
+const errorMessage = ref('')
+const isLoading = ref(false)
+const redirectPath = ref('/')
 
-      try {
-        if (!this.email || !this.password) {
-          this.errorMessage = 'Veuillez remplir tous les champs'
-          this.isLoading = false
-          return
-        }
-
-        await login(this.email, this.password)
-        this.router.push(this.redirectPath)
-      } catch (error: any) {
-        this.errorMessage = error.response?.data?.message || 'Erreur lors de la connexion'
-        console.error('Erreur de connexion:', error)
-      } finally {
-        this.isLoading = false
-      }
-    },
-  },
+onMounted(() => {
+  if (route.query.redirect) {
+    redirectPath.value = route.query.redirect as string
+  }
 })
+
+async function handleSubmit() {
+  isLoading.value = true
+  errorMessage.value = ''
+
+  try {
+    if (!email.value || !password.value) {
+      errorMessage.value = 'Veuillez remplir tous les champs'
+      isLoading.value = false
+      return
+    }
+
+    await login(email.value, password.value)
+    router.push(redirectPath.value)
+  } catch (error: any) {
+    errorMessage.value = error.response?.data?.message || 'Erreur lors de la connexion'
+    console.error('Erreur de connexion:', error)
+  } finally {
+    isLoading.value = false
+  }
+}
 </script>
 
 <template>

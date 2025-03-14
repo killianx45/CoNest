@@ -1,71 +1,55 @@
-<script lang="ts">
+<script setup lang="ts">
+import { ref, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import type { Produit } from '@/services/api'
 import { getProduitById, isAuthenticated } from '@/services/api'
-import { onMounted, ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
 import NavBar from '../../NavBar.vue'
 
-export default {
-  name: 'ShowProduitPage',
-  components: {
-    NavBar,
-  },
-  setup() {
-    const route = useRoute()
-    const router = useRouter()
-    const produit = ref<Produit | null>(null)
-    const loading = ref(true)
-    const error = ref<string | null>(null)
+const route = useRoute()
+const router = useRouter()
+const produit = ref<Produit | null>(null)
+const loading = ref(true)
+const error = ref<string | null>(null)
+const formatPrix = (prix: string | number): string => {
+  return typeof prix === 'string' ? prix : prix.toString()
+}
 
-    const formatPrix = (prix: string | number): string => {
-      return typeof prix === 'string' ? prix : prix.toString()
+onMounted(async () => {
+  if (!isAuthenticated()) {
+    router.push({
+      path: '/login',
+      query: { redirect: route.fullPath },
+    })
+    return
+  }
+
+  try {
+    const produitId = parseInt(route.params.id as string, 10)
+    if (isNaN(produitId)) {
+      error.value = 'ID de produit invalide'
+      loading.value = false
+      return
     }
 
-    onMounted(async () => {
-      if (!isAuthenticated()) {
+    loading.value = true
+    produit.value = await getProduitById(produitId)
+    loading.value = false
+  } catch (err) {
+    loading.value = false
+    if (err instanceof Error && err.message.includes('Authentification requise')) {
+      error.value = 'Authentification requise pour accéder aux détails du produit'
+      setTimeout(() => {
         router.push({
           path: '/login',
           query: { redirect: route.fullPath },
         })
-        return
-      }
-
-      try {
-        const produitId = parseInt(route.params.id as string, 10)
-        if (isNaN(produitId)) {
-          error.value = 'ID de produit invalide'
-          loading.value = false
-          return
-        }
-
-        loading.value = true
-        produit.value = await getProduitById(produitId)
-        loading.value = false
-      } catch (err) {
-        loading.value = false
-        if (err instanceof Error && err.message.includes('Authentification requise')) {
-          error.value = 'Authentification requise pour accéder aux détails du produit'
-          setTimeout(() => {
-            router.push({
-              path: '/login',
-              query: { redirect: route.fullPath },
-            })
-          }, 2000)
-        } else {
-          error.value = 'Erreur lors du chargement du produit'
-          console.error('Erreur lors du chargement du produit:', err)
-        }
-      }
-    })
-
-    return {
-      produit,
-      loading,
-      error,
-      formatPrix,
+      }, 2000)
+    } else {
+      error.value = 'Erreur lors du chargement du produit'
+      console.error('Erreur lors du chargement du produit:', err)
     }
-  },
-}
+  }
+})
 </script>
 
 <template>
@@ -79,13 +63,11 @@ export default {
       >
         {{ error }}
       </div>
-
       <div v-if="loading" class="flex items-center justify-center py-8">
         <div
           class="w-12 h-12 border-t-2 border-b-2 border-blue-500 rounded-full animate-spin"
         ></div>
       </div>
-
       <div v-else-if="produit" class="grid grid-cols-1 gap-8 md:grid-cols-2">
         <div class="overflow-hidden rounded-lg shadow-lg">
           <img
@@ -123,7 +105,6 @@ export default {
           </router-link>
         </div>
       </div>
-
       <div v-else class="py-8 text-center text-gray-500">Produit non trouvé.</div>
     </div>
   </div>

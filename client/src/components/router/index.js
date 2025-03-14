@@ -52,6 +52,11 @@ const router = createRouter({
       name: 'createCommande',
       component: () => import('../views/commandes/CreateCommande.vue'),
     },
+    {
+      path: '/:pathMatch(.*)*',
+      name: 'notFound',
+      component: () => import('../views/NotFound.vue'),
+    },
   ],
 })
 

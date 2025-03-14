@@ -1,228 +1,227 @@
-<script lang="ts">
-import NavBar from '../../NavBar.vue'
-import { defineComponent, ref, reactive, onMounted, watch } from 'vue'
+<script setup lang="ts">
+import { ref, reactive, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
+import NavBar from '../../NavBar.vue'
 import {
   getAllProduits,
   createCommande,
   verifierDisponibilite,
-  Produit,
-  CommandeCreateData,
+  type Produit,
+  type CommandeCreateData,
 } from '../../../services/api'
 
-export default defineComponent({
-  name: 'CreateCommande',
-  components: {
-    NavBar,
-  },
-  setup() {
-    const router = useRouter()
-    const produits = ref<Produit[]>([])
-    const loading = ref(false)
-    const error = ref('')
-    const success = ref(false)
-    const checkingAvailability = ref(false)
-    const form = reactive({
-      produits: [{ id: 0, date: '', heure_debut: '', heure_fin: '' }],
-    })
-    const errors = reactive({
-      produits: [
-        { id: false, date: false, heure_debut: false, heure_fin: false, disponibilite: false },
-      ],
-      general: '',
-    })
-    const fetchProduits = async () => {
-      try {
-        loading.value = true
-        produits.value = await getAllProduits()
-      } catch (err) {
-        error.value = 'Erreur lors du chargement des produits. Veuillez réessayer.'
-        console.error(err)
-      } finally {
-        loading.value = false
+const router = useRouter()
+const produits = ref<Produit[]>([])
+const loading = ref(false)
+const error = ref('')
+const success = ref(false)
+const checkingAvailability = ref(false)
+
+interface ProduitError {
+  id: boolean
+  date: boolean
+  heure_debut: boolean
+  heure_fin: boolean
+  disponibilite: boolean
+}
+
+const form = reactive<{
+  produits: Array<{ id: number; date: string; heure_debut: string; heure_fin: string }>
+}>({
+  produits: [{ id: 0, date: '', heure_debut: '', heure_fin: '' }],
+})
+
+const errors = reactive<{ produits: ProduitError[]; general: string }>({
+  produits: [
+    { id: false, date: false, heure_debut: false, heure_fin: false, disponibilite: false },
+  ],
+  general: '',
+})
+
+const fetchProduits = async () => {
+  try {
+    loading.value = true
+    produits.value = await getAllProduits()
+  } catch (err) {
+    error.value = 'Erreur lors du chargement des espaces de coworking. Veuillez réessayer.'
+    console.error(err)
+  } finally {
+    loading.value = false
+  }
+}
+
+const addProduit = () => {
+  form.produits.push({ id: 0, date: '', heure_debut: '', heure_fin: '' })
+  errors.produits.push({
+    id: false,
+    date: false,
+    heure_debut: false,
+    heure_fin: false,
+    disponibilite: false,
+  })
+}
+
+const removeProduit = (index: number) => {
+  if (form.produits.length > 1) {
+    form.produits.splice(index, 1)
+    errors.produits.splice(index, 1)
+  }
+}
+
+const checkAvailability = async (index: number) => {
+  const produit = form.produits[index]
+  if (produit.id && produit.date && produit.heure_debut && produit.heure_fin) {
+    try {
+      checkingAvailability.value = true
+      errors.produits[index].disponibilite = false
+
+      const disponible = await verifierDisponibilite(
+        Number(produit.id),
+        produit.date,
+        produit.heure_debut,
+        produit.heure_fin,
+      )
+
+      if (!disponible) {
+        errors.produits[index].disponibilite = true
       }
+    } catch (err) {
+      console.error('Erreur lors de la vérification de disponibilité:', err)
+    } finally {
+      checkingAvailability.value = false
     }
-    const addProduit = () => {
-      form.produits.push({ id: 0, date: '', heure_debut: '', heure_fin: '' })
-      errors.produits.push({
-        id: false,
-        date: false,
-        heure_debut: false,
-        heure_fin: false,
-        disponibilite: false,
-      })
-    }
-    const removeProduit = (index: number) => {
-      if (form.produits.length > 1) {
-        form.produits.splice(index, 1)
-        errors.produits.splice(index, 1)
-      }
-    }
-    const checkAvailability = async (index: number) => {
+  }
+}
+
+watch(
+  () => [...form.produits],
+  (newProduits) => {
+    newProduits.forEach((_, index) => {
       const produit = form.produits[index]
       if (produit.id && produit.date && produit.heure_debut && produit.heure_fin) {
-        try {
-          checkingAvailability.value = true
-          errors.produits[index].disponibilite = false
-
-          const disponible = await verifierDisponibilite(
-            Number(produit.id),
-            produit.date,
-            produit.heure_debut,
-            produit.heure_fin,
-          )
-
-          if (!disponible) {
-            errors.produits[index].disponibilite = true
-          }
-        } catch (err) {
-          console.error('Erreur lors de la vérification de disponibilité:', err)
-        } finally {
-          checkingAvailability.value = false
-        }
+        errors.produits[index].disponibilite = false
       }
-    }
-    watch(
-      () => [...form.produits],
-      (newProduits) => {
-        newProduits.forEach((_, index) => {
-          const produit = form.produits[index]
-          if (produit.id && produit.date && produit.heure_debut && produit.heure_fin) {
-            errors.produits[index].disponibilite = false
-          }
-        })
-      },
-      { deep: true },
-    )
-    const validateForm = (): boolean => {
-      let isValid = true
-      errors.general = ''
-
-      form.produits.forEach((produit, index) => {
-        errors.produits[index].id = produit.id === 0
-        errors.produits[index].date = !produit.date
-        errors.produits[index].heure_debut = !produit.heure_debut
-        errors.produits[index].heure_fin = !produit.heure_fin
-        if (produit.heure_debut && produit.heure_fin && produit.heure_debut >= produit.heure_fin) {
-          errors.produits[index].heure_fin = true
-          errors.general = "L'heure de fin doit être après l'heure de début"
-          isValid = false
-        }
-        if (
-          errors.produits[index].id ||
-          errors.produits[index].date ||
-          errors.produits[index].heure_debut ||
-          errors.produits[index].heure_fin ||
-          errors.produits[index].disponibilite
-        ) {
-          isValid = false
-        }
-      })
-
-      return isValid
-    }
-    const checkAllAvailabilities = async (): Promise<boolean> => {
-      let allAvailable = true
-      checkingAvailability.value = true
-
-      for (let i = 0; i < form.produits.length; i++) {
-        const produit = form.produits[i]
-        if (produit.id && produit.date && produit.heure_debut && produit.heure_fin) {
-          try {
-            const disponible = await verifierDisponibilite(
-              Number(produit.id),
-              produit.date,
-              produit.heure_debut,
-              produit.heure_fin,
-            )
-
-            if (!disponible) {
-              errors.produits[i].disponibilite = true
-              allAvailable = false
-            }
-          } catch (err) {
-            console.error('Erreur lors de la vérification de disponibilité:', err)
-            allAvailable = false
-          }
-        }
-      }
-
-      checkingAvailability.value = false
-      return allAvailable
-    }
-    const submitForm = async () => {
-      if (!validateForm()) {
-        return
-      }
-      const allAvailable = await checkAllAvailabilities()
-      if (!allAvailable) {
-        errors.general = 'Un ou plusieurs créneaux sélectionnés ne sont pas disponibles.'
-        return
-      }
-
-      try {
-        loading.value = true
-        const commandeData: CommandeCreateData = {
-          produits: form.produits.map((p) => Number(p.id)),
-          dates: form.produits.map((p) => p.date),
-          heures_debut: form.produits.map((p) => p.heure_debut),
-          heures_fin: form.produits.map((p) => p.heure_fin),
-        }
-
-        await createCommande(commandeData)
-        success.value = true
-        setTimeout(() => {
-          router.push('/commandes')
-        }, 2000)
-      } catch (err: any) {
-        if (err.response && err.response.data && err.response.data.message) {
-          error.value = err.response.data.message
-        } else {
-          error.value = 'Une erreur est survenue lors de la création de la commande.'
-        }
-        console.error(err)
-      } finally {
-        loading.value = false
-      }
-    }
-    onMounted(fetchProduits)
-
-    return {
-      produits,
-      form,
-      errors,
-      loading,
-      checkingAvailability,
-      error,
-      success,
-      addProduit,
-      removeProduit,
-      checkAvailability,
-      submitForm,
-    }
+    })
   },
-})
+  { deep: true },
+)
+
+const validateForm = (): boolean => {
+  let isValid = true
+  errors.general = ''
+
+  form.produits.forEach((produit, index) => {
+    errors.produits[index].id = produit.id === 0
+    errors.produits[index].date = !produit.date
+    errors.produits[index].heure_debut = !produit.heure_debut
+    errors.produits[index].heure_fin = !produit.heure_fin
+    if (produit.heure_debut && produit.heure_fin && produit.heure_debut >= produit.heure_fin) {
+      errors.produits[index].heure_fin = true
+      errors.general = "L'heure de fin doit être après l'heure de début"
+      isValid = false
+    }
+
+    if (
+      errors.produits[index].id ||
+      errors.produits[index].date ||
+      errors.produits[index].heure_debut ||
+      errors.produits[index].heure_fin ||
+      errors.produits[index].disponibilite
+    ) {
+      isValid = false
+    }
+  })
+
+  return isValid
+}
+
+const checkAllAvailabilities = async (): Promise<boolean> => {
+  let allAvailable = true
+  checkingAvailability.value = true
+
+  for (let i = 0; i < form.produits.length; i++) {
+    const produit = form.produits[i]
+    if (produit.id && produit.date && produit.heure_debut && produit.heure_fin) {
+      try {
+        const disponible = await verifierDisponibilite(
+          Number(produit.id),
+          produit.date,
+          produit.heure_debut,
+          produit.heure_fin,
+        )
+
+        if (!disponible) {
+          errors.produits[i].disponibilite = true
+          allAvailable = false
+        }
+      } catch (err) {
+        console.error('Erreur lors de la vérification de disponibilité:', err)
+        allAvailable = false
+      }
+    }
+  }
+
+  checkingAvailability.value = false
+  return allAvailable
+}
+
+const submitForm = async () => {
+  if (!validateForm()) {
+    return
+  }
+
+  const allAvailable = await checkAllAvailabilities()
+  if (!allAvailable) {
+    errors.general = 'Un ou plusieurs créneaux sélectionnés ne sont pas disponibles.'
+    return
+  }
+
+  try {
+    loading.value = true
+    const commandeData: CommandeCreateData = {
+      produits: form.produits.map((p) => Number(p.id)),
+      dates: form.produits.map((p) => p.date),
+      heures_debut: form.produits.map((p) => p.heure_debut),
+      heures_fin: form.produits.map((p) => p.heure_fin),
+    }
+
+    await createCommande(commandeData)
+    success.value = true
+
+    setTimeout(() => {
+      router.push('/commandes')
+    }, 2000)
+  } catch (err: any) {
+    if (err.response && err.response.data && err.response.data.message) {
+      error.value = err.response.data.message
+    } else {
+      error.value = 'Une erreur est survenue lors de la création de la réservation.'
+    }
+    console.error(err)
+  } finally {
+    loading.value = false
+  }
+}
+
+onMounted(fetchProduits)
 </script>
 
 <template>
   <NavBar />
   <div class="max-w-6xl p-6 mx-auto mt-20 bg-white border-2 border-orange-300 rounded-lg shadow-md">
     <h1 class="mb-6 text-3xl font-bold text-black">Créer une réservation</h1>
-
     <div v-if="loading || checkingAvailability" class="flex justify-center my-8">
       <div class="w-12 h-12 border-b-2 border-orange-500 rounded-full animate-spin"></div>
       <p v-if="checkingAvailability" class="ml-3 text-gray-600">
         Vérification de la disponibilité...
       </p>
     </div>
-
     <div
       v-else-if="success"
       class="px-4 py-3 mb-4 text-green-700 bg-green-100 border border-green-400 rounded"
     >
       <p>Réservation créée avec succès ! Redirection en cours...</p>
     </div>
-
     <div v-else>
       <div
         v-if="error"
@@ -237,7 +236,6 @@ export default defineComponent({
       >
         <p>{{ errors.general }}</p>
       </div>
-
       <form @submit.prevent="submitForm" class="space-y-6">
         <div
           v-for="(produit, index) in form.produits"

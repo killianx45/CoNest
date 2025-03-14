@@ -1,9 +1,10 @@
+import type { AxiosInstance, AxiosRequestConfig } from 'axios'
 import axios from 'axios'
 
 const API_URL = 'http://localhost:8000/api'
 const TOKEN_KEY = 'auth_token'
 
-export const api = axios.create({
+export const api: AxiosInstance = axios.create({
   baseURL: API_URL,
   headers: {
     'Content-Type': 'application/ld+json',
@@ -11,14 +12,13 @@ export const api = axios.create({
   },
 })
 
-export const setupInterceptors = () => {
+export const setupInterceptors = (): void => {
   api.interceptors.request.use(
     (config) => {
       const token = localStorage.getItem(TOKEN_KEY)
       if (token) {
         config.headers.Authorization = `Bearer ${token}`
       }
-      // S'assurer que les headers sont toujours présents
       config.headers['Content-Type'] = 'application/ld+json'
       config.headers.Accept = 'application/ld+json'
       return config
@@ -121,7 +121,7 @@ export interface ApiResponse<T> {
   member: T[]
 }
 
-export const getAuthHeaders = () => {
+export const getAuthHeaders = (): Record<string, string> => {
   const token = localStorage.getItem(TOKEN_KEY)
   return token ? { Authorization: `Bearer ${token}` } : {}
 }
@@ -160,8 +160,6 @@ export const createProduit = async (produitData: ProduitCreateData): Promise<Pro
     if (!isAuthenticated()) {
       throw new Error('Vous devez être connecté pour créer un produit')
     }
-
-    // Créer un FormData pour envoyer le fichier image
     const formData = new FormData()
     formData.append('nom', produitData.nom)
     formData.append('description', produitData.description)
@@ -170,13 +168,11 @@ export const createProduit = async (produitData: ProduitCreateData): Promise<Pro
     formData.append('date_debut', produitData.date_debut)
     formData.append('date_fin', produitData.date_fin)
 
-    // Ajouter les catégories
     produitData.categories.forEach((categoryId) => {
       formData.append('categories[]', categoryId.toString())
     })
 
-    // Configurer les en-têtes pour FormData
-    const config = {
+    const config: AxiosRequestConfig = {
       headers: {
         'Content-Type': 'multipart/form-data',
         Accept: 'application/ld+json',
@@ -204,11 +200,7 @@ export const updateProduit = async (produitData: ProduitUpdateData): Promise<Pro
     if (!isAuthenticated()) {
       throw new Error('Vous devez être connecté pour modifier un produit')
     }
-
-    // Créer un FormData pour envoyer le fichier image
     const formData = new FormData()
-
-    // Ajouter les champs de base
     formData.append('nom', produitData.nom)
     formData.append('description', produitData.description)
     formData.append('prix', produitData.prix.toString())
@@ -216,21 +208,17 @@ export const updateProduit = async (produitData: ProduitUpdateData): Promise<Pro
     formData.append('date_fin', produitData.date_fin)
     formData.append('image_changed', produitData.image_changed ? '1' : '0')
 
-    // Ajouter l'image seulement si elle a été modifiée
     if (produitData.image_changed && produitData.image) {
       formData.append('image', produitData.image)
     }
 
-    // Ajouter les catégories
     if (produitData.categories && produitData.categories.length > 0) {
-      // Utiliser categories[] pour que Laravel reconnaisse cela comme un tableau
       produitData.categories.forEach((categoryId) => {
         formData.append('categories[]', categoryId.toString())
       })
     }
 
-    // Configurer les en-têtes pour FormData
-    const config = {
+    const config: AxiosRequestConfig = {
       headers: {
         'Content-Type': 'multipart/form-data',
         Accept: 'application/json',
@@ -238,7 +226,6 @@ export const updateProduit = async (produitData: ProduitUpdateData): Promise<Pro
       },
     }
 
-    // Utiliser la nouvelle route POST au lieu de PUT
     const response = await axios.post<Produit>(
       `${API_URL}/produits/update/${produitData.id}`,
       formData,

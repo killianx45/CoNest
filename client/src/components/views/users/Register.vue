@@ -1,52 +1,42 @@
-<script lang="ts">
-import { register } from '@/services/api'
-import { defineComponent } from 'vue'
+<script setup lang="ts">
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { register } from '@/services/api'
 
-export default defineComponent({
-  name: 'Register',
-  data() {
-    return {
-      email: '',
-      password: '',
-      name: '',
-      telephone: '',
-      errorMessage: '',
-      isLoading: false,
+const router = useRouter()
+const email = ref('')
+const password = ref('')
+const name = ref('')
+const telephone = ref('')
+const errorMessage = ref('')
+const isLoading = ref(false)
+
+async function handleSubmit() {
+  isLoading.value = true
+  errorMessage.value = ''
+
+  try {
+    if (!email.value || !password.value || !name.value || !telephone.value) {
+      errorMessage.value = 'Veuillez remplir tous les champs'
+      isLoading.value = false
+      return
     }
-  },
-  setup() {
-    const router = useRouter()
-    return { router }
-  },
-  methods: {
-    async handleSubmit() {
-      this.isLoading = true
-      this.errorMessage = ''
 
-      try {
-        if (!this.email || !this.password || !this.name || !this.telephone) {
-          this.errorMessage = 'Veuillez remplir tous les champs'
-          this.isLoading = false
-          return
-        }
-
-        await register(this.email, this.password, this.name, this.telephone)
-        this.router.push('/login')
-      } catch (error: any) {
-        this.errorMessage = error.response?.data?.message || "Erreur lors de l'inscription"
-        console.error("Erreur d'inscription:", error)
-      } finally {
-        this.isLoading = false
-      }
-    },
-  },
-})
+    await register(email.value, password.value, name.value, telephone.value)
+    router.push('/login')
+  } catch (error: any) {
+    errorMessage.value = error.response?.data?.message || "Erreur lors de l'inscription"
+    console.error("Erreur d'inscription:", error)
+  } finally {
+    isLoading.value = false
+  }
+}
 </script>
 
 <template>
   <div class="container px-4 pt-24 mx-auto">
     <h1 class="mb-6 text-3xl font-bold">Inscription</h1>
+
     <form @submit.prevent="handleSubmit" class="max-w-md mx-auto">
       <div class="mb-4">
         <label for="name" class="block mb-2 font-medium">Nom</label>
