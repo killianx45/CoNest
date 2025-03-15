@@ -20,11 +20,8 @@ use App\Http\Controllers\AuthController;
 )]
 class Client
 {
-    // Champs pour la connexion
     public string $email;
     public string $password;
-
-    // Champs pour l'inscription
     public ?string $name;
     public ?string $telephone;
     public ?string $role = 'ROLE_USER';

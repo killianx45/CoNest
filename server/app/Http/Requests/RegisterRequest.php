@@ -2,11 +2,9 @@
 
 namespace App\Http\Requests;
 
-use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
-class ProfileUpdateRequest extends FormRequest
+class RegisterRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,15 +22,11 @@ class ProfileUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:255'],
-            'email' => [
-                'required',
-                'string',
-                'lowercase',
-                'email',
-                'max:255',
-                Rule::unique(User::class)->ignore($this->user()->id),
-            ],
+            'email' => 'required|string|email|unique:users',
+            'password' => 'required|string|min:8',
+            'name' => 'required|string|max:255',
+            'telephone' => 'required|string|max:255',
+            'role' => 'sometimes|string|in:ROLE_USER,ROLE_ADMIN,ROLE_LOUEUR',
         ];
     }
 
@@ -44,15 +38,14 @@ class ProfileUpdateRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.required' => 'Le nom est obligatoire',
-            'name.string' => 'Le nom doit être une chaîne de caractères',
-            'name.max' => 'Le nom ne doit pas dépasser 255 caractères',
             'email.required' => 'L\'adresse email est obligatoire',
-            'email.string' => 'L\'adresse email doit être une chaîne de caractères',
-            'email.lowercase' => 'L\'adresse email doit être en minuscules',
             'email.email' => 'L\'adresse email doit être valide',
-            'email.max' => 'L\'adresse email ne doit pas dépasser 255 caractères',
             'email.unique' => 'Cette adresse email est déjà utilisée',
+            'password.required' => 'Le mot de passe est obligatoire',
+            'password.min' => 'Le mot de passe doit contenir au moins 8 caractères',
+            'name.required' => 'Le nom est obligatoire',
+            'telephone.required' => 'Le numéro de téléphone est obligatoire',
+            'role.in' => 'Le rôle doit être ROLE_USER, ROLE_ADMIN ou ROLE_LOUEUR',
         ];
     }
 }

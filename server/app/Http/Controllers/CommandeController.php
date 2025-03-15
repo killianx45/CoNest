@@ -6,14 +6,19 @@ use App\Models\Commande;
 use App\Models\Produit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Http\JsonResponse;
+use Illuminate\View\View;
+use Illuminate\Http\RedirectResponse;
+use App\Http\Requests\StoreCommandeRequest;
+use App\Http\Requests\UpdateCommandeRequest;
+use App\Http\Requests\VerifierDisponibiliteRequest;
 
 class CommandeController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(): View
     {
         $user = Auth::user();
 
@@ -23,16 +28,13 @@ class CommandeController extends Controller
             $commandes = Commande::with(['produits', 'client'])->get();
         }
 
-        // Récupérer le nom de l'utilisateur qui a fait la commande à partir de la relation client
-        // au lieu du user courant
-
         return view('commandes.index', compact('commandes'));
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(): View
     {
         $produits = Produit::all();
         return view('commandes.create', compact('produits'));
@@ -41,23 +43,15 @@ class CommandeController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreCommandeRequest $request): RedirectResponse
     {
-        $request->validate([
-            'produits' => 'required|array',
-            'produits.*' => 'exists:produits,id',
-            'dates' => 'required|array',
-            'dates.*' => 'required|date',
-            'heures_debut' => 'required|array',
-            'heures_debut.*' => 'required',
-            'heures_fin' => 'required|array',
-            'heures_fin.*' => 'required',
-        ]);
+        $validated = $request->validated();
 
-        $produits = $request->produits;
-        $dates = $request->dates;
-        $heuresDebut = $request->heures_debut;
-        $heuresFin = $request->heures_fin;
+        $produits = $validated['produits'];
+        $dates = $validated['dates'];
+        $heuresDebut = $validated['heures_debut'];
+        $heuresFin = $validated['heures_fin'];
+
         $erreur = $this->verifierDisponibiliteTousCreneaux($produits, $dates, $heuresDebut, $heuresFin);
         if ($erreur) {
             return back()->withErrors(['message' => $erreur])->withInput();
@@ -76,7 +70,7 @@ class CommandeController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(string $id): View
     {
         $commande = Commande::with('produits')->findOrFail($id);
         $user_name = $commande->client->name;
@@ -91,7 +85,7 @@ class CommandeController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(string $id): View
     {
         $commande = Commande::with('produits')->findOrFail($id);
         $produits = Produit::all();
@@ -101,25 +95,16 @@ class CommandeController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateCommandeRequest $request, string $id): RedirectResponse
     {
-        $request->validate([
-            'produits' => 'required|array',
-            'produits.*' => 'exists:produits,id',
-            'dates' => 'required|array',
-            'dates.*' => 'required|date',
-            'heures_debut' => 'required|array',
-            'heures_debut.*' => 'required',
-            'heures_fin' => 'required|array',
-            'heures_fin.*' => 'required',
-        ]);
+        $validated = $request->validated();
 
         $commande = Commande::findOrFail($id);
 
-        $produits = $request->produits;
-        $dates = $request->dates;
-        $heuresDebut = $request->heures_debut;
-        $heuresFin = $request->heures_fin;
+        $produits = $validated['produits'];
+        $dates = $validated['dates'];
+        $heuresDebut = $validated['heures_debut'];
+        $heuresFin = $validated['heures_fin'];
 
         $erreur = $this->verifierDisponibiliteTousCreneaux($produits, $dates, $heuresDebut, $heuresFin, $id);
         if ($erreur) {
@@ -136,7 +121,7 @@ class CommandeController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(string $id): RedirectResponse
     {
         $commande = Commande::findOrFail($id);
         $commande->delete();
@@ -146,7 +131,7 @@ class CommandeController extends Controller
     /**
      * Vérifie la disponibilité de tous les créneaux demandés
      */
-    private function verifierDisponibiliteTousCreneaux($produits, $dates, $heuresDebut, $heuresFin, $commandeId = null)
+    private function verifierDisponibiliteTousCreneaux($produits, $dates, $heuresDebut, $heuresFin, $commandeId = null): ?string
     {
         for ($i = 0; $i < count($produits); $i++) {
             $produit = Produit::find($produits[$i]);
@@ -167,7 +152,7 @@ class CommandeController extends Controller
     /**
      * Attache les produits à la commande et calcule le prix total
      */
-    private function attacherProduitsEtCalculerPrix($commande, $produits, $dates, $heuresDebut, $heuresFin)
+    private function attacherProduitsEtCalculerPrix($commande, $produits, $dates, $heuresDebut, $heuresFin): void
     {
         $prixTotal = 0;
 
@@ -196,7 +181,7 @@ class CommandeController extends Controller
     /**
      * API: Get all commandes with complete pivot data
      */
-    public function getAllCommandesComplete()
+    public function getAllCommandesComplete(): JsonResponse
     {
         $user = Auth::user();
         if ($user->role === 'ROLE_USER') {
@@ -244,7 +229,7 @@ class CommandeController extends Controller
     /**
      * API: Get a complete commande with pivot data
      */
-    public function getCommandeComplete(string $id)
+    public function getCommandeComplete(string $id): JsonResponse
     {
         $commande = Commande::with(['produits' => function ($query) {
             $query->withPivot('date_reservation', 'heure_debut', 'heure_fin');
@@ -277,21 +262,15 @@ class CommandeController extends Controller
     /**
      * API: Vérifier la disponibilité d'un créneau horaire
      */
-    public function apiVerifierDisponibilite(Request $request)
+    public function apiVerifierDisponibilite(VerifierDisponibiliteRequest $request): JsonResponse
     {
-        $request->validate([
-            'produit_id' => 'required|exists:produits,id',
-            'date' => 'required|date',
-            'heure_debut' => 'required',
-            'heure_fin' => 'required',
-        ]);
+        $validated = $request->validated();
 
-        $produit = Produit::find($request->produit_id);
-        $date = $request->date;
-        $heureDebut = $request->heure_debut;
-        $heureFin = $request->heure_fin;
+        $produit = Produit::find($validated['produit_id']);
+        $date = $validated['date'];
+        $heureDebut = $validated['heure_debut'];
+        $heureFin = $validated['heure_fin'];
 
-        // Vérifier si le produit est disponible à cette date
         if (!$produit->estDansDisponibilite($date)) {
             return response()->json([
                 'disponible' => false,
@@ -299,7 +278,6 @@ class CommandeController extends Controller
             ]);
         }
 
-        // Vérifier si le créneau horaire est disponible
         $disponible = $produit->estDisponible($date, $heureDebut, $heureFin);
 
         return response()->json([
@@ -311,26 +289,16 @@ class CommandeController extends Controller
     /**
      * API: Créer une nouvelle commande
      */
-    public function apiStore(Request $request)
+    public function apiStore(StoreCommandeRequest $request): JsonResponse
     {
         try {
-            $request->validate([
-                'produits' => 'required|array',
-                'produits.*' => 'exists:produits,id',
-                'dates' => 'required|array',
-                'dates.*' => 'required|date',
-                'heures_debut' => 'required|array',
-                'heures_debut.*' => 'required',
-                'heures_fin' => 'required|array',
-                'heures_fin.*' => 'required',
-            ]);
+            $validated = $request->validated();
 
-            $produits = $request->produits;
-            $dates = $request->dates;
-            $heuresDebut = $request->heures_debut;
-            $heuresFin = $request->heures_fin;
+            $produits = $validated['produits'];
+            $dates = $validated['dates'];
+            $heuresDebut = $validated['heures_debut'];
+            $heuresFin = $validated['heures_fin'];
 
-            // Vérifier la disponibilité de tous les créneaux
             $erreur = $this->verifierDisponibiliteTousCreneaux($produits, $dates, $heuresDebut, $heuresFin);
             if ($erreur) {
                 return response()->json([
@@ -339,21 +307,17 @@ class CommandeController extends Controller
                 ], 400);
             }
 
-            // Créer la commande
             $commande = new Commande();
             $commande->id_user = Auth::id();
             $commande->prix = 0;
             $commande->save();
 
-            // Attacher les produits et calculer le prix
             $this->attacherProduitsEtCalculerPrix($commande, $produits, $dates, $heuresDebut, $heuresFin);
 
-            // Récupérer la commande complète avec les relations
             $commandeComplete = Commande::with(['produits' => function ($query) {
                 $query->withPivot('date_reservation', 'heure_debut', 'heure_fin');
             }, 'client'])->findOrFail($commande->id);
 
-            // Formater la réponse
             $produitsData = [];
             foreach ($commandeComplete->produits as $produit) {
                 $produitData = $produit->toArray();
@@ -377,10 +341,6 @@ class CommandeController extends Controller
 
             return response()->json($result);
         } catch (\Exception $e) {
-            // Log l'erreur pour le débogage
-            error_log('Erreur lors de la création de la commande: ' . $e->getMessage());
-            error_log($e->getTraceAsString());
-
             return response()->json([
                 'success' => false,
                 'message' => 'Une erreur est survenue lors de la création de la commande: ' . $e->getMessage()
