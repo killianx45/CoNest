@@ -2,18 +2,22 @@
 
 namespace App\Http\Controllers;
 
-
 use App\Models\Commande;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\View\View;
 
 class ClientController extends Controller
 {
-    public function index()
+    /**
+     * Display the client dashboard with their reservations.
+     */
+    public function index(): View
     {
         $commandes = Commande::with('produits')->where('id_user', Auth::id())->get();
         $date_reservation = null;
         $heure_debut = null;
         $heure_fin = null;
+
         if ($commandes->isNotEmpty()) {
             $commande = $commandes->first();
             if ($commande->produits->isNotEmpty()) {

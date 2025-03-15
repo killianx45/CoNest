@@ -30,7 +30,6 @@ class Produit extends Model
         return $this->belongsToMany(Category::class);
     }
 
-    // Vérifier si une date est dans la période de disponibilité
     public function estDansDisponibilite($date)
     {
         if (empty($this->disponibilite)) {
@@ -56,7 +55,6 @@ class Produit extends Model
         }
     }
 
-    // Vérifier si un créneau horaire est disponible pour ce produit
     public function estDisponible($date, $heureDebut, $heureFin)
     {
         if (!$this->estDansDisponibilite($date)) {
@@ -66,7 +64,6 @@ class Produit extends Model
         return Commande::estDisponible($this->id, $date, $heureDebut, $heureFin);
     }
 
-    // Obtenir les créneaux horaires réservés pour une date donnée
     public function getCreneauxReserves($date)
     {
         return $this->commandes()

@@ -6,13 +6,19 @@ use App\Models\Produit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Category;
+use Illuminate\Http\JsonResponse;
+use Illuminate\View\View;
+use Illuminate\Http\RedirectResponse;
+use App\Http\Requests\StoreProduitRequest;
+use App\Http\Requests\UpdateProduitRequest;
+use App\Http\Requests\ApiUpdateProduitRequest;
 
 class ProduitController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(): View
     {
         $produits = Produit::all();
         $categories = Category::all();
@@ -22,7 +28,7 @@ class ProduitController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(): View
     {
         $categories = Category::all();
         return view('produits.create', compact('categories'));
@@ -31,22 +37,15 @@ class ProduitController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreProduitRequest $request): RedirectResponse
     {
-        $request->validate([
-            'nom' => 'required',
-            'description' => 'required',
-            'prix' => 'required|numeric',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'categories' => 'required|array',
-            'date_debut' => 'required|date',
-            'date_fin' => 'required|date|after_or_equal:date_debut',
-        ]);
+        $validated = $request->validated();
 
         $produit = new Produit();
-        $produit->nom = $request->nom;
-        $produit->description = $request->description;
-        $produit->prix = $request->prix;
+        $produit->nom = $validated['nom'];
+        $produit->description = $validated['description'];
+        $produit->prix = $validated['prix'];
+
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $imageName = time() . '_' . $image->getClientOriginalName();
@@ -58,18 +57,18 @@ class ProduitController extends Controller
             $produit->image = 'images/' . $imageName;
         }
 
-
-        $produit->disponibilite = $request->date_debut . '-' . $request->date_fin;
+        $produit->disponibilite = $validated['date_debut'] . '-' . $validated['date_fin'];
         $produit->id_user = Auth::id();
         $produit->save();
-        $produit->categories()->attach($request->categories);
-        return redirect()->route('produits.index');
+        $produit->categories()->attach($validated['categories']);
+
+        return redirect()->route('produits.index')->with('success', 'Produit créé avec succès');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(string $id): View
     {
         $produit = Produit::findOrFail($id);
         return view('produits.show', compact('produit'));
@@ -78,7 +77,7 @@ class ProduitController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(string $id): View
     {
         $produit = Produit::findOrFail($id);
         if (Auth::user()->role === 'ROLE_USER') {
@@ -91,26 +90,17 @@ class ProduitController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateProduitRequest $request, string $id): RedirectResponse
     {
-        $request->validate([
-            'nom' => 'required',
-            'description' => 'required',
-            'prix' => 'required|numeric',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'categories' => 'required|array',
-            'date_debut' => 'required|date',
-            'date_fin' => 'required|date|after_or_equal:date_debut',
-        ]);
+        $validated = $request->validated();
 
         $produit = Produit::findOrFail($id);
-        $produit->nom = $request->nom;
-        $produit->description = $request->description;
-        $produit->prix = $request->prix;
+        $produit->nom = $validated['nom'];
+        $produit->description = $validated['description'];
+        $produit->prix = $validated['prix'];
 
-        // Formater les dates pour la disponibilité
-        if ($request->date_debut && $request->date_fin) {
-            $produit->disponibilite = $request->date_debut . '-' . $request->date_fin;
+        if ($validated['date_debut'] && $validated['date_fin']) {
+            $produit->disponibilite = $validated['date_debut'] . '-' . $validated['date_fin'];
         } else {
             $produit->disponibilite = null;
         }
@@ -118,7 +108,6 @@ class ProduitController extends Controller
         $produit->id_user = Auth::id();
 
         if ($request->hasFile('image')) {
-            // Supprimer l'ancienne image si elle existe
             if ($produit->image && file_exists(public_path($produit->image))) {
                 unlink(public_path($produit->image));
             }
@@ -134,14 +123,14 @@ class ProduitController extends Controller
         }
 
         $produit->save();
-        $produit->categories()->attach($request->categories);
-        return redirect()->route('produits.index');
+        $produit->categories()->sync($validated['categories']);
+        return redirect()->route('produits.index')->with('success', 'Produit mis à jour avec succès');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(string $id): RedirectResponse
     {
         $produit = Produit::findOrFail($id);
         if ($produit->image && file_exists(public_path($produit->image))) {
@@ -157,29 +146,21 @@ class ProduitController extends Controller
         }
 
         $produit->delete();
-        return redirect()->route('produits.index');
+        return redirect()->route('produits.index')->with('success', 'Produit supprimé avec succès');
     }
 
     /**
      * API: Store a newly created resource in storage.
      */
-    public function apiStore(Request $request)
+    public function apiStore(StoreProduitRequest $request): JsonResponse
     {
         try {
-            $request->validate([
-                'nom' => 'required',
-                'description' => 'required',
-                'prix' => 'required|numeric',
-                'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-                'categories' => 'required|array',
-                'date_debut' => 'required|date',
-                'date_fin' => 'required|date|after_or_equal:date_debut',
-            ]);
+            $validated = $request->validated();
 
             $produit = new Produit();
-            $produit->nom = $request->nom;
-            $produit->description = $request->description;
-            $produit->prix = $request->prix;
+            $produit->nom = $validated['nom'];
+            $produit->description = $validated['description'];
+            $produit->prix = $validated['prix'];
 
             if ($request->hasFile('image')) {
                 $image = $request->file('image');
@@ -192,101 +173,76 @@ class ProduitController extends Controller
                 $produit->image = 'images/' . $imageName;
             }
 
-            $produit->disponibilite = $request->date_debut . '-' . $request->date_fin;
+            $produit->disponibilite = $validated['date_debut'] . '-' . $validated['date_fin'];
             $produit->id_user = Auth::id();
             $produit->save();
 
-            if ($request->has('categories')) {
-                $produit->categories()->attach($request->categories);
+            if (isset($validated['categories'])) {
+                $produit->categories()->attach($validated['categories']);
             }
 
-            // Récupérer le produit avec ses relations
             $produit = Produit::with('categories')->find($produit->id);
 
             return response()->json($produit);
         } catch (\Exception $e) {
-            error_log('Erreur lors de la création du produit: ' . $e->getMessage());
-            error_log($e->getTraceAsString());
-
             return response()->json([
                 'success' => false,
                 'message' => 'Une erreur est survenue lors de la création du produit: ' . $e->getMessage()
             ], 500);
         }
     }
+
     /**
-     * API: Update the specified resource in storage (simplified version).
+     * API: Update the specified resource in storage.
      */
-    public function apiUpdate(Request $request, string $id)
+    public function apiUpdate(ApiUpdateProduitRequest $request, string $id): JsonResponse
     {
         try {
-            // Trouver le produit
+            $validated = $request->validated();
             $produit = Produit::findOrFail($id);
 
-            // Vérifier les permissions
-            if (Auth::id() !== $produit->id_user && Auth::user()->role !== 'ROLE_ADMIN' && Auth::user()->role !== 'ROLE_LOUEUR') {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Vous n\'êtes pas autorisé à modifier ce produit.'
-                ], 403);
+            if (isset($validated['nom'])) {
+                $produit->nom = $validated['nom'];
             }
 
-            // Mettre à jour les champs de base s'ils sont présents
-            if ($request->has('nom')) {
-                $produit->nom = $request->input('nom');
+            if (isset($validated['description'])) {
+                $produit->description = $validated['description'];
             }
 
-            if ($request->has('description')) {
-                $produit->description = $request->input('description');
+            if (isset($validated['prix'])) {
+                $produit->prix = $validated['prix'];
             }
 
-            if ($request->has('prix')) {
-                $produit->prix = $request->input('prix');
+            if (isset($validated['date_debut']) && isset($validated['date_fin'])) {
+                $produit->disponibilite = $validated['date_debut'] . '-' . $validated['date_fin'];
             }
 
-            if ($request->has('date_debut') && $request->has('date_fin')) {
-                $produit->disponibilite = $request->input('date_debut') . '-' . $request->input('date_fin');
-            }
-
-            // Gérer l'image si elle a été modifiée
-            if ($request->has('image_changed') && $request->input('image_changed') == '1' && $request->hasFile('image')) {
-                // Supprimer l'ancienne image
+            if (isset($validated['image_changed']) && $validated['image_changed'] == '1' && $request->hasFile('image')) {
                 if ($produit->image && file_exists(public_path($produit->image))) {
                     @unlink(public_path($produit->image));
                 }
 
-                // Enregistrer la nouvelle image
                 $image = $request->file('image');
                 $imageName = time() . '_' . $image->getClientOriginalName();
                 $image->move(public_path('images'), $imageName);
                 $produit->image = 'images/' . $imageName;
             }
 
-            // Sauvegarder le produit
             $produit->save();
 
-            // Gérer les catégories si elles sont présentes
-            if ($request->has('categories')) {
-                // Détacher toutes les catégories existantes
+            if (isset($validated['categories'])) {
                 $produit->categories()->detach();
+                $categories = $validated['categories'];
 
-                // Récupérer les catégories
-                $categories = $request->input('categories');
-
-                // Si c'est une chaîne JSON, la décoder
                 if (is_string($categories) && json_decode($categories) !== null) {
                     $categories = json_decode($categories);
                 }
 
-                // Si c'est un tableau, attacher chaque catégorie
                 if (is_array($categories)) {
-                    foreach ($categories as $categoryId) {
-                        $produit->categories()->attach((int)$categoryId);
-                    }
+                    $produit->categories()->attach($categories);
                 }
             }
 
-            // Récupérer le produit mis à jour avec ses relations
             $updatedProduit = Produit::with('categories')->find($produit->id);
 
             return response()->json($updatedProduit);

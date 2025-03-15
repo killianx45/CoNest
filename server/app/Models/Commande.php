@@ -21,36 +21,27 @@ class Commande extends Model
             ->withPivot('date_reservation', 'heure_debut', 'heure_fin');
     }
 
-    // Méthode pour calculer le prix total de la commande
     public function calculerPrixTotal()
     {
         $total = 0;
         foreach ($this->produits as $produit) {
-            // Calculer la différence d'heures
             $heureDebut = new \DateTime($produit->pivot->heure_debut);
             $heureFin = new \DateTime($produit->pivot->heure_fin);
             $diff = $heureDebut->diff($heureFin);
             $heures = $diff->h + ($diff->i / 60);
 
-            // Multiplier le prix horaire par le nombre d'heures
             $total += $produit->prix * $heures;
         }
         return $total;
     }
 
-    // Vérifier si un créneau horaire est disponible
     public static function estDisponible($produitId, $date, $heureDebut, $heureFin)
     {
-        return self::whereHas('produits', function ($query) use ($produitId, $date, $heureDebut, $heureFin) {
-            $query->where('produit_id', $produitId)
-                ->where('date_reservation', $date)
-                ->where(function ($q) use ($heureDebut, $heureFin) {
-                    // Vérifie si le créneau demandé chevauche un créneau existant
-                    $q->where(function ($subq) use ($heureDebut, $heureFin) {
-                        $subq->where('heure_debut', '<', $heureFin)
-                            ->where('heure_fin', '>', $heureDebut);
-                    });
-                });
-        })->count() === 0;
+        return !self::join('commande_produit', 'commandes.id', '=', 'commande_produit.commande_id')
+            ->where('commande_produit.produit_id', $produitId)
+            ->where('commande_produit.date_reservation', $date)
+            ->where('commande_produit.heure_debut', '<', $heureFin)
+            ->where('commande_produit.heure_fin', '>', $heureDebut)
+            ->exists();
     }
 }

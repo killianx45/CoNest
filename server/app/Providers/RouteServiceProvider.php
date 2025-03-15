@@ -35,7 +35,6 @@ class RouteServiceProvider extends ServiceProvider
         ->group(base_path('routes/web.php'));
     });
 
-    // Enregistrer les middlewares d'alias
     $this->app['router']->aliasMiddleware('jwt.auth', \App\Http\Middleware\JwtMiddleware::class);
     $this->app['router']->aliasMiddleware('role', \App\Http\Middleware\CheckRole::class);
   }
