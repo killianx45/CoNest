@@ -1,16 +1,18 @@
 <script setup lang="ts">
-import { ref, reactive, onMounted, watch } from 'vue'
-import { useRouter } from 'vue-router'
-import NavBar from '../../NavBar.vue'
+import { onMounted, reactive, ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import {
-  getAllProduits,
   createCommande,
+  getAllProduits,
+  isAuthenticated,
   verifierDisponibilite,
-  type Produit,
   type CommandeCreateData,
+  type Produit,
 } from '../../../services/api'
+import NavBar from '../../NavBar.vue'
 
 const router = useRouter()
+const route = useRoute()
 const produits = ref<Produit[]>([])
 const loading = ref(false)
 const error = ref('')
@@ -203,7 +205,17 @@ const submitForm = async () => {
   }
 }
 
-onMounted(fetchProduits)
+onMounted(() => {
+  if (!isAuthenticated()) {
+    router.push({
+      path: '/login',
+      query: { redirect: route.fullPath },
+    })
+    return
+  }
+
+  fetchProduits()
+})
 </script>
 
 <template>

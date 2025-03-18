@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { isAuthenticated, logout } from '@/services/api'
+import { isAuthenticated, logout, getCurrentUser } from '@/services/api'
 
 const router = useRouter()
 const currentLanguage = ref('FR')
@@ -35,6 +35,12 @@ async function handleLogout() {
     console.error('Erreur lors de la déconnexion:', error)
   }
 }
+
+const userName = ref('')
+
+getCurrentUser().then((user) => {
+  userName.value = user.name
+})
 </script>
 
 <template>
@@ -67,6 +73,7 @@ async function handleLogout() {
           </div>
           <div v-if="isAccountMenuOpen" class="pl-4 mt-2">
             <div v-if="isLoggedIn" class="flex flex-col">
+              <span class="text-[#333] py-2">{{ userName }}</span>
               <router-link to="/commandes" class="no-underline text-[#333] py-2">
                 Commande
               </router-link>
@@ -131,6 +138,7 @@ async function handleLogout() {
             class="absolute right-0 z-10 w-48 py-1 mt-2 bg-white rounded-md shadow-lg"
           >
             <div v-if="isLoggedIn">
+              <span class="text-[#333] px-4 py-2">{{ userName }}</span>
               <router-link to="/commandes" class="block px-4 py-2 text-[#333] hover:bg-gray-100">
                 Commande
               </router-link>
