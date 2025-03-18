@@ -46,15 +46,19 @@ class ProduitController extends Controller
         $produit->description = $validated['description'];
         $produit->prix = $validated['prix'];
 
-        if ($request->hasFile('image')) {
-            $image = $request->file('image');
-            $imageName = time() . '_' . $image->getClientOriginalName();
-            $image->move(public_path('images'), $imageName);
-            if (!file_exists(resource_path('images'))) {
-                mkdir(resource_path('images'), 0777, true);
+        if ($request->hasFile('images')) {
+            $images = $request->file('images');
+            $imagePaths = [];
+            foreach ($images as $image) {
+                $imageName = time() . '_' . $image->getClientOriginalName();
+                $image->move(public_path('images'), $imageName);
+                if (!file_exists(resource_path('images'))) {
+                    mkdir(resource_path('images'), 0777, true);
+                }
+                copy(public_path('images/' . $imageName), resource_path('images/' . $imageName));
+                $imagePaths[] = 'images/' . $imageName;
             }
-            copy(public_path('images/' . $imageName), resource_path('images/' . $imageName));
-            $produit->image = 'images/' . $imageName;
+            $produit->image = implode(',', $imagePaths);
         }
 
         $produit->disponibilite = $validated['date_debut'] . '-' . $validated['date_fin'];
@@ -107,19 +111,23 @@ class ProduitController extends Controller
 
         $produit->id_user = Auth::id();
 
-        if ($request->hasFile('image')) {
-            if ($produit->image && file_exists(public_path($produit->image))) {
-                unlink(public_path($produit->image));
-            }
+        if ($request->hasFile('images')) {
+            $images = $request->file('images');
+            $imagePaths = [];
+            foreach ($images as $image) {
+                if ($produit->image && file_exists(public_path($produit->image))) {
+                    unlink(public_path($produit->image));
+                }
 
-            $image = $request->file('image');
-            $imageName = time() . '_' . $image->getClientOriginalName();
-            $image->move(public_path('images'), $imageName);
-            if (!file_exists(resource_path('images'))) {
-                mkdir(resource_path('images'), 0777, true);
+                $imageName = time() . '_' . $image->getClientOriginalName();
+                $image->move(public_path('images'), $imageName);
+                if (!file_exists(resource_path('images'))) {
+                    mkdir(resource_path('images'), 0777, true);
+                }
+                copy(public_path('images/' . $imageName), resource_path('images/' . $imageName));
+                $imagePaths[] = 'images/' . $imageName;
             }
-            copy(public_path('images/' . $imageName), resource_path('images/' . $imageName));
-            $produit->image = 'images/' . $imageName;
+            $produit->image = implode(',', $imagePaths);
         }
 
         $produit->save();
@@ -162,15 +170,19 @@ class ProduitController extends Controller
             $produit->description = $validated['description'];
             $produit->prix = $validated['prix'];
 
-            if ($request->hasFile('image')) {
-                $image = $request->file('image');
-                $imageName = time() . '_' . $image->getClientOriginalName();
-                $image->move(public_path('images'), $imageName);
-                if (!file_exists(resource_path('images'))) {
-                    mkdir(resource_path('images'), 0777, true);
+            if ($request->hasFile('images')) {
+                $images = $request->file('images');
+                $imagePaths = [];
+                foreach ($images as $image) {
+                    $imageName = time() . '_' . $image->getClientOriginalName();
+                    $image->move(public_path('images'), $imageName);
+                    if (!file_exists(resource_path('images'))) {
+                        mkdir(resource_path('images'), 0777, true);
+                    }
+                    copy(public_path('images/' . $imageName), resource_path('images/' . $imageName));
+                    $imagePaths[] = 'images/' . $imageName;
                 }
-                copy(public_path('images/' . $imageName), resource_path('images/' . $imageName));
-                $produit->image = 'images/' . $imageName;
+                $produit->image = implode(',', $imagePaths);
             }
 
             $produit->disponibilite = $validated['date_debut'] . '-' . $validated['date_fin'];
@@ -217,15 +229,19 @@ class ProduitController extends Controller
                 $produit->disponibilite = $validated['date_debut'] . '-' . $validated['date_fin'];
             }
 
-            if (isset($validated['image_changed']) && $validated['image_changed'] == '1' && $request->hasFile('image')) {
+            if (isset($validated['image_changed']) && $validated['image_changed'] == '1' && $request->hasFile('images')) {
                 if ($produit->image && file_exists(public_path($produit->image))) {
                     @unlink(public_path($produit->image));
                 }
 
-                $image = $request->file('image');
-                $imageName = time() . '_' . $image->getClientOriginalName();
-                $image->move(public_path('images'), $imageName);
-                $produit->image = 'images/' . $imageName;
+                $images = $request->file('images');
+                $imagePaths = [];
+                foreach ($images as $image) {
+                    $imageName = time() . '_' . $image->getClientOriginalName();
+                    $image->move(public_path('images'), $imageName);
+                    $imagePaths[] = 'images/' . $imageName;
+                }
+                $produit->image = implode(',', $imagePaths);
             }
 
             $produit->save();

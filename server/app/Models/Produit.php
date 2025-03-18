@@ -12,7 +12,7 @@ class Produit extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['nom', 'description', 'prix', 'image', 'categorie', 'disponibilite', 'id_user'];
+    protected $fillable = ['nom', 'description', 'prix', 'images', 'categorie', 'disponibilite', 'id_user'];
 
     public function user()
     {
@@ -75,5 +75,15 @@ class Produit extends Model
                     'heure_fin' => $commande->pivot->heure_fin
                 ];
             });
+    }
+
+    public function getImagesAttribute($value)
+    {
+        return explode(',', $value);
+    }
+
+    public function setImagesAttribute($value)
+    {
+        $this->attributes['images'] = implode(',', $value);
     }
 }

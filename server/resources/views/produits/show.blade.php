@@ -18,7 +18,9 @@
       <p class="text-black"><span class="font-semibold">Prix:</span> {{ $produit->prix }}</p>
     </div>
     <div class="p-4 rounded-md bg-orange-50">
-      <img src="{{ asset('/' . $produit->image) }}" alt="Image du produit" class="object-cover w-full h-48 rounded-md">
+      @foreach (explode(',', $produit->image) as $image)
+      <img src="{{ asset('/' . $image) }}" alt="Image du produit" class="object-cover w-full h-48 rounded-md">
+      @endforeach
     </div>
     <div class="p-4 rounded-md bg-orange-50">
       <p class="text-black"><span class="font-semibold">Categorie:</span> {{ $produit->categories->pluck('name')->implode(', ') }}</p>
