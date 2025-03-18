@@ -30,7 +30,11 @@
           <td class="p-3">{{ $produit->nom }}</td>
           <td class="p-3">{{ $produit->description }}</td>
           <td class="p-3">{{ $produit->prix }}</td>
-          <td class="p-3"><img src="{{ asset('/' . $produit->image) }}" alt="Image du produit" class="object-cover w-24 h-24 border border-orange-300 rounded"></td>
+          <td class="p-3">
+            @foreach (explode(',', $produit->image) as $image)
+            <img src="{{ asset('/' . $image) }}" alt="Image du produit" class="object-cover w-24 h-24 border border-orange-300 rounded">
+            @endforeach
+          </td>
           <td class="p-3">{{ $produit->categories->pluck('name')->implode(', ') }}</td>
           <td class="p-3">{{ $produit->disponibilite }}</td>
           <td class="p-3 space-y-2">

@@ -25,8 +25,8 @@
     </div>
 
     <div class="mb-4">
-      <label for="image" class="block mb-2 font-semibold text-black">Image</label>
-      <input type="file" name="image" id="image" class="w-full p-2 bg-white border border-orange-200 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-300">
+      <label for="images" class="block mb-2 font-semibold text-black">Images</label>
+      <input type="file" name="images[]" id="images" class="w-full p-2 bg-white border border-orange-200 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-300" multiple>
     </div>
 
     <div class="mb-4">

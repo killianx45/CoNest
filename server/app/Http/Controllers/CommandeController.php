@@ -28,6 +28,19 @@ class CommandeController extends Controller
             $commandes = Commande::with(['produits', 'client'])->get();
         }
 
+        if ($user->role === 'ROLE_LOUEUR') {
+            $produitsIds = Produit::where('id_user', $user->id)->pluck('id');
+            $commandesProduits = Commande::with(['produits', 'client'])
+                ->whereHas('produits', function ($query) use ($produitsIds) {
+                    $query->whereIn('produits.id', $produitsIds);
+                })
+                ->get();
+            $commandesPersonnelles = Commande::with(['produits', 'client'])
+                ->where('id_user', $user->id)
+                ->get();
+            $commandes = $commandesProduits->merge($commandesPersonnelles)->unique('id');
+        }
+
         return view('commandes.index', compact('commandes'));
     }
 
@@ -100,6 +113,10 @@ class CommandeController extends Controller
         $validated = $request->validated();
 
         $commande = Commande::findOrFail($id);
+
+        if ($commande->id_user !== Auth::id()) {
+            return back()->withErrors(['message' => 'Vous n\'avez pas le droit de modifier cette réservation'])->withInput();
+        }
 
         $produits = $validated['produits'];
         $dates = $validated['dates'];
