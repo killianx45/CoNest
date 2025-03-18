@@ -59,9 +59,9 @@ onMounted(async () => {
           @click="voirProduit(produit.id)"
         >
           <div class="flex flex-col h-full">
-            <div v-if="produit.image" class="mb-2">
+            <div v-if="produit.images && produit.images.length > 0" class="mb-2">
               <img
-                :src="`http://localhost:8000/${produit.image}`"
+                :src="`http://localhost:8000/${produit.images[0]}`"
                 :alt="produit.nom"
                 class="object-cover w-full h-40 rounded"
               />

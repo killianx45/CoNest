@@ -26,7 +26,7 @@ const categories = ref<Category[]>([])
 const loading = ref(false)
 const error = ref('')
 const success = ref(false)
-const imagePreview = ref('')
+const imagePreviews = ref<string[]>([])
 const hasPermission = ref(true)
 const imageChanged = ref(false)
 const produit = ref<Produit | null>(null)
@@ -34,7 +34,7 @@ const form = reactive({
   nom: '',
   description: '',
   prix: 0,
-  image: null as File | null,
+  images: [] as File[],
   categories: [] as number[],
   date_debut: '',
   date_fin: '',
@@ -44,7 +44,7 @@ const errors = reactive({
   nom: false,
   description: false,
   prix: false,
-  image: false,
+  images: false,
   categories: false,
   date_debut: false,
   date_fin: false,
@@ -114,8 +114,9 @@ const fetchProduit = async () => {
       )
     }
 
-    if (produit.value.image) {
-      imagePreview.value = `http://localhost:8000/${produit.value.image}`
+    if (produit.value.images && Array.isArray(produit.value.images)) {
+      form.images = produit.value.images.map((img) => new File([], img.name))
+      imagePreviews.value = produit.value.images.map((img) => `http://localhost:8000/${img.path}`)
     }
   } catch (err: any) {
     error.value = err.message || `Erreur lors de la récupération du produit #${produitId}`
@@ -138,13 +139,19 @@ const fetchCategories = async () => {
 const handleImageChange = (event: Event) => {
   const target = event.target as HTMLInputElement
   if (target.files && target.files.length > 0) {
-    form.image = target.files[0]
+    form.images = Array.from(target.files)
     imageChanged.value = true
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      imagePreview.value = e.target?.result as string
-    }
-    reader.readAsDataURL(form.image)
+    imagePreviews.value = []
+
+    Array.from(target.files).forEach((file) => {
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        if (e.target?.result) {
+          imagePreviews.value.push(e.target.result as string)
+        }
+      }
+      reader.readAsDataURL(file)
+    })
   }
 }
 
@@ -158,8 +165,8 @@ const validateForm = (): boolean => {
   errors.prix = form.prix <= 0
   if (errors.prix) isValid = false
   if (imageChanged.value) {
-    errors.image = !form.image
-    if (errors.image) isValid = false
+    errors.images = form.images.length === 0
+    if (errors.images) isValid = false
   }
   errors.categories = form.categories.length === 0
   if (errors.categories) isValid = false
@@ -184,8 +191,8 @@ const submitForm = async () => {
   try {
     loading.value = true
 
-    if (imageChanged.value && !form.image) {
-      throw new Error("L'image est requise")
+    if (imageChanged.value && form.images.length === 0) {
+      throw new Error('Au moins une image est requise')
     }
     const formatDate = (dateStr: string) => {
       if (!dateStr) return ''
@@ -210,7 +217,7 @@ const submitForm = async () => {
       nom: form.nom,
       description: form.description,
       prix: form.prix,
-      image: form.image || new File([], ''),
+      images: form.images,
       categories: form.categories,
       date_debut: formatDate(form.date_debut),
       date_fin: formatDate(form.date_fin),
@@ -279,7 +286,6 @@ onMounted(async () => {
         v-if="error"
         class="px-4 py-3 mb-4 text-red-700 bg-red-100 border border-red-400 rounded"
       >
-        v-if="error" class="px-4 py-3 mb-4 text-red-700 bg-red-100 border border-red-400 rounded" >
         <p>{{ error }}</p>
       </div>
 
@@ -336,22 +342,25 @@ onMounted(async () => {
         </div>
 
         <div>
-          <label for="image" class="block mb-2 font-medium text-gray-700">Image</label>
+          <label for="images" class="block mb-2 font-medium text-gray-700">Images</label>
           <input
             type="file"
-            id="image"
+            id="images"
             accept="image/*"
+            multiple
             @change="handleImageChange"
             class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-            :class="{ 'border-red-500': errors.image }"
+            :class="{ 'border-red-500': errors.images }"
           />
-          <p v-if="imageChanged && errors.image" class="mt-1 text-sm text-red-600">
-            L'image est requise si vous choisissez de la modifier
+          <p v-if="imageChanged && errors.images" class="mt-1 text-sm text-red-600">
+            Au moins une image est requise si vous choisissez de la modifier
           </p>
 
-          <div v-if="imagePreview" class="mt-2">
+          <div v-if="imagePreviews.length > 0" class="mt-2">
             <img
-              :src="imagePreview"
+              v-for="(preview, index) in imagePreviews"
+              :key="index"
+              :src="preview"
               alt="Prévisualisation"
               class="object-cover w-full h-48 rounded-md"
             />

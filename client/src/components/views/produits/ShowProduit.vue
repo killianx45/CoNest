@@ -69,14 +69,23 @@ onMounted(async () => {
         ></div>
       </div>
       <div v-else-if="produit" class="grid grid-cols-1 gap-8 md:grid-cols-2">
-        <div class="overflow-hidden rounded-lg shadow-lg">
-          <img
-            v-if="produit.image"
-            :src="`http://localhost:8000/${produit.image}`"
-            :alt="produit.nom"
-            class="object-cover w-full h-64 md:h-96"
-          />
-          <div v-else class="flex items-center justify-center w-full h-64 bg-gray-200 md:h-96">
+        <div class="grid grid-cols-2 gap-4">
+          <div
+            v-if="produit.images && produit.images.length > 0"
+            v-for="image in produit.images"
+            :key="image"
+            class="overflow-hidden rounded-lg shadow-lg"
+          >
+            <img
+              :src="`http://localhost:8000/${image}`"
+              :alt="produit.nom"
+              class="object-cover w-full h-32 md:h-48"
+            />
+          </div>
+          <div
+            v-else
+            class="flex items-center justify-center w-full h-64 col-span-2 bg-gray-200 md:h-96"
+          >
             <span class="text-gray-500">Aucune image disponible</span>
           </div>
         </div>
@@ -98,7 +107,7 @@ onMounted(async () => {
           </button>
           <router-link :to="`/produit/${produit.id}/edit`">
             <button
-              class="px-6 py-2 mt-auto font-semibold text-white transition-colors bg-blue-600 rounded-lg hover:bg-blue-700"
+              class="px-6 py-2 mt-4 font-semibold text-white transition-colors bg-blue-600 rounded-lg hover:bg-blue-700"
             >
               Modifier
             </button>
