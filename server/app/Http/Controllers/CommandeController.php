@@ -201,15 +201,39 @@ class CommandeController extends Controller
     public function getAllCommandesComplete(): JsonResponse
     {
         $user = Auth::user();
+
+        // Initialiser la collection de commandes
+        $commandes = collect();
+
         if ($user->role === 'ROLE_USER') {
+            // Un utilisateur normal ne voit que ses propres commandes
             $commandes = Commande::with(['produits' => function ($query) {
                 $query->withPivot('date_reservation', 'heure_debut', 'heure_fin');
             }, 'client'])->where('id_user', $user->id)->get();
+        } elseif ($user->role === 'ROLE_LOUEUR') {
+            // Un loueur voit ses propres commandes
+            $commandesPersonnelles = Commande::with(['produits' => function ($query) {
+                $query->withPivot('date_reservation', 'heure_debut', 'heure_fin');
+            }, 'client'])->where('id_user', $user->id)->get();
+
+            // Et les commandes qui contiennent ses produits
+            $produitsIds = Produit::where('id_user', $user->id)->pluck('id');
+
+            $commandesAvecSesProduits = Commande::whereHas('produits', function ($query) use ($produitsIds) {
+                $query->whereIn('produits.id', $produitsIds);
+            })->with(['produits' => function ($query) {
+                $query->withPivot('date_reservation', 'heure_debut', 'heure_fin');
+            }, 'client'])->get();
+
+            // Fusionner les deux collections sans doublons
+            $commandes = $commandesPersonnelles->merge($commandesAvecSesProduits)->unique('id');
         } else {
+            // Admin voit toutes les commandes
             $commandes = Commande::with(['produits' => function ($query) {
                 $query->withPivot('date_reservation', 'heure_debut', 'heure_fin');
             }, 'client'])->get();
         }
+
         $results = [];
         foreach ($commandes as $commande) {
             $produits = [];
