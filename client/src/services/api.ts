@@ -46,7 +46,7 @@ export interface Produit {
   nom: string
   description: string
   prix: string | number
-  image?: string
+  images?: string[]
   disponibilite?: string
   createdAt?: string
   updatedAt?: string
@@ -54,19 +54,21 @@ export interface Produit {
   commandes?: string[]
   categories?: any[]
 }
+
 export interface ProduitCreateData {
   nom: string
   description: string
   prix: number
-  image: File
+  images: File[]
   categories: number[]
   date_debut: string
   date_fin: string
 }
 
-export interface ProduitUpdateData extends ProduitCreateData {
+export interface ProduitUpdateData extends Omit<ProduitCreateData, 'images'> {
   id: number
   image_changed: boolean
+  images?: File[]
 }
 
 export interface User {
@@ -164,9 +166,12 @@ export const createProduit = async (produitData: ProduitCreateData): Promise<Pro
     formData.append('nom', produitData.nom)
     formData.append('description', produitData.description)
     formData.append('prix', produitData.prix.toString())
-    formData.append('image', produitData.image)
     formData.append('date_debut', produitData.date_debut)
     formData.append('date_fin', produitData.date_fin)
+
+    produitData.images.forEach((image, index) => {
+      formData.append(`images[${index}]`, image)
+    })
 
     produitData.categories.forEach((categoryId) => {
       formData.append('categories[]', categoryId.toString())
@@ -208,8 +213,10 @@ export const updateProduit = async (produitData: ProduitUpdateData): Promise<Pro
     formData.append('date_fin', produitData.date_fin)
     formData.append('image_changed', produitData.image_changed ? '1' : '0')
 
-    if (produitData.image_changed && produitData.image) {
-      formData.append('image', produitData.image)
+    if (produitData.image_changed && produitData.images) {
+      produitData.images.forEach((image, index) => {
+        formData.append(`images[${index}]`, image)
+      })
     }
 
     if (produitData.categories && produitData.categories.length > 0) {

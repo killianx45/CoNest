@@ -12,7 +12,9 @@ class Produit extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['nom', 'description', 'prix', 'images', 'categorie', 'disponibilite', 'id_user'];
+    protected $fillable = ['nom', 'description', 'prix', 'image', 'categorie', 'disponibilite', 'id_user'];
+
+    protected $appends = ['images'];
 
     public function user()
     {
@@ -77,13 +79,20 @@ class Produit extends Model
             });
     }
 
-    public function getImagesAttribute($value)
+    public function getImagesAttribute()
     {
-        return explode(',', $value);
+        if (empty($this->image)) {
+            return [];
+        }
+        return explode(',', $this->image);
     }
 
     public function setImagesAttribute($value)
     {
-        $this->attributes['images'] = implode(',', $value);
+        if (is_array($value)) {
+            $this->attributes['image'] = implode(',', $value);
+        } else {
+            $this->attributes['image'] = $value;
+        }
     }
 }

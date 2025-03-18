@@ -112,13 +112,21 @@ class ProduitController extends Controller
         $produit->id_user = Auth::id();
 
         if ($request->hasFile('images')) {
+            if ($produit->image) {
+                $oldImages = explode(',', $produit->image);
+                foreach ($oldImages as $oldImage) {
+                    if (file_exists(public_path($oldImage))) {
+                        unlink(public_path($oldImage));
+                    }
+                    if (file_exists(resource_path($oldImage))) {
+                        unlink(resource_path($oldImage));
+                    }
+                }
+            }
+
             $images = $request->file('images');
             $imagePaths = [];
             foreach ($images as $image) {
-                if ($produit->image && file_exists(public_path($produit->image))) {
-                    unlink(public_path($produit->image));
-                }
-
                 $imageName = time() . '_' . $image->getClientOriginalName();
                 $image->move(public_path('images'), $imageName);
                 if (!file_exists(resource_path('images'))) {
@@ -230,8 +238,16 @@ class ProduitController extends Controller
             }
 
             if (isset($validated['image_changed']) && $validated['image_changed'] == '1' && $request->hasFile('images')) {
-                if ($produit->image && file_exists(public_path($produit->image))) {
-                    @unlink(public_path($produit->image));
+                if ($produit->image) {
+                    $oldImages = explode(',', $produit->image);
+                    foreach ($oldImages as $oldImage) {
+                        if (file_exists(public_path($oldImage))) {
+                            @unlink(public_path($oldImage));
+                        }
+                        if (file_exists(resource_path($oldImage))) {
+                            @unlink(resource_path($oldImage));
+                        }
+                    }
                 }
 
                 $images = $request->file('images');
@@ -239,6 +255,10 @@ class ProduitController extends Controller
                 foreach ($images as $image) {
                     $imageName = time() . '_' . $image->getClientOriginalName();
                     $image->move(public_path('images'), $imageName);
+                    if (!file_exists(resource_path('images'))) {
+                        mkdir(resource_path('images'), 0777, true);
+                    }
+                    copy(public_path('images/' . $imageName), resource_path('images/' . $imageName));
                     $imagePaths[] = 'images/' . $imageName;
                 }
                 $produit->image = implode(',', $imagePaths);

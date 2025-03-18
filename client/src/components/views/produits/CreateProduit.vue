@@ -16,13 +16,13 @@ const categories = ref<Category[]>([])
 const loading = ref(false)
 const error = ref('')
 const success = ref(false)
-const imagePreview = ref('')
+const imagePreviews = ref<string[]>([])
 const hasPermission = ref(true)
 const form = reactive({
   nom: '',
   description: '',
   prix: 0,
-  image: null as File | null,
+  images: [] as File[],
   categories: [] as number[],
   date_debut: '',
   date_fin: '',
@@ -32,7 +32,7 @@ const errors = reactive({
   nom: false,
   description: false,
   prix: false,
-  image: false,
+  images: false,
   categories: false,
   date_debut: false,
   date_fin: false,
@@ -74,12 +74,18 @@ const fetchCategories = async () => {
 const handleImageChange = (event: Event) => {
   const target = event.target as HTMLInputElement
   if (target.files && target.files.length > 0) {
-    form.image = target.files[0]
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      imagePreview.value = e.target?.result as string
-    }
-    reader.readAsDataURL(form.image)
+    form.images = Array.from(target.files)
+    imagePreviews.value = []
+
+    Array.from(target.files).forEach((file) => {
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        if (e.target?.result) {
+          imagePreviews.value.push(e.target.result as string)
+        }
+      }
+      reader.readAsDataURL(file)
+    })
   }
 }
 
@@ -92,8 +98,8 @@ const validateForm = (): boolean => {
   if (errors.description) isValid = false
   errors.prix = form.prix <= 0
   if (errors.prix) isValid = false
-  errors.image = !form.image
-  if (errors.image) isValid = false
+  errors.images = form.images.length === 0
+  if (errors.images) isValid = false
   errors.categories = form.categories.length === 0
   if (errors.categories) isValid = false
   errors.date_debut = !form.date_debut
@@ -117,15 +123,15 @@ const submitForm = async () => {
   try {
     loading.value = true
 
-    if (!form.image) {
-      throw new Error("L'image est requise")
+    if (form.images.length === 0) {
+      throw new Error('Au moins une image est requise')
     }
 
     const produitData: ProduitCreateData = {
       nom: form.nom,
       description: form.description,
       prix: form.prix,
-      image: form.image,
+      images: form.images,
       categories: form.categories,
       date_debut: form.date_debut,
       date_fin: form.date_fin,
@@ -239,19 +245,24 @@ onMounted(async () => {
           </p>
         </div>
         <div>
-          <label for="image" class="block mb-2 font-medium text-gray-700">Image *</label>
+          <label for="images" class="block mb-2 font-medium text-gray-700">Images *</label>
           <input
             type="file"
-            id="image"
+            id="images"
             accept="image/*"
             @change="handleImageChange"
             class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-            :class="{ 'border-red-500': errors.image }"
+            :class="{ 'border-red-500': errors.images }"
+            multiple
           />
-          <p v-if="errors.image" class="mt-1 text-sm text-red-600">L'image est requise</p>
-          <div v-if="imagePreview" class="mt-2">
+          <p v-if="errors.images" class="mt-1 text-sm text-red-600">
+            Au moins une image est requise
+          </p>
+          <div v-if="imagePreviews.length > 0" class="mt-2">
             <img
-              :src="imagePreview"
+              v-for="(preview, index) in imagePreviews"
+              :key="index"
+              :src="preview"
               alt="Prévisualisation"
               class="object-cover w-full h-48 rounded-md"
             />
