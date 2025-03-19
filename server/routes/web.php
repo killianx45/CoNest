@@ -13,7 +13,8 @@ Route::get('/', function () {
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/dashboard', [ClientController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard', [ClientController::class, 'dashboard'])->name('dashboard');
+
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -39,6 +40,7 @@ Route::middleware(['auth', 'role:ROLE_LOUEUR,ROLE_ADMIN'])->group(function () {
 
 Route::middleware(['auth', 'role:ROLE_ADMIN'])->group(function () {
     Route::resource('categories', CategoryController::class);
+    Route::resource('clients', ClientController::class);
 });
 
 

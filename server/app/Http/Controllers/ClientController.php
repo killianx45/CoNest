@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Client;
 use App\Models\Commande;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
+use Illuminate\Http\RedirectResponse;
 
 class ClientController extends Controller
 {
@@ -12,6 +15,20 @@ class ClientController extends Controller
      * Display the client dashboard with their reservations.
      */
     public function index(): View
+    {
+        $clients = User::all();
+
+        return view('clients.index', compact('clients'));
+    }
+
+    public function destroy(string $id): RedirectResponse
+    {
+        $client = User::findOrFail($id);
+        $client->delete();
+        return redirect()->route('clients.index')->with('success', 'Client supprimé avec succès');
+    }
+
+    public function dashboard(): View
     {
         $commandes = Commande::with('produits')->where('id_user', Auth::id())->get();
         $date_reservation = null;

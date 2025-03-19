@@ -5,6 +5,7 @@ namespace App\Models;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Post;
 use App\Http\Controllers\AuthController;
+use Illuminate\Database\Eloquent\Model;
 
 #[ApiResource(
     operations: [
@@ -18,7 +19,7 @@ use App\Http\Controllers\AuthController;
         )
     ]
 )]
-class Client
+class Client extends Model
 {
     public string $email;
     public string $password;
