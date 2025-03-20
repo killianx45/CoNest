@@ -46,6 +46,7 @@ export interface Produit {
   nom: string
   description: string
   prix: string | number
+  adresse: string
   images?: string[]
   disponibilite?: string
   createdAt?: string
@@ -59,6 +60,7 @@ export interface ProduitCreateData {
   nom: string
   description: string
   prix: number
+  adresse: string
   images: File[]
   categories: number[]
   date_debut: string
@@ -213,14 +215,18 @@ export const updateProduit = async (produitData: ProduitUpdateData): Promise<Pro
       throw new Error('Vous devez être connecté pour modifier un produit')
     }
     const formData = new FormData()
-    formData.append('nom', produitData.nom)
-    formData.append('description', produitData.description)
-    formData.append('prix', produitData.prix.toString())
-    formData.append('date_debut', produitData.date_debut)
-    formData.append('date_fin', produitData.date_fin)
+
+    if (produitData.nom) formData.append('nom', produitData.nom)
+    if (produitData.description) formData.append('description', produitData.description)
+    if (produitData.prix !== undefined && produitData.prix !== null)
+      formData.append('prix', produitData.prix.toString())
+    if (produitData.adresse) formData.append('adresse', produitData.adresse)
+    if (produitData.date_debut) formData.append('date_debut', produitData.date_debut)
+    if (produitData.date_fin) formData.append('date_fin', produitData.date_fin)
+
     formData.append('image_changed', produitData.image_changed ? '1' : '0')
 
-    if (produitData.image_changed && produitData.images) {
+    if (produitData.image_changed && produitData.images && produitData.images.length > 0) {
       produitData.images.forEach((image, index) => {
         formData.append(`images[${index}]`, image)
       })
@@ -228,7 +234,9 @@ export const updateProduit = async (produitData: ProduitUpdateData): Promise<Pro
 
     if (produitData.categories && produitData.categories.length > 0) {
       produitData.categories.forEach((categoryId) => {
-        formData.append('categories[]', categoryId.toString())
+        if (categoryId !== undefined && categoryId !== null) {
+          formData.append('categories[]', categoryId.toString())
+        }
       })
     }
 

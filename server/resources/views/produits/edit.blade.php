@@ -27,6 +27,11 @@
       </div>
 
       <div class="mb-4">
+        <label for="adresse" class="block mb-2 font-semibold text-black">Adresse</label>
+        <input type="text" name="adresse" id="adresse" value="{{ $produit->adresse }}" class="w-full p-2 border border-orange-200 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-300">
+      </div>
+
+      <div class="mb-4">
         <label for="images" class="block mb-2 font-semibold text-black">Images</label>
         <input type="file" name="images[]" id="images" class="w-full p-2 bg-white border border-orange-200 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-300" multiple>
       </div>

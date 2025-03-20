@@ -22,7 +22,8 @@
                   <th class="p-3 font-semibold text-left">Nom</th>
                   <th class="p-3 font-semibold text-left">Description</th>
                   <th class="p-3 font-semibold text-left">Prix</th>
-                  <th class="p-3 font-semibold text-left">Image</th>
+                  <th class="p-3 font-semibold text-left">Adresse</th>
+                  <th class="p-3 font-semibold text-left"></th>Image</th>
                   <th class="p-3 font-semibold text-left">Categorie</th>
                   <th class="p-3 font-semibold text-left">Disponibilite</th>
                   <th class="p-3 font-semibold text-left">Action</th>
@@ -34,6 +35,7 @@
                   <td class="p-3">{{ $produit->nom }}</td>
                   <td class="p-3">{{ $produit->description }}</td>
                   <td class="p-3">{{ $produit->prix }}</td>
+                  <td class="p-3">{{ $produit->adresse }}</td>
                   <td class="p-3">
                     @foreach (explode(',', $produit->image) as $image)
                     <img src="{{ asset('/' . $image) }}" alt="Image du produit" class="object-cover w-24 h-24 border border-orange-300 rounded">

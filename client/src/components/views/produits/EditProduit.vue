@@ -1,17 +1,17 @@
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
-import NavBar from '../../NavBar.vue'
+import { onMounted, reactive, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import {
   getAllCategories,
+  getCurrentUser,
   getProduitById,
+  isAuthenticated,
   updateProduit,
   type Category,
   type Produit,
   type ProduitUpdateData,
-  getCurrentUser,
-  isAuthenticated,
 } from '../../../services/api'
+import NavBar from '../../NavBar.vue'
 
 const props = defineProps({
   id: {
@@ -34,6 +34,7 @@ const form = reactive({
   nom: '',
   description: '',
   prix: 0,
+  adresse: '',
   images: [] as File[],
   categories: [] as number[],
   date_debut: '',
@@ -44,6 +45,7 @@ const errors = reactive({
   nom: false,
   description: false,
   prix: false,
+  adresse: false,
   images: false,
   categories: false,
   date_debut: false,
@@ -75,26 +77,37 @@ const fetchProduit = async () => {
   try {
     loading.value = true
     produit.value = await getProduitById(produitId)
-    form.nom = produit.value.nom
-    form.description = produit.value.description
+    form.nom = produit.value.nom || ''
+    form.description = produit.value.description || ''
     form.prix =
-      typeof produit.value.prix === 'string' ? parseFloat(produit.value.prix) : produit.value.prix
+      typeof produit.value.prix === 'string'
+        ? parseFloat(produit.value.prix)
+        : produit.value.prix || 0
+    form.adresse = produit.value.adresse || ''
 
     if (produit.value.disponibilite) {
       const dates = produit.value.disponibilite.split('-')
       if (dates.length >= 2) {
         const formatDate = (dateStr: string) => {
+          dateStr = dateStr.trim()
           if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
             return dateStr
           }
+
+          if (/^\d{8}$/.test(dateStr)) {
+            return `${dateStr.substring(0, 4)}-${dateStr.substring(4, 6)}-${dateStr.substring(6, 8)}`
+          }
           try {
-            const parts = dateStr.match(/(\d{4})(\d{2})(\d{2})/) || dateStr.split(/[^\d]/)
-            if (parts && parts.length >= 3) {
+            const parts = dateStr.match(/(\d{4})(\d{2})(\d{2})/)
+            if (parts && parts.length >= 4) {
               return `${parts[1]}-${parts[2]}-${parts[3]}`
             }
             const date = new Date(dateStr)
             if (!isNaN(date.getTime())) {
-              return date.toISOString().split('T')[0]
+              const year = date.getFullYear()
+              const month = String(date.getMonth() + 1).padStart(2, '0')
+              const day = String(date.getDate()).padStart(2, '0')
+              return `${year}-${month}-${day}`
             }
           } catch (e) {
             console.error('Erreur lors du formatage de la date:', e)
@@ -109,14 +122,17 @@ const fetchProduit = async () => {
     }
 
     if (produit.value.categories && Array.isArray(produit.value.categories)) {
-      form.categories = produit.value.categories.map((cat) =>
-        typeof cat === 'object' && cat !== null ? cat.id : parseInt(cat.toString()),
-      )
+      form.categories = produit.value.categories
+        .filter((cat: any) => cat && cat.id)
+        .map((cat: Category) => cat.id)
+    } else {
+      form.categories = []
     }
 
     if (produit.value.images && Array.isArray(produit.value.images)) {
-      form.images = produit.value.images.map((img) => new File([], img.name))
-      imagePreviews.value = produit.value.images.map((img) => `http://localhost:8000/${img.path}`)
+      imagePreviews.value = produit.value.images.map(
+        (img: string) => `http://localhost:8000/${img}`,
+      )
     }
   } catch (err: any) {
     error.value = err.message || `Erreur lors de la récupération du produit #${produitId}`
@@ -164,6 +180,8 @@ const validateForm = (): boolean => {
   if (errors.description) isValid = false
   errors.prix = form.prix <= 0
   if (errors.prix) isValid = false
+  errors.adresse = !form.adresse.trim()
+  if (errors.adresse) isValid = false
   if (imageChanged.value) {
     errors.images = form.images.length === 0
     if (errors.images) isValid = false
@@ -190,9 +208,10 @@ const submitForm = async () => {
 
   try {
     loading.value = true
-
+    error.value = ''
     if (imageChanged.value && form.images.length === 0) {
-      throw new Error('Au moins une image est requise')
+      error.value = 'Au moins une image est requise si vous choisissez de la modifier'
+      return
     }
     const formatDate = (dateStr: string) => {
       if (!dateStr) return ''
@@ -203,7 +222,10 @@ const submitForm = async () => {
       try {
         const date = new Date(dateStr)
         if (!isNaN(date.getTime())) {
-          return date.toISOString().split('T')[0]
+          const year = date.getFullYear()
+          const month = String(date.getMonth() + 1).padStart(2, '0')
+          const day = String(date.getDate()).padStart(2, '0')
+          return `${year}-${month}-${day}`
         }
       } catch (e) {
         console.error('Erreur lors du formatage de la date:', e)
@@ -211,17 +233,20 @@ const submitForm = async () => {
 
       return dateStr
     }
-
     const produitData: ProduitUpdateData = {
       id: produitId,
       nom: form.nom,
       description: form.description,
       prix: form.prix,
-      images: form.images,
+      adresse: form.adresse,
       categories: form.categories,
       date_debut: formatDate(form.date_debut),
       date_fin: formatDate(form.date_fin),
       image_changed: imageChanged.value,
+    }
+
+    if (imageChanged.value) {
+      produitData.images = form.images
     }
 
     await updateProduit(produitData)
@@ -238,7 +263,6 @@ const submitForm = async () => {
     } else {
       error.value = 'Une erreur est survenue lors de la modification du produit.'
     }
-    console.error(err)
   } finally {
     loading.value = false
   }
@@ -339,6 +363,18 @@ onMounted(async () => {
           <p v-if="errors.prix" class="mt-1 text-sm text-red-600">
             Le prix doit être supérieur à 0
           </p>
+        </div>
+
+        <div>
+          <label for="adresse" class="block mb-2 font-medium text-gray-700">Adresse *</label>
+          <input
+            type="text"
+            id="adresse"
+            v-model="form.adresse"
+            class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+            :class="{ 'border-red-500': errors.adresse }"
+          />
+          <p v-if="errors.adresse" class="mt-1 text-sm text-red-600">L'adresse est requise</p>
         </div>
 
         <div>

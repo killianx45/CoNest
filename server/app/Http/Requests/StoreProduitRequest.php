@@ -31,6 +31,7 @@ class StoreProduitRequest extends FormRequest
             'categories' => 'required|array',
             'date_debut' => 'required|date',
             'date_fin' => 'required|date|after_or_equal:date_debut',
+            'adresse' => 'required|string|max:255',
         ];
     }
 
@@ -58,6 +59,9 @@ class StoreProduitRequest extends FormRequest
             'date_fin.required' => 'La date de fin est obligatoire',
             'date_fin.date' => 'La date de fin doit être une date valide',
             'date_fin.after_or_equal' => 'La date de fin doit être postérieure ou égale à la date de début',
+            'adresse.required' => 'L\'adresse est obligatoire',
+            'adresse.string' => 'L\'adresse doit être une chaîne de caractères',
+            'adresse.max' => 'L\'adresse ne peut pas dépasser 255 caractères',
         ];
     }
 }

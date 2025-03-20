@@ -109,6 +109,11 @@ const ajouterAuCommande = () => {
             <p class="text-gray-700">{{ produit.description }}</p>
           </div>
 
+          <div class="p-4 mb-6 bg-gray-100 rounded-lg">
+            <h2 class="mb-2 text-lg font-semibold">Adresse</h2>
+            <p class="text-gray-700">{{ produit.adresse }}</p>
+          </div>
+
           <button
             class="px-6 py-2 mt-auto font-semibold text-white transition-colors bg-blue-600 rounded-lg hover:bg-blue-700"
             @click="ajouterAuCommande"

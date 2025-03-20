@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import NavBar from '../../NavBar.vue'
 import {
-  getAllCategories,
   createProduit,
-  type Category,
-  type ProduitCreateData,
+  getAllCategories,
   getCurrentUser,
   isAuthenticated,
+  type Category,
+  type ProduitCreateData,
 } from '../../../services/api'
+import NavBar from '../../NavBar.vue'
 
 const router = useRouter()
 const categories = ref<Category[]>([])
@@ -22,6 +22,7 @@ const form = reactive({
   nom: '',
   description: '',
   prix: 0,
+  adresse: '',
   images: [] as File[],
   categories: [] as number[],
   date_debut: '',
@@ -32,6 +33,7 @@ const errors = reactive({
   nom: false,
   description: false,
   prix: false,
+  adresse: false,
   images: false,
   categories: false,
   date_debut: false,
@@ -98,6 +100,8 @@ const validateForm = (): boolean => {
   if (errors.description) isValid = false
   errors.prix = form.prix <= 0
   if (errors.prix) isValid = false
+  errors.adresse = !form.adresse.trim()
+  if (errors.adresse) isValid = false
   errors.images = form.images.length === 0
   if (errors.images) isValid = false
   errors.categories = form.categories.length === 0
@@ -131,6 +135,7 @@ const submitForm = async () => {
       nom: form.nom,
       description: form.description,
       prix: form.prix,
+      adresse: form.adresse,
       images: form.images,
       categories: form.categories,
       date_debut: form.date_debut,
@@ -243,6 +248,17 @@ onMounted(async () => {
           <p v-if="errors.prix" class="mt-1 text-sm text-red-600">
             Le prix doit être supérieur à 0
           </p>
+        </div>
+        <div>
+          <label for="adresse" class="block mb-2 font-medium text-gray-700">Adresse *</label>
+          <input
+            type="text"
+            id="adresse"
+            v-model="form.adresse"
+            class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+            :class="{ 'border-red-500': errors.adresse }"
+          />
+          <p v-if="errors.adresse" class="mt-1 text-sm text-red-600">L'adresse est requise</p>
         </div>
         <div>
           <label for="images" class="block mb-2 font-medium text-gray-700">Images *</label>
