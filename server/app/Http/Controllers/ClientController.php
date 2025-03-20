@@ -47,4 +47,52 @@ class ClientController extends Controller
 
         return view('dashboard', compact('commandes', 'date_reservation', 'heure_debut', 'heure_fin'));
     }
+
+    /**
+     * Get the concours status for the authenticated user.
+     */
+    public function getConcoursStatus()
+    {
+        $user = Auth::user();
+        if (!$user) {
+            return response()->json(['error' => 'Utilisateur non authentifié'], 401);
+        }
+
+        return response()->json([
+            'concours' => (bool) $user->concours,
+            'user' => $user->name
+        ]);
+    }
+
+    /**
+     * Update the concours status for the authenticated user.
+     */
+    public function updateConcoursStatus()
+    {
+        $user = Auth::user();
+        if (!$user) {
+            return response()->json(['error' => 'Utilisateur non authentifié'], 401);
+        }
+
+        $client = new Client();
+        $client->ApiConcours();
+        $updatedUser = User::find($user->id);
+
+        return response()->json([
+            'concours' => (bool) $updatedUser->concours,
+            'message' => 'Statut du concours mis à jour avec succès'
+        ]);
+    }
+
+    /**
+     * Get the number of users eligible for the contest.
+     */
+    public function getConcoursEligibleCount()
+    {
+        $count = User::where('concours', 1)->count();
+
+        return response()->json([
+            'count' => $count
+        ]);
+    }
 }
