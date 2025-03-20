@@ -52,7 +52,7 @@ export interface Produit {
   updatedAt?: string
   user?: string
   commandes?: string[]
-  categories?: any[]
+  categories?: Category[]
 }
 
 export interface ProduitCreateData {
@@ -128,24 +128,20 @@ export const getAuthHeaders = (): Record<string, string> => {
   return token ? { Authorization: `Bearer ${token}` } : {}
 }
 
+// PRODUITS
+
 export const getAllProduits = async (): Promise<Produit[]> => {
   try {
-    const response = await api.get<ApiResponse<Produit>>('/produits', {
-      params: {
-        page: 1,
-      },
-    })
+    const response = await api.get<ApiResponse<Produit>>('/produits')
     if (response.data && response.data.member) {
       return response.data.member
     }
     return response.data as unknown as Produit[]
   } catch (error) {
     console.error('Erreur lors de la récupération des produits:', error)
-    throw error
+    return []
   }
 }
-
-// PRODUITS
 
 export const getProduitById = async (id: number): Promise<Produit> => {
   try {
@@ -428,23 +424,13 @@ export const verifierDisponibilite = async (
 
 export const getAllCategories = async (): Promise<Category[]> => {
   try {
-    const response = await api.get<ApiResponse<Category>>('/categories')
+    const response = await api.get<ApiResponse<Category>>('/categories_public')
     if (response.data && response.data.member) {
       return response.data.member
     }
     return response.data as unknown as Category[]
   } catch (error) {
     console.error('Erreur lors de la récupération des catégories:', error)
-    if (axios.isAxiosError(error)) {
-      if (error.response?.status === 401) {
-        throw new Error('Vous devez être connecté pour accéder aux catégories.')
-      } else if (error.response?.status === 403) {
-        throw new Error(
-          "Vous n'avez pas les droits nécessaires pour accéder aux catégories. Seuls les loueurs et administrateurs peuvent y accéder.",
-        )
-      }
-    }
-
-    throw new Error('Erreur lors de la récupération des catégories. Veuillez réessayer.')
+    return []
   }
 }

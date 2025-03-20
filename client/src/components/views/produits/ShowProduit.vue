@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
 import type { Produit } from '@/services/api'
 import { getProduitById, isAuthenticated } from '@/services/api'
+import { onMounted, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import NavBar from '../../NavBar.vue'
 
 const route = useRoute()
@@ -50,6 +50,15 @@ onMounted(async () => {
     }
   }
 })
+
+const ajouterAuCommande = () => {
+  if (produit.value) {
+    router.push({
+      name: 'createCommande',
+      query: { produitId: produit.value.id.toString() },
+    })
+  }
+}
 </script>
 
 <template>
@@ -102,6 +111,7 @@ onMounted(async () => {
 
           <button
             class="px-6 py-2 mt-auto font-semibold text-white transition-colors bg-blue-600 rounded-lg hover:bg-blue-700"
+            @click="ajouterAuCommande"
           >
             Ajouter au panier
           </button>

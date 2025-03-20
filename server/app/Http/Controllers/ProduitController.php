@@ -166,6 +166,21 @@ class ProduitController extends Controller
     }
 
     /**
+     * API: Get all products with their categories
+     */
+    public function apiIndex(): JsonResponse
+    {
+        $produits = Produit::with('categories')->get();
+        return response()->json([
+            '@context' => '/api/contexts/Produit',
+            '@id' => '/api/produits',
+            '@type' => 'hydra:Collection',
+            'totalItems' => count($produits),
+            'member' => $produits
+        ]);
+    }
+
+    /**
      * API: Store a newly created resource in storage.
      */
     public function apiStore(StoreProduitRequest $request): JsonResponse

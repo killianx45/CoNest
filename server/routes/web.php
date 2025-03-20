@@ -48,11 +48,13 @@ Route::group(['prefix' => 'api'], function () {
     Route::post('auth/login', [AuthController::class, 'login']);
     Route::get('produits', [ProduitController::class, 'apiIndex']);
     Route::post('auth/register', [AuthController::class, 'register']);
+    Route::get('categories_public', [CategoryController::class, 'apiPublicIndex']);
 
     Route::group(['middleware' => 'auth:api'], function () {
         Route::post('logout', [AuthController::class, 'logout']);
         Route::post('refresh', [AuthController::class, 'refresh']);
         Route::get('me', [AuthController::class, 'me']);
+        Route::get('produits', [ProduitController::class, 'apiIndex']);
         Route::get('produits/{produit}', [ProduitController::class, 'apiShow']);
 
         Route::post('commandes', [CommandeController::class, 'apiStore']);
