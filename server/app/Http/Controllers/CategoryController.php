@@ -29,6 +29,21 @@ class CategoryController extends Controller
     }
 
     /**
+     * API: Display a public listing of categories.
+     */
+    public function apiPublicIndex(): JsonResponse
+    {
+        $categories = Category::all();
+        return response()->json([
+            '@context' => '/api/contexts/Category',
+            '@id' => '/api/categories_public',
+            '@type' => 'hydra:Collection',
+            'totalItems' => count($categories),
+            'member' => $categories
+        ]);
+    }
+
+    /**
      * Display a listing of the resource.
      */
     public function index(): View

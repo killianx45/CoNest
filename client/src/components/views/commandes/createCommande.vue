@@ -214,7 +214,12 @@ onMounted(() => {
     return
   }
 
-  fetchProduits()
+  fetchProduits().then(() => {
+    const produitId = route.query.produitId
+    if (produitId) {
+      form.produits[0].id = Number(produitId)
+    }
+  })
 })
 </script>
 

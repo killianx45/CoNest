@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { getCurrentUser, isAuthenticated, logout } from '@/services/api'
+import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { isAuthenticated, logout, getCurrentUser } from '@/services/api'
 
 const router = useRouter()
 const currentLanguage = ref('FR')
@@ -39,7 +39,7 @@ async function handleLogout() {
 const userName = ref('')
 
 getCurrentUser().then((user) => {
-  userName.value = user.name
+  userName.value = user?.name || ''
 })
 </script>
 
