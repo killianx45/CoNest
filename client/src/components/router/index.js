@@ -53,6 +53,11 @@ const router = createRouter({
       component: () => import('../views/commandes/CreateCommande.vue'),
     },
     {
+      path: '/concours',
+      name: 'concours',
+      component: () => import('../views/users/Concours.vue'),
+    },
+    {
       path: '/:pathMatch(.*)*',
       name: 'notFound',
       component: () => import('../views/NotFound.vue'),

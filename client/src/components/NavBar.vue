@@ -77,6 +77,9 @@ getCurrentUser().then((user) => {
               <router-link to="/commandes" class="no-underline text-[#333] py-2">
                 Commande
               </router-link>
+              <router-link to="/concours" class="no-underline text-[#333] py-2">
+                Concours Mensuel
+              </router-link>
               <button
                 @click="handleLogout"
                 class="no-underline text-[#333] text-left py-2 bg-transparent border-none"
@@ -141,6 +144,9 @@ getCurrentUser().then((user) => {
               <span class="text-[#333] px-4 py-2">{{ userName }}</span>
               <router-link to="/commandes" class="block px-4 py-2 text-[#333] hover:bg-gray-100">
                 Commande
+              </router-link>
+              <router-link to="/concours" class="block px-4 py-2 text-[#333] hover:bg-gray-100">
+                Concours Mensuel
               </router-link>
               <button
                 @click="handleLogout"

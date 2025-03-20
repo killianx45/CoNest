@@ -80,6 +80,7 @@ export interface User {
   name: string
   createdAt?: string
   updatedAt?: string
+  concours?: boolean
 }
 
 export interface Commande {
@@ -106,6 +107,16 @@ export interface Category {
   description?: string
   createdAt?: string
   updatedAt?: string
+}
+
+export interface ConcoursStatusResponse {
+  concours: boolean
+  user: string
+  message?: string
+}
+
+export interface ConcoursEligibleCountResponse {
+  count: number
 }
 
 export interface AuthResponse {
@@ -432,5 +443,37 @@ export const getAllCategories = async (): Promise<Category[]> => {
   } catch (error) {
     console.error('Erreur lors de la récupération des catégories:', error)
     return []
+  }
+}
+
+// CONCOURS
+
+export const getConcoursStatus = async (): Promise<ConcoursStatusResponse> => {
+  try {
+    const response = await api.get<ConcoursStatusResponse>('/concours/status')
+    return response.data
+  } catch (error) {
+    console.error('Erreur lors de la récupération du statut du concours:', error)
+    throw error
+  }
+}
+
+export const updateConcoursStatus = async (): Promise<ConcoursStatusResponse> => {
+  try {
+    const response = await api.post<ConcoursStatusResponse>('/concours/update')
+    return response.data
+  } catch (error) {
+    console.error('Erreur lors de la mise à jour du statut du concours:', error)
+    throw error
+  }
+}
+
+export const getConcoursEligibleCount = async (): Promise<number> => {
+  try {
+    const response = await api.get<ConcoursEligibleCountResponse>('/concours/eligible-count')
+    return response.data.count
+  } catch (error) {
+    console.error('Erreur lors de la récupération du nombre de participants éligibles:', error)
+    return 0
   }
 }

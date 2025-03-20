@@ -56,6 +56,9 @@ Route::group(['prefix' => 'api'], function () {
         Route::get('me', [AuthController::class, 'me']);
         Route::get('produits', [ProduitController::class, 'apiIndex']);
         Route::get('produits/{produit}', [ProduitController::class, 'apiShow']);
+        Route::get('concours/status', [ClientController::class, 'getConcoursStatus']);
+        Route::post('concours/update', [ClientController::class, 'updateConcoursStatus']);
+        Route::get('concours/eligible-count', [ClientController::class, 'getConcoursEligibleCount']);
 
         Route::post('commandes', [CommandeController::class, 'apiStore']);
         Route::get('commandes_complete/{id}', [CommandeController::class, 'getCommandeComplete']);
