@@ -35,6 +35,7 @@ class ApiUpdateProduitRequest extends FormRequest
             'image_changed' => 'sometimes|in:0,1',
             'categories' => 'sometimes|array',
             'categories.*' => 'exists:categories,id',
+            'adresse' => 'sometimes|string|max:255',
         ];
     }
 
@@ -61,6 +62,8 @@ class ApiUpdateProduitRequest extends FormRequest
             'image_changed.in' => 'La valeur de image_changed doit être 0 ou 1',
             'categories.array' => 'Les catégories doivent être un tableau',
             'categories.*.exists' => 'Une des catégories sélectionnées n\'existe pas',
+            'adresse.string' => 'L\'adresse doit être une chaîne de caractères',
+            'adresse.max' => 'L\'adresse ne peut pas dépasser 255 caractères',
         ];
     }
 }

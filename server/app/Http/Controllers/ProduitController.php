@@ -45,7 +45,7 @@ class ProduitController extends Controller
         $produit->nom = $validated['nom'];
         $produit->description = $validated['description'];
         $produit->prix = $validated['prix'];
-
+        $produit->adresse = $validated['adresse'];
         if ($request->hasFile('images')) {
             $images = $request->file('images');
             $imagePaths = [];
@@ -102,7 +102,7 @@ class ProduitController extends Controller
         $produit->nom = $validated['nom'];
         $produit->description = $validated['description'];
         $produit->prix = $validated['prix'];
-
+        $produit->adresse = $validated['adresse'];
         if ($validated['date_debut'] && $validated['date_fin']) {
             $produit->disponibilite = $validated['date_debut'] . '-' . $validated['date_fin'];
         } else {
@@ -192,7 +192,7 @@ class ProduitController extends Controller
             $produit->nom = $validated['nom'];
             $produit->description = $validated['description'];
             $produit->prix = $validated['prix'];
-
+            $produit->adresse = $validated['adresse'];
             if ($request->hasFile('images')) {
                 $images = $request->file('images');
                 $imagePaths = [];
@@ -246,6 +246,10 @@ class ProduitController extends Controller
 
             if (isset($validated['prix'])) {
                 $produit->prix = $validated['prix'];
+            }
+
+            if (isset($validated['adresse'])) {
+                $produit->adresse = $validated['adresse'];
             }
 
             if (isset($validated['date_debut']) && isset($validated['date_fin'])) {
