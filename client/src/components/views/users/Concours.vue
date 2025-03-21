@@ -7,6 +7,7 @@ import {
   updateConcoursStatus,
 } from '@/services/api'
 import { computed, onMounted, onUnmounted, ref } from 'vue'
+import ConfettiExplosion from 'vue-confetti-explosion'
 
 const concoursStatus = ref(false)
 const userName = ref('')
@@ -21,6 +22,10 @@ const minutes = ref(0)
 const secondes = ref(0)
 let timerInterval: number | null = null
 const produits = ref<Produit[]>([])
+const showConfetti = ref(false)
+const buttonRef = ref<HTMLElement | null>(null)
+const stageHeight = ref(window.innerHeight)
+const stageWidth = ref(window.innerWidth)
 
 const dateFin = computed(() => {
   const now = new Date()
@@ -71,13 +76,58 @@ onMounted(async () => {
   updateTimer()
   timerInterval = window.setInterval(updateTimer, 1000)
   fetchProduits()
+  window.addEventListener('resize', updateStageDimensions)
 })
 
 onUnmounted(() => {
   if (timerInterval) {
     clearInterval(timerInterval)
   }
+  window.removeEventListener('resize', updateStageDimensions)
 })
+
+function updateStageDimensions() {
+  stageHeight.value = window.innerHeight
+  stageWidth.value = window.innerWidth
+}
+
+const confettiProps = {
+  particleCount: 150,
+  particleSize: 8,
+  particleSizeVariation: 3,
+  force: 0.6,
+  colors: ['#FFD700', '#FF6347', '#4169E1', '#32CD32', '#9932CC', '#FF1493'],
+  estimatedDuration: 5000,
+}
+
+function triggerConfetti() {
+  if (concoursStatus.value) {
+    showConfetti.value = true
+    setTimeout(() => {
+      showConfetti.value = false
+    }, confettiProps.estimatedDuration)
+  }
+}
+
+async function updateStatus() {
+  isUpdating.value = true
+  message.value = ''
+  error.value = ''
+  const prevStatus = concoursStatus.value
+
+  try {
+    const response = await updateConcoursStatus()
+    concoursStatus.value = response.concours
+    message.value = response.message || 'Statut mis à jour avec succès'
+    await fetchEligibleCount()
+    triggerConfetti()
+  } catch (err: any) {
+    error.value = err.response?.data?.message || 'Erreur lors de la mise à jour du statut'
+    console.error('Erreur:', err)
+  } finally {
+    isUpdating.value = false
+  }
+}
 
 async function checkConcoursStatus() {
   isLoading.value = true
@@ -87,30 +137,15 @@ async function checkConcoursStatus() {
     const response = await getConcoursStatus()
     concoursStatus.value = response.concours
     userName.value = response.user
+    setTimeout(() => {
+      triggerConfetti()
+    }, 500)
   } catch (err: any) {
     error.value =
       err.response?.data?.message || 'Erreur lors de la récupération du statut du concours'
     console.error('Erreur:', err)
   } finally {
     isLoading.value = false
-  }
-}
-
-async function updateStatus() {
-  isUpdating.value = true
-  message.value = ''
-  error.value = ''
-
-  try {
-    const response = await updateConcoursStatus()
-    concoursStatus.value = response.concours
-    message.value = response.message || 'Statut mis à jour avec succès'
-    await fetchEligibleCount()
-  } catch (err: any) {
-    error.value = err.response?.data?.message || 'Erreur lors de la mise à jour du statut'
-    console.error('Erreur:', err)
-  } finally {
-    isUpdating.value = false
   }
 }
 </script>
@@ -137,7 +172,7 @@ async function updateStatus() {
       <div class="w-full p-6 bg-white rounded-lg shadow-md md:w-1/2">
         <h2 class="mb-4 text-2xl font-semibold">Bonjour {{ userName }}</h2>
         <div
-          class="p-4 mb-4"
+          class="p-4 mb-4 transition-colors duration-500"
           :class="
             concoursStatus
               ? 'bg-green-100 border-l-4 border-green-500'
@@ -145,12 +180,15 @@ async function updateStatus() {
           "
         >
           <h3
-            class="text-xl font-medium"
+            class="text-xl font-medium transition-colors duration-500"
             :class="concoursStatus ? 'text-green-700' : 'text-yellow-700'"
           >
             {{ concoursStatus ? 'Félicitations! 🎉' : 'Pas encore éligible 😢' }}
           </h3>
-          <p class="mt-2" :class="concoursStatus ? 'text-green-700' : 'text-yellow-700'">
+          <p
+            class="mt-2 transition-colors duration-500"
+            :class="concoursStatus ? 'text-green-700' : 'text-yellow-700'"
+          >
             {{
               concoursStatus
                 ? 'Vous êtes éligible au concours de ce mois!'
@@ -158,17 +196,41 @@ async function updateStatus() {
             }}
           </p>
         </div>
-        <button
-          @click="updateStatus"
-          class="w-full px-4 py-2 mt-4 text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
-          :disabled="isUpdating"
+
+        <div class="relative">
+          <button
+            ref="buttonRef"
+            @click="updateStatus"
+            class="w-full px-4 py-2 mt-4 text-white transition-colors duration-300 bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+            :disabled="isUpdating"
+          >
+            {{ isUpdating ? 'Mise à jour en cours...' : 'Mettre à jour mon statut' }}
+          </button>
+
+          <div v-if="showConfetti" class="absolute top-0 left-0 w-full">
+            <ConfettiExplosion
+              :particleCount="confettiProps.particleCount"
+              :particleSize="confettiProps.particleSize"
+              :particleSizeVariation="confettiProps.particleSizeVariation"
+              :force="confettiProps.force"
+              :colors="confettiProps.colors"
+              :stageHeight="stageHeight"
+              :stageWidth="stageWidth"
+              class="absolute top-0 transform -translate-x-1/2 left-1/2"
+            />
+          </div>
+        </div>
+
+        <div
+          v-if="message"
+          class="p-4 mt-4 mb-4 text-blue-700 transition-all duration-300 bg-blue-100 rounded-lg"
         >
-          {{ isUpdating ? 'Mise à jour en cours...' : 'Mettre à jour mon statut' }}
-        </button>
-        <div v-if="message" class="p-4 mb-4 text-blue-700 bg-blue-100 rounded-lg">
           {{ message }}
         </div>
-        <div v-if="error" class="p-4 mb-4 text-red-700 bg-red-100 rounded-lg">
+        <div
+          v-if="error"
+          class="p-4 mt-4 mb-4 text-red-700 transition-all duration-300 bg-red-100 rounded-lg"
+        >
           {{ error }}
         </div>
       </div>
