@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { getCurrentUser, isAuthenticated, logout } from '@/services/api'
-import { computed, ref } from 'vue'
+import { computed, onBeforeUnmount, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
@@ -37,6 +37,16 @@ async function handleLogout() {
 }
 
 const userName = ref('')
+
+onBeforeUnmount(() => {
+  isMenuOpen.value = false
+  isAccountMenuOpen.value = false
+})
+
+router.beforeEach(() => {
+  isMenuOpen.value = false
+  isAccountMenuOpen.value = false
+})
 
 getCurrentUser().then((user) => {
   userName.value = user?.name || ''
