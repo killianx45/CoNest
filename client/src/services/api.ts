@@ -175,6 +175,7 @@ export const createProduit = async (produitData: ProduitCreateData): Promise<Pro
     formData.append('nom', produitData.nom)
     formData.append('description', produitData.description)
     formData.append('prix', produitData.prix.toString())
+    formData.append('adresse', produitData.adresse)
     formData.append('date_debut', produitData.date_debut)
     formData.append('date_fin', produitData.date_fin)
 
