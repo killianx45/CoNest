@@ -1,3 +1,8 @@
+import Commandes from '@/components/views/commandes/AllCommande.vue'
+import Concours from '@/components/views/users/Concours.vue'
+import Login from '@/components/views/users/Login.vue'
+import Register from '@/components/views/users/Register.vue'
+import { isAuthenticated } from '@/services/api'
 import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../Home.vue'
 
@@ -12,12 +17,26 @@ const router = createRouter({
     {
       path: '/login',
       name: 'login',
-      component: () => import('../views/users/Login.vue'),
+      component: Login,
+      beforeEnter: (to, from, next) => {
+        if (isAuthenticated()) {
+          next({ path: '/' })
+        } else {
+          next()
+        }
+      },
     },
     {
       path: '/register',
       name: 'register',
-      component: () => import('../views/users/Register.vue'),
+      component: Register,
+      beforeEnter: (to, from, next) => {
+        if (isAuthenticated()) {
+          next({ path: '/' })
+        } else {
+          next()
+        }
+      },
     },
     {
       path: '/produit/:id',
@@ -39,7 +58,14 @@ const router = createRouter({
     {
       path: '/commandes',
       name: 'allCommandes',
-      component: () => import('../views/commandes/AllCommande.vue'),
+      component: Commandes,
+      beforeEnter: (to, from, next) => {
+        if (!isAuthenticated()) {
+          next({ path: '/login' })
+        } else {
+          next()
+        }
+      },
     },
     {
       path: '/commandes/:id',
@@ -55,7 +81,14 @@ const router = createRouter({
     {
       path: '/concours',
       name: 'concours',
-      component: () => import('../views/users/Concours.vue'),
+      component: Concours,
+      beforeEnter: (to, from, next) => {
+        if (!isAuthenticated()) {
+          next({ path: '/login' })
+        } else {
+          next()
+        }
+      },
     },
     {
       path: '/:pathMatch(.*)*',
