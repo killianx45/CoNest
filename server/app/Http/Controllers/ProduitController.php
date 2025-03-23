@@ -52,10 +52,6 @@ class ProduitController extends Controller
             foreach ($images as $image) {
                 $imageName = time() . '_' . $image->getClientOriginalName();
                 $image->move(public_path('images'), $imageName);
-                if (!file_exists(resource_path('images'))) {
-                    mkdir(resource_path('images'), 0777, true);
-                }
-                copy(public_path('images/' . $imageName), resource_path('images/' . $imageName));
                 $imagePaths[] = 'images/' . $imageName;
             }
             $produit->image = implode(',', $imagePaths);
@@ -118,9 +114,6 @@ class ProduitController extends Controller
                     if (file_exists(public_path($oldImage))) {
                         unlink(public_path($oldImage));
                     }
-                    if (file_exists(resource_path($oldImage))) {
-                        unlink(resource_path($oldImage));
-                    }
                 }
             }
 
@@ -129,10 +122,6 @@ class ProduitController extends Controller
             foreach ($images as $image) {
                 $imageName = time() . '_' . $image->getClientOriginalName();
                 $image->move(public_path('images'), $imageName);
-                if (!file_exists(resource_path('images'))) {
-                    mkdir(resource_path('images'), 0777, true);
-                }
-                copy(public_path('images/' . $imageName), resource_path('images/' . $imageName));
                 $imagePaths[] = 'images/' . $imageName;
             }
             $produit->image = implode(',', $imagePaths);
@@ -151,9 +140,6 @@ class ProduitController extends Controller
         $produit = Produit::findOrFail($id);
         if ($produit->image && file_exists(public_path($produit->image))) {
             unlink(public_path($produit->image));
-            if (file_exists(resource_path('images/' . basename($produit->image)))) {
-                unlink(resource_path('images/' . basename($produit->image)));
-            }
         }
 
         $commandes = $produit->commandes()->get();
@@ -199,10 +185,6 @@ class ProduitController extends Controller
                 foreach ($images as $image) {
                     $imageName = time() . '_' . $image->getClientOriginalName();
                     $image->move(public_path('images'), $imageName);
-                    if (!file_exists(resource_path('images'))) {
-                        mkdir(resource_path('images'), 0777, true);
-                    }
-                    copy(public_path('images/' . $imageName), resource_path('images/' . $imageName));
                     $imagePaths[] = 'images/' . $imageName;
                 }
                 $produit->image = implode(',', $imagePaths);
@@ -263,9 +245,6 @@ class ProduitController extends Controller
                         if (file_exists(public_path($oldImage))) {
                             @unlink(public_path($oldImage));
                         }
-                        if (file_exists(resource_path($oldImage))) {
-                            @unlink(resource_path($oldImage));
-                        }
                     }
                 }
 
@@ -274,10 +253,6 @@ class ProduitController extends Controller
                 foreach ($images as $image) {
                     $imageName = time() . '_' . $image->getClientOriginalName();
                     $image->move(public_path('images'), $imageName);
-                    if (!file_exists(resource_path('images'))) {
-                        mkdir(resource_path('images'), 0777, true);
-                    }
-                    copy(public_path('images/' . $imageName), resource_path('images/' . $imageName));
                     $imagePaths[] = 'images/' . $imageName;
                 }
                 $produit->image = implode(',', $imagePaths);
