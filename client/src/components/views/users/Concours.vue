@@ -152,7 +152,7 @@ async function checkConcoursStatus() {
 
 <template>
   <div class="container px-4 pt-24 mx-auto">
-    <div class="p-4 mb-6 text-center bg-orange-200 rounded-lg">
+    <div class="p-4 mb-6 text-center bg-gray-200 rounded-lg">
       <h2 class="text-2xl font-bold">Tirage dans</h2>
       <div class="flex justify-center gap-4">
         <div class="text-3xl font-bold">{{ jours }} Jours</div>
@@ -201,7 +201,7 @@ async function checkConcoursStatus() {
           <button
             ref="buttonRef"
             @click="updateStatus"
-            class="w-full px-4 py-2 mt-4 text-white transition-colors duration-300 bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+            class="w-full px-4 py-2 mt-4 text-white transition-colors duration-300 bg-orange-500 rounded-lg hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 disabled:opacity-50"
             :disabled="isUpdating"
           >
             {{ isUpdating ? 'Mise à jour en cours...' : 'Mettre à jour mon statut' }}
