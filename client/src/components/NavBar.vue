@@ -76,7 +76,7 @@ getCurrentUser().then((user) => {
         </button>
       </router-link>
       <ul class="p-0 m-0 list-none">
-        <li class="p-2 border-b border-gray-200">
+        <li class="p-2 mr-2 border-b border-gray-200">
           <div @click="toggleAccountMenu" class="flex items-center justify-between cursor-pointer">
             <span class="no-underline text-[#333] font-bold">Mon compte</span>
             <span>{{ isAccountMenuOpen ? '▲' : '▼' }}</span>
@@ -103,14 +103,6 @@ getCurrentUser().then((user) => {
               </router-link>
             </div>
           </div>
-        </li>
-        <li class="p-2">
-          <button
-            @click="toggleLanguage"
-            class="bg-transparent border-none cursor-pointer text-base flex items-center gap-2 p-1 rounded hover:bg-[#f0f0f0] w-full"
-          >
-            🌍 {{ currentLanguage }}
-          </button>
         </li>
       </ul>
     </div>
@@ -148,7 +140,7 @@ getCurrentUser().then((user) => {
           </div>
           <div
             v-if="isAccountMenuOpen"
-            class="absolute right-0 z-10 w-48 py-1 mt-2 bg-white rounded-md shadow-lg"
+            class="absolute right-0 z-10 w-48 py-1 mt-2 mr-2 bg-white rounded-md shadow-lg"
           >
             <div v-if="isLoggedIn">
               <span class="text-[#333] px-4 py-2">{{ userName }}</span>
@@ -171,14 +163,6 @@ getCurrentUser().then((user) => {
               </router-link>
             </div>
           </div>
-        </li>
-        <li class="m-0">
-          <button
-            @click="toggleLanguage"
-            class="bg-transparent border-none cursor-pointer text-base flex items-center gap-2 p-1 rounded hover:bg-[#f0f0f0] language-btn"
-          >
-            🌍 {{ currentLanguage }}
-          </button>
         </li>
       </div>
     </ul>

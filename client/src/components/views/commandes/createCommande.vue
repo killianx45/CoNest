@@ -358,7 +358,13 @@ onMounted(() => {
           </button>
         </div>
 
-        <div class="flex justify-end">
+        <div class="flex justify-between">
+          <router-link
+            to="/commandes"
+            class="px-6 py-3 text-white bg-red-500 rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500"
+          >
+            Retour à la liste des réservations
+          </router-link>
           <button
             type="submit"
             class="px-6 py-3 text-white bg-orange-500 rounded-md hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500"
