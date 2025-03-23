@@ -225,155 +225,174 @@ onMounted(() => {
 
 <template>
   <NavBar />
-  <div class="max-w-6xl p-6 mx-auto mt-20 bg-white border-2 border-orange-300 rounded-lg shadow-md">
-    <h1 class="mb-6 text-3xl font-bold text-black">Créer une réservation</h1>
-    <div v-if="loading || checkingAvailability" class="flex justify-center my-8">
-      <div class="w-12 h-12 border-b-2 border-orange-500 rounded-full animate-spin"></div>
-      <p v-if="checkingAvailability" class="ml-3 text-gray-600">
-        Vérification de la disponibilité...
-      </p>
-    </div>
-    <div
-      v-else-if="success"
-      class="px-4 py-3 mb-4 text-green-700 bg-green-100 border border-green-400 rounded"
+  <div class="flex items-center justify-center min-h-screen bg-[#FFF1E9]">
+    <fieldset
+      class="fieldset w-full max-w-6xl bg-[#FDF9F6] border border-base-200 p-8 md:p-12 lg:p-20 rounded-box"
     >
-      <p>Réservation créée avec succès ! Redirection en cours...</p>
-    </div>
-    <div v-else>
-      <div
-        v-if="error"
-        class="px-4 py-3 mb-4 text-red-700 bg-red-100 border border-red-400 rounded"
-      >
-        <p>{{ error }}</p>
+      <h1 class="mb-8 text-2xl font-semibold text-center">Créer une réservation</h1>
+
+      <div v-if="loading || checkingAvailability" class="flex justify-center my-8">
+        <div class="w-12 h-12 border-b-2 border-[#FF8238] rounded-full animate-spin"></div>
+        <p v-if="checkingAvailability" class="ml-3 text-gray-600">
+          Vérification de la disponibilité...
+        </p>
       </div>
 
       <div
-        v-if="errors.general"
-        class="px-4 py-3 mb-4 text-red-700 bg-red-100 border border-red-400 rounded"
+        v-else-if="success"
+        class="px-4 py-3 mb-4 text-green-700 bg-green-100 border border-green-400 rounded"
       >
-        <p>{{ errors.general }}</p>
+        <p>Réservation créée avec succès ! Redirection en cours...</p>
       </div>
-      <form @submit.prevent="submitForm" class="space-y-6">
-        <div
-          v-for="(produit, index) in form.produits"
-          :key="index"
-          class="p-4 border border-gray-200 rounded-lg"
-        >
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="text-lg font-semibold">Espace {{ index + 1 }}</h3>
-            <button
-              v-if="form.produits.length > 1"
-              type="button"
-              @click="removeProduit(index)"
-              class="text-red-500 hover:text-red-700"
+
+      <div v-else>
+        <div v-if="error" class="w-full p-3 mb-6 text-red-700 bg-red-100 rounded-lg">
+          {{ error }}
+        </div>
+
+        <div v-if="errors.general" class="w-full p-3 mb-6 text-red-700 bg-red-100 rounded-lg">
+          {{ errors.general }}
+        </div>
+
+        <form @submit.prevent="submitForm" class="space-y-6">
+          <div
+            v-for="(produit, index) in form.produits"
+            :key="index"
+            class="p-6 mb-6 bg-white border border-gray-200 rounded-lg shadow-sm"
+          >
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-semibold">Espace {{ index + 1 }}</h3>
+              <button
+                v-if="form.produits.length > 1"
+                type="button"
+                @click="removeProduit(index)"
+                class="text-red-500 hover:text-red-700"
+              >
+                Supprimer
+              </button>
+            </div>
+
+            <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+              <div>
+                <label class="block mb-2 text-gray-700">Espace de coworking</label>
+                <select
+                  v-model="form.produits[index].id"
+                  class="w-full px-4 py-3 placeholder-black border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF8238]"
+                  :class="{
+                    'border-red-500': errors.produits[index].id,
+                    'border-gray-300': !errors.produits[index].id,
+                  }"
+                >
+                  <option :value="0" disabled>Sélectionnez un espace</option>
+                  <option v-for="p in produits" :key="p.id" :value="p.id">
+                    {{ p.nom }} - {{ p.prix }}€/h
+                  </option>
+                </select>
+                <p v-if="errors.produits[index].id" class="mt-1 text-sm text-red-600">
+                  Veuillez sélectionner un espace
+                </p>
+              </div>
+
+              <div>
+                <label class="block mb-2 text-gray-700">Date de réservation</label>
+                <input
+                  type="date"
+                  v-model="form.produits[index].date"
+                  class="w-full px-4 py-3 placeholder-black border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF8238]"
+                  :class="{
+                    'border-red-500': errors.produits[index].date,
+                    'border-gray-300': !errors.produits[index].date,
+                  }"
+                  :min="new Date().toISOString().split('T')[0]"
+                />
+                <p v-if="errors.produits[index].date" class="mt-1 text-sm text-red-600">
+                  Veuillez sélectionner une date
+                </p>
+              </div>
+
+              <div>
+                <label class="block mb-2 text-gray-700">Heure de début</label>
+                <input
+                  type="time"
+                  v-model="form.produits[index].heure_debut"
+                  class="w-full px-4 py-3 placeholder-black border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF8238]"
+                  :class="{
+                    'border-red-500': errors.produits[index].heure_debut,
+                    'border-gray-300': !errors.produits[index].heure_debut,
+                  }"
+                  min="08:00"
+                  max="20:00"
+                  @change="checkAvailability(index)"
+                />
+                <p v-if="errors.produits[index].heure_debut" class="mt-1 text-sm text-red-600">
+                  Veuillez sélectionner une heure de début
+                </p>
+              </div>
+
+              <div>
+                <label class="block mb-2 text-gray-700">Heure de fin</label>
+                <input
+                  type="time"
+                  v-model="form.produits[index].heure_fin"
+                  class="w-full px-4 py-3 placeholder-black border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF8238]"
+                  :class="{
+                    'border-red-500': errors.produits[index].heure_fin,
+                    'border-gray-300': !errors.produits[index].heure_fin,
+                  }"
+                  min="08:00"
+                  max="20:00"
+                  @change="checkAvailability(index)"
+                />
+                <p v-if="errors.produits[index].heure_fin" class="mt-1 text-sm text-red-600">
+                  Veuillez sélectionner une heure de fin
+                </p>
+              </div>
+            </div>
+
+            <div
+              v-if="errors.produits[index].disponibilite"
+              class="p-3 mt-4 text-red-700 bg-red-100 border border-red-200 rounded"
             >
-              Supprimer
+              <p>Ce créneau n'est pas disponible. Veuillez choisir un autre créneau.</p>
+            </div>
+          </div>
+
+          <div class="flex justify-center mb-6">
+            <button
+              type="button"
+              @click="addProduit"
+              class="px-4 py-2 font-medium text-[#FF8238] bg-white border border-[#FF8238] rounded-lg hover:bg-[#FFF1E9] focus:outline-none focus:ring-2 focus:ring-[#FF8238]"
+            >
+              + Ajouter un espace
             </button>
           </div>
 
-          <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <div>
-              <label class="block mb-1 text-sm font-medium text-gray-700"
-                >Espace de coworking</label
-              >
-              <select
-                v-model="form.produits[index].id"
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-orange-500 focus:border-orange-500"
-                :class="{ 'border-red-500': errors.produits[index].id }"
-              >
-                <option :value="0" disabled>Sélectionnez un espace</option>
-                <option v-for="p in produits" :key="p.id" :value="p.id">
-                  {{ p.nom }} - {{ p.prix }}€/h
-                </option>
-              </select>
-              <p v-if="errors.produits[index].id" class="mt-1 text-sm text-red-600">
-                Veuillez sélectionner un espace
-              </p>
-            </div>
+          <div class="flex flex-col space-y-4 md:flex-row md:justify-between md:space-y-0">
+            <router-link
+              to="/commandes"
+              class="px-6 py-3 font-medium text-center text-white bg-red-500 rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500"
+            >
+              Retour à la liste des réservations
+            </router-link>
 
-            <div>
-              <label class="block mb-1 text-sm font-medium text-gray-700"
-                >Date de réservation</label
-              >
-              <input
-                type="date"
-                v-model="form.produits[index].date"
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-orange-500 focus:border-orange-500"
-                :class="{ 'border-red-500': errors.produits[index].date }"
-                :min="new Date().toISOString().split('T')[0]"
-              />
-              <p v-if="errors.produits[index].date" class="mt-1 text-sm text-red-600">
-                Veuillez sélectionner une date
-              </p>
-            </div>
-
-            <div>
-              <label class="block mb-1 text-sm font-medium text-gray-700">Heure de début</label>
-              <input
-                type="time"
-                v-model="form.produits[index].heure_debut"
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-orange-500 focus:border-orange-500"
-                :class="{ 'border-red-500': errors.produits[index].heure_debut }"
-                min="08:00"
-                max="20:00"
-                @change="checkAvailability(index)"
-              />
-              <p v-if="errors.produits[index].heure_debut" class="mt-1 text-sm text-red-600">
-                Veuillez sélectionner une heure de début
-              </p>
-            </div>
-
-            <div>
-              <label class="block mb-1 text-sm font-medium text-gray-700">Heure de fin</label>
-              <input
-                type="time"
-                v-model="form.produits[index].heure_fin"
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-orange-500 focus:border-orange-500"
-                :class="{ 'border-red-500': errors.produits[index].heure_fin }"
-                min="08:00"
-                max="20:00"
-                @change="checkAvailability(index)"
-              />
-              <p v-if="errors.produits[index].heure_fin" class="mt-1 text-sm text-red-600">
-                Veuillez sélectionner une heure de fin
-              </p>
-            </div>
+            <button
+              type="submit"
+              class="px-6 py-3 font-medium text-white bg-[#FF8238] rounded-lg hover:bg-[#e86f29] focus:outline-none focus:ring-2 focus:ring-[#FF8238]"
+              :disabled="loading || checkingAvailability"
+            >
+              {{ loading ? 'Création en cours...' : 'Créer la réservation' }}
+            </button>
           </div>
-
-          <div
-            v-if="errors.produits[index].disponibilite"
-            class="px-4 py-2 mt-3 text-red-600 border border-red-200 rounded bg-red-50"
-          >
-            <p>Ce créneau n'est pas disponible. Veuillez choisir un autre créneau.</p>
-          </div>
-        </div>
-
-        <div class="flex justify-center">
-          <button
-            type="button"
-            @click="addProduit"
-            class="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500"
-          >
-            + Ajouter un espace
-          </button>
-        </div>
-
-        <div class="flex justify-between">
-          <router-link
-            to="/commandes"
-            class="px-6 py-3 text-white bg-red-500 rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500"
-          >
-            Retour à la liste des réservations
-          </router-link>
-          <button
-            type="submit"
-            class="px-6 py-3 text-white bg-orange-500 rounded-md hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500"
-            :disabled="loading || checkingAvailability"
-          >
-            {{ loading ? 'Création en cours...' : 'Créer la réservation' }}
-          </button>
-        </div>
-      </form>
-    </div>
+        </form>
+      </div>
+    </fieldset>
   </div>
 </template>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
+* {
+  font-family: 'Poppins', sans-serif;
+}
+</style>
