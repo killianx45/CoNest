@@ -278,200 +278,205 @@ onMounted(async () => {
 
 <template>
   <NavBar />
-  <div class="max-w-4xl p-6 mx-auto mt-20 bg-white border-2 border-orange-300 rounded-lg shadow-md">
-    <h1 class="pb-2 mb-6 text-3xl font-bold text-black border-b-2 border-orange-200">
-      Modifier le produit
-    </h1>
+  <section class="flex items-center justify-center min-h-screen bg-[#FFF1E9] formu">
+    <div class="w-full max-w-3xl p-12 mx-8 mt-10 mb-10 bg-orange-100 rounded-lg shadow-md">
+      <a :href="'/produit/' + produitId" class="block mb-4 text-gray-500"><p>&lt; retour</p></a>
+      <h1 class="mb-10 text-2xl font-semibold text-center text-blue-950">Modifier un bien</h1>
 
-    <div v-if="loading" class="flex justify-center my-8">
-      <div class="w-12 h-12 border-b-2 border-orange-500 rounded-full animate-spin"></div>
-    </div>
+      <div v-if="loading" class="flex justify-center my-10">
+        <div class="w-12 h-12 border-b-2 border-orange-500 rounded-full animate-spin"></div>
+      </div>
 
-    <div
-      v-else-if="success"
-      class="px-4 py-3 mb-4 text-green-700 bg-green-100 border border-green-400 rounded"
-    >
-      <p>Produit modifié avec succès ! Redirection en cours...</p>
-    </div>
-
-    <div
-      v-else-if="!hasPermission"
-      class="px-4 py-3 mb-4 text-red-700 bg-red-100 border border-red-400 rounded"
-    >
-      <p>{{ error }}</p>
-      <p class="mt-2">
-        <a href="/login" class="text-blue-600 underline hover:text-blue-800">Se connecter</a>
-        pour accéder à cette fonctionnalité.
-      </p>
-    </div>
-
-    <div v-else>
       <div
-        v-if="error"
-        class="px-4 py-3 mb-4 text-red-700 bg-red-100 border border-red-400 rounded"
+        v-else-if="success"
+        class="px-6 py-4 mb-6 text-green-700 bg-green-100 border border-green-400 rounded"
+      >
+        <p>Produit modifié avec succès ! Redirection en cours...</p>
+      </div>
+
+      <div
+        v-else-if="!hasPermission"
+        class="px-6 py-4 mb-6 text-red-700 bg-red-100 border border-red-400 rounded"
       >
         <p>{{ error }}</p>
+        <p class="mt-4">
+          <a href="/login" class="text-blue-600 underline hover:text-blue-800">Se connecter</a>
+          pour accéder à cette fonctionnalité.
+        </p>
       </div>
 
-      <div
-        v-if="errors.general"
-        class="px-4 py-3 mb-4 text-red-700 bg-red-100 border border-red-400 rounded"
-      >
-        <p>{{ errors.general }}</p>
-      </div>
-
-      <form @submit.prevent="submitForm" class="space-y-6">
-        <div>
-          <label for="nom" class="block mb-2 font-medium text-gray-700">Nom du produit *</label>
-          <input
-            type="text"
-            id="nom"
-            v-model="form.nom"
-            class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-            :class="{ 'border-red-500': errors.nom }"
-          />
-          <p v-if="errors.nom" class="mt-1 text-sm text-red-600">Le nom est requis</p>
+      <div v-else>
+        <div
+          v-if="error"
+          class="px-6 py-4 mb-6 text-red-700 bg-red-100 border border-red-400 rounded"
+        >
+          <p>{{ error }}</p>
         </div>
 
-        <div>
-          <label for="description" class="block mb-2 font-medium text-gray-700"
-            >Description *</label
-          >
-          <textarea
-            id="description"
-            v-model="form.description"
-            rows="4"
-            class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-            :class="{ 'border-red-500': errors.description }"
-          ></textarea>
-          <p v-if="errors.description" class="mt-1 text-sm text-red-600">
-            La description est requise
-          </p>
+        <div
+          v-if="errors.general"
+          class="px-6 py-4 mb-6 text-red-700 bg-red-100 border border-red-400 rounded"
+        >
+          <p>{{ errors.general }}</p>
         </div>
 
-        <div>
-          <label for="prix" class="block mb-2 font-medium text-gray-700">Prix (€) *</label>
-          <input
-            type="number"
-            id="prix"
-            v-model="form.prix"
-            min="0"
-            step="0.01"
-            class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-            :class="{ 'border-red-500': errors.prix }"
-          />
-          <p v-if="errors.prix" class="mt-1 text-sm text-red-600">
-            Le prix doit être supérieur à 0
-          </p>
-        </div>
-
-        <div>
-          <label for="adresse" class="block mb-2 font-medium text-gray-700">Adresse *</label>
-          <input
-            type="text"
-            id="adresse"
-            v-model="form.adresse"
-            class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-            :class="{ 'border-red-500': errors.adresse }"
-          />
-          <p v-if="errors.adresse" class="mt-1 text-sm text-red-600">L'adresse est requise</p>
-        </div>
-
-        <div>
-          <label for="images" class="block mb-2 font-medium text-gray-700">Images</label>
-          <input
-            type="file"
-            id="images"
-            accept="image/*"
-            multiple
-            @change="handleImageChange"
-            class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-            :class="{ 'border-red-500': errors.images }"
-          />
-          <p v-if="imageChanged && errors.images" class="mt-1 text-sm text-red-600">
-            Au moins une image est requise si vous choisissez de la modifier
-          </p>
-
-          <div v-if="imagePreviews.length > 0" class="mt-2">
-            <img
-              v-for="(preview, index) in imagePreviews"
-              :key="index"
-              :src="preview"
-              alt="Prévisualisation"
-              class="object-cover w-full h-48 rounded-md"
-            />
-          </div>
-        </div>
-
-        <div>
-          <label class="block mb-2 font-medium text-gray-700">Catégories *</label>
-          <div class="p-3 border rounded-md" :class="{ 'border-red-500': errors.categories }">
-            <div v-for="category in categories" :key="category.id" class="mb-2">
-              <label class="inline-flex items-center">
-                <input
-                  type="checkbox"
-                  :value="category.id"
-                  v-model="form.categories"
-                  class="w-4 h-4 text-orange-600 border-gray-300 rounded focus:ring-orange-500"
-                />
-                <span class="ml-2">{{ category.name }}</span>
-              </label>
-            </div>
-          </div>
-          <p v-if="errors.categories" class="mt-1 text-sm text-red-600">
-            Sélectionnez au moins une catégorie
-          </p>
-        </div>
-
-        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <form @submit.prevent="submitForm" class="space-y-8">
           <div>
-            <label for="date_debut" class="block mb-2 font-medium text-gray-700"
-              >Date de début *</label
+            <label class="block mb-2 font-medium text-blue-950" for="nom">Nom du bien</label>
+            <input
+              type="text"
+              id="nom"
+              v-model="form.nom"
+              class="w-full p-3 border border-gray-300 rounded-md bg-orange-50 focus:outline-none focus:ring-1 focus:ring-primary"
+              :class="{ 'border-red-500': errors.nom }"
+            />
+            <p v-if="errors.nom" class="mt-2 text-sm text-red-600">Le nom est requis</p>
+          </div>
+
+          <div>
+            <label class="block mb-2 font-medium text-blue-950" for="adresse">Adresse</label>
+            <input
+              type="text"
+              id="adresse"
+              v-model="form.adresse"
+              class="w-full p-3 border border-gray-300 rounded-md bg-orange-50 focus:outline-none focus:ring-1 focus:ring-primary"
+              :class="{ 'border-red-500': errors.adresse }"
+            />
+            <p v-if="errors.adresse" class="mt-2 text-sm text-red-600">L'adresse est requise</p>
+          </div>
+
+          <div>
+            <label class="block mb-2 font-medium text-blue-950" for="prix"
+              >Prix (tarif par heures)</label
             >
             <input
-              type="date"
-              id="date_debut"
-              v-model="form.date_debut"
-              class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-              :class="{ 'border-red-500': errors.date_debut }"
+              type="number"
+              id="prix"
+              v-model="form.prix"
+              min="0"
+              step="0.01"
+              class="w-full p-3 border border-gray-300 rounded-md bg-orange-50 focus:outline-none focus:ring-1 focus:ring-primary"
+              :class="{ 'border-red-500': errors.prix }"
             />
-            <p v-if="errors.date_debut" class="mt-1 text-sm text-red-600">
-              La date de début est requise
+            <p v-if="errors.prix" class="mt-2 text-sm text-red-600">
+              Le prix doit être supérieur à 0
             </p>
           </div>
 
           <div>
-            <label for="date_fin" class="block mb-2 font-medium text-gray-700">Date de fin *</label>
-            <input
-              type="date"
-              id="date_fin"
-              v-model="form.date_fin"
-              class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-              :class="{ 'border-red-500': errors.date_fin }"
-            />
-            <p v-if="errors.date_fin" class="mt-1 text-sm text-red-600">
-              La date de fin est requise
+            <fieldset class="space-y-3">
+              <legend class="mb-2 font-medium text-blue-950">Type de bureaux</legend>
+              <div class="px-5 space-y-3">
+                <div v-for="category in categories" :key="category.id" class="mb-2">
+                  <label class="flex items-center space-x-2 text-blue-950">
+                    <input
+                      type="checkbox"
+                      :value="category.id"
+                      v-model="form.categories"
+                      class="w-5 h-5 text-orange-600 border-gray-300 rounded"
+                    />
+                    <span class="ml-2">{{ category.name }}</span>
+                  </label>
+                </div>
+              </div>
+              <p v-if="errors.categories" class="px-5 mt-2 text-sm text-red-600">
+                Sélectionnez au moins une catégorie
+              </p>
+            </fieldset>
+          </div>
+
+          <div>
+            <label class="block mb-2 font-medium text-blue-950" for="description"
+              >Description du bien</label
+            >
+            <textarea
+              id="description"
+              v-model="form.description"
+              rows="4"
+              class="w-full p-3 border border-gray-300 rounded-md bg-orange-50 focus:outline-none focus:ring-1 focus:ring-primary"
+              :class="{ 'border-red-500': errors.description }"
+            ></textarea>
+            <p v-if="errors.description" class="mt-2 text-sm text-red-600">
+              La description est requise
             </p>
           </div>
-        </div>
 
-        <div class="flex justify-between">
-          <button
-            type="button"
-            class="px-6 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
-            @click="router.push(`/produit/${produitId}`)"
-          >
-            Annuler
-          </button>
-          <button
-            type="submit"
-            class="px-6 py-2 text-white bg-orange-500 rounded-md hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
-            :disabled="loading"
-          >
-            {{ loading ? 'Modification en cours...' : 'Enregistrer les modifications' }}
-          </button>
-        </div>
-      </form>
+          <div>
+            <label class="block mb-2 font-medium text-blue-950" for="images">Image</label>
+            <input
+              type="file"
+              id="images"
+              accept="image/*"
+              @change="handleImageChange"
+              multiple
+              class="w-full p-3 border border-gray-300 rounded-md bg-orange-50 focus:outline-none focus:ring-1 focus:ring-primary"
+              :class="{ 'border-red-500': errors.images }"
+            />
+            <p v-if="imageChanged && errors.images" class="mt-2 text-sm text-red-600">
+              Au moins une image est requise si vous choisissez de la modifier
+            </p>
+
+            <div v-if="imagePreviews.length > 0" class="mt-4 space-y-2">
+              <img
+                v-for="(preview, index) in imagePreviews"
+                :key="index"
+                :src="preview"
+                alt="Prévisualisation"
+                class="object-cover w-full h-48 mb-4 rounded-md"
+              />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+            <div>
+              <label class="block mb-2 font-medium text-blue-950" for="date_debut"
+                >Date de début</label
+              >
+              <input
+                type="date"
+                id="date_debut"
+                v-model="form.date_debut"
+                class="w-full p-3 border border-gray-300 rounded-md bg-orange-50 focus:outline-none focus:ring-1 focus:ring-primary"
+                :class="{ 'border-red-500': errors.date_debut }"
+              />
+              <p v-if="errors.date_debut" class="mt-2 text-sm text-red-600">
+                La date de début est requise
+              </p>
+            </div>
+
+            <div>
+              <label class="block mb-2 font-medium text-blue-950" for="date_fin">Date de fin</label>
+              <input
+                type="date"
+                id="date_fin"
+                v-model="form.date_fin"
+                class="w-full p-3 border border-gray-300 rounded-md bg-orange-50 focus:outline-none focus:ring-1 focus:ring-primary"
+                :class="{ 'border-red-500': errors.date_fin }"
+              />
+              <p v-if="errors.date_fin" class="mt-2 text-sm text-red-600">
+                La date de fin est requise
+              </p>
+            </div>
+          </div>
+
+          <div class="flex justify-between pt-4 mt-8">
+            <button
+              type="button"
+              class="px-6 py-3 text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 focus:outline-none"
+              @click="router.push(`/produit/${produitId}`)"
+            >
+              Annuler
+            </button>
+            <button
+              type="submit"
+              class="px-6 py-3 text-white transition bg-orange-500 rounded-lg hover:bg-orange-300"
+              :disabled="loading"
+            >
+              {{ loading ? 'Modification en cours...' : 'Enregistrer' }}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
-  </div>
+  </section>
 </template>

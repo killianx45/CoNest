@@ -151,130 +151,133 @@ async function checkConcoursStatus() {
 </script>
 
 <template>
-  <div class="container px-4 pt-24 mx-auto">
-    <div class="p-4 mb-6 text-center bg-gray-200 rounded-lg">
-      <h2 class="text-2xl font-bold">Tirage dans</h2>
-      <div class="flex justify-center gap-4">
-        <div class="text-3xl font-bold">{{ jours }} Jours</div>
-        <div class="text-3xl font-bold">{{ heures }} Heures</div>
-        <div class="text-3xl font-bold">{{ minutes }} Minutes</div>
-        <div class="text-3xl font-bold">{{ secondes }} Secondes</div>
-      </div>
-      <p class="mt-2 text-blue-600">
-        {{ participantsEligibles }} participant{{
-          participantsEligibles !== 1 ? 's' : ''
-        }}
-        éligible{{ participantsEligibles !== 1 ? 's' : '' }} ce mois-ci
-      </p>
-    </div>
-
-    <div class="flex flex-col gap-4 md:flex-row">
-      <div class="w-full p-6 bg-white rounded-lg shadow-md md:w-1/2">
-        <h2 class="mb-4 text-2xl font-semibold">Bonjour {{ userName }}</h2>
-        <div
-          class="p-4 mb-4 transition-colors duration-500"
-          :class="
-            concoursStatus
-              ? 'bg-green-100 border-l-4 border-green-500'
-              : 'bg-yellow-100 border-l-4 border-yellow-500'
-          "
-        >
-          <h3
-            class="text-xl font-medium transition-colors duration-500"
-            :class="concoursStatus ? 'text-green-700' : 'text-yellow-700'"
-          >
-            {{ concoursStatus ? 'Félicitations! 🎉' : 'Pas encore éligible 😢' }}
-          </h3>
-          <p
-            class="mt-2 transition-colors duration-500"
-            :class="concoursStatus ? 'text-green-700' : 'text-yellow-700'"
-          >
-            {{
-              concoursStatus
-                ? 'Vous êtes éligible au concours de ce mois!'
-                : "Vous n'êtes pas encore éligible au concours de ce mois."
-            }}
-          </p>
+  <div class="min-h-screen pt-24 bg-[#FFF1E9]">
+    <div class="container px-4 mx-auto">
+      <div class="p-6 mb-6 text-center bg-orange-100 rounded-lg shadow-md">
+        <h2 class="text-2xl font-bold text-blue-950">Tirage dans</h2>
+        <div class="flex justify-center gap-4 mt-4">
+          <div class="text-3xl font-bold text-blue-950">{{ jours }} Jours</div>
+          <div class="text-3xl font-bold text-blue-950">{{ heures }} Heures</div>
+          <div class="text-3xl font-bold text-blue-950">{{ minutes }} Minutes</div>
+          <div class="text-3xl font-bold text-blue-950">{{ secondes }} Secondes</div>
         </div>
+        <p class="mt-4 font-medium text-blue-800">
+          {{ participantsEligibles }} participant{{
+            participantsEligibles !== 1 ? 's' : ''
+          }}
+          éligible{{ participantsEligibles !== 1 ? 's' : '' }} ce mois-ci
+        </p>
+      </div>
 
-        <div class="relative">
-          <button
-            ref="buttonRef"
-            @click="updateStatus"
-            class="w-full px-4 py-2 mt-4 text-white transition-colors duration-300 bg-orange-500 rounded-lg hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 disabled:opacity-50"
-            :disabled="isUpdating"
+      <div class="flex flex-col gap-6 md:flex-row">
+        <div class="w-full p-6 bg-orange-100 rounded-lg shadow-md md:w-1/2">
+          <h2 class="mb-4 text-2xl font-semibold text-blue-950">Bonjour {{ userName }}</h2>
+          <div
+            class="p-4 mb-4 transition-colors duration-500"
+            :class="
+              concoursStatus
+                ? 'bg-green-100 border-l-4 border-green-500'
+                : 'bg-yellow-100 border-l-4 border-yellow-500'
+            "
           >
-            {{ isUpdating ? 'Mise à jour en cours...' : 'Mettre à jour mon statut' }}
-          </button>
+            <h3
+              class="text-xl font-medium transition-colors duration-500"
+              :class="concoursStatus ? 'text-green-700' : 'text-yellow-700'"
+            >
+              {{ concoursStatus ? 'Félicitations! 🎉' : 'Pas encore éligible 😢' }}
+            </h3>
+            <p
+              class="mt-2 transition-colors duration-500"
+              :class="concoursStatus ? 'text-green-700' : 'text-yellow-700'"
+            >
+              {{
+                concoursStatus
+                  ? 'Vous êtes éligible au concours de ce mois!'
+                  : "Vous n'êtes pas encore éligible au concours de ce mois."
+              }}
+            </p>
+          </div>
 
-          <div v-if="showConfetti" class="absolute top-0 left-0 w-full">
-            <ConfettiExplosion
-              :particleCount="confettiProps.particleCount"
-              :particleSize="confettiProps.particleSize"
-              :particleSizeVariation="confettiProps.particleSizeVariation"
-              :force="confettiProps.force"
-              :colors="confettiProps.colors"
-              :stageHeight="stageHeight"
-              :stageWidth="stageWidth"
-              class="absolute top-0 transform -translate-x-1/2 left-1/2"
-            />
+          <div class="relative">
+            <button
+              ref="buttonRef"
+              @click="updateStatus"
+              class="w-full px-6 py-3 mt-6 text-white transition-colors duration-300 bg-orange-500 rounded-lg hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 disabled:opacity-50"
+              :disabled="isUpdating"
+            >
+              {{ isUpdating ? 'Mise à jour en cours...' : 'Mettre à jour mon statut' }}
+            </button>
+
+            <div v-if="showConfetti" class="absolute top-0 left-0 w-full">
+              <ConfettiExplosion
+                :particleCount="confettiProps.particleCount"
+                :particleSize="confettiProps.particleSize"
+                :particleSizeVariation="confettiProps.particleSizeVariation"
+                :force="confettiProps.force"
+                :colors="confettiProps.colors"
+                :stageHeight="stageHeight"
+                :stageWidth="stageWidth"
+                class="absolute top-0 transform -translate-x-1/2 left-1/2"
+              />
+            </div>
+          </div>
+
+          <div
+            v-if="message"
+            class="p-4 mt-6 mb-4 text-blue-700 transition-all duration-300 bg-blue-100 rounded-lg"
+          >
+            {{ message }}
+          </div>
+          <div
+            v-if="error"
+            class="p-4 mt-6 mb-4 text-red-700 transition-all duration-300 bg-red-100 rounded-lg"
+          >
+            {{ error }}
           </div>
         </div>
 
-        <div
-          v-if="message"
-          class="p-4 mt-4 mb-4 text-blue-700 transition-all duration-300 bg-blue-100 rounded-lg"
-        >
-          {{ message }}
-        </div>
-        <div
-          v-if="error"
-          class="p-4 mt-4 mb-4 text-red-700 transition-all duration-300 bg-red-100 rounded-lg"
-        >
-          {{ error }}
+        <div class="w-full p-6 bg-orange-100 rounded-lg shadow-md md:w-1/2">
+          <h2 class="mb-4 text-2xl font-semibold text-blue-950">À propos du concours</h2>
+          <p class="mb-3 text-blue-950">
+            Chaque mois, nous organisons un concours exclusif pour nos utilisateurs les plus actifs.
+          </p>
+          <p class="mb-3 text-blue-950">
+            Pour être éligible, vous devez réserver au moins 12 heures d'espaces de coworking
+            pendant le mois en cours.
+          </p>
+          <p class="mb-3 text-blue-950">
+            Les gagnants seront tirés au sort parmi tous les participants éligibles à la fin du
+            mois.
+          </p>
+          <p class="text-blue-950">
+            Les prix varient chaque mois, mais peuvent inclure des heures gratuites, des réductions
+            ou des cadeaux exclusifs.
+          </p>
         </div>
       </div>
 
-      <div class="w-full p-6 bg-white rounded-lg shadow-md md:w-1/2">
-        <h2 class="mb-4 text-2xl font-semibold">À propos du concours</h2>
-        <p class="mb-3">
-          Chaque mois, nous organisons un concours exclusif pour nos utilisateurs les plus actifs.
+      <div class="mt-10">
+        <h2 class="mb-6 text-2xl font-semibold text-blue-950">Produits phares</h2>
+        <p class="mb-6 text-blue-950">
+          Voici les produits phares du mois. Vous pouvez tenter de gagner l'un d'eux en réservant 12
+          heures d'espaces de coworking pendant le mois en cours.
         </p>
-        <p class="mb-3">
-          Pour être éligible, vous devez réserver au moins 12 heures d'espaces de coworking pendant
-          le mois en cours.
-        </p>
-        <p class="mb-3">
-          Les gagnants seront tirés au sort parmi tous les participants éligibles à la fin du mois.
-        </p>
-        <p>
-          Les prix varient chaque mois, mais peuvent inclure des heures gratuites, des réductions ou
-          des cadeaux exclusifs.
-        </p>
-      </div>
-    </div>
-
-    <div class="mt-8">
-      <h2 class="mb-4 text-2xl font-semibold">Produits phares</h2>
-      <p class="mb-4">
-        Voici les produits phares du mois. Vous pouvez tenter de gagner l'un d'eux en réservant 12
-        heures d'espaces de coworking pendant le mois en cours.
-      </p>
-      <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <div
-          v-for="produit in produits"
-          :key="produit.id"
-          class="p-4 bg-white rounded-lg shadow-md"
-        >
-          <h3 class="font-bold">{{ produit.nom }}</h3>
-          <p>{{ produit.description }}</p>
-          <p class="text-lg font-semibold">{{ produit.prix }} €</p>
-          <img
-            v-if="produit.images && produit.images.length > 0"
-            :src="`http://localhost:8000/${produit.images[0]}`"
-            alt="Image du produit"
-            class="object-cover w-full h-32 mt-2 rounded-lg"
-          />
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+          <div
+            v-for="produit in produits"
+            :key="produit.id"
+            class="p-6 transition-transform bg-orange-100 rounded-lg shadow-md hover:scale-105"
+          >
+            <h3 class="font-bold text-blue-950">{{ produit.nom }}</h3>
+            <p class="my-2 text-blue-900">{{ produit.description }}</p>
+            <p class="text-lg font-semibold text-orange-600">{{ produit.prix }} €/h</p>
+            <img
+              v-if="produit.images && produit.images.length > 0"
+              :src="`http://localhost:8000/${produit.images[0]}`"
+              alt="Image du produit"
+              class="object-cover w-full h-40 mt-4 rounded-lg"
+            />
+          </div>
         </div>
       </div>
     </div>
