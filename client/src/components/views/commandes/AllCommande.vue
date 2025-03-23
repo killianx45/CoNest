@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import type { Commande } from '../../../services/api'
 import { getAllCommandes } from '../../../services/api'
@@ -58,7 +58,9 @@ const getEspaceName = (commande: Commande) => {
 
 <template>
   <NavBar />
-  <div class="max-w-6xl p-6 mx-auto mt-20 bg-white border-2 border-orange-300 rounded-lg shadow-md">
+  <div
+    class="flex flex-col justify-between max-w-6xl p-6 mx-auto mt-20 bg-white border-2 border-orange-300 rounded-lg shadow-md"
+  >
     <div class="flex items-center justify-between pb-2 mb-6 border-b-2 border-orange-200">
       <h1 class="text-3xl font-bold text-black">Mes réservations</h1>
       <router-link
@@ -90,7 +92,6 @@ const getEspaceName = (commande: Commande) => {
       <table class="min-w-full bg-white">
         <thead class="bg-orange-50">
           <tr>
-            <th class="px-4 py-3 text-sm font-semibold text-left text-gray-700">ID</th>
             <th class="px-4 py-3 text-sm font-semibold text-left text-gray-700">Espace</th>
             <th class="px-4 py-3 text-sm font-semibold text-left text-gray-700">Date</th>
             <th class="px-4 py-3 text-sm font-semibold text-left text-gray-700">Horaires</th>
@@ -100,7 +101,6 @@ const getEspaceName = (commande: Commande) => {
         </thead>
         <tbody class="divide-y divide-gray-200">
           <tr v-for="commande in commandes" :key="commande.id" class="hover:bg-orange-50">
-            <td class="px-4 py-3 text-sm text-gray-700">#{{ commande.id }}</td>
             <td class="px-4 py-3 text-sm text-gray-700">
               <div v-if="commande.produits && commande.produits.length > 0">
                 {{ getEspaceName(commande) }}
