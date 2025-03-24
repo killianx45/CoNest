@@ -1,0 +1,7 @@
+# robots.txt pour CoNest
+User-agent: *
+Allow: /
+
+
+# Sitemap
+Sitemap: https://conest.fr/sitemap.xml 

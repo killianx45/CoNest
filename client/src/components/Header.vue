@@ -128,14 +128,14 @@ onMounted(async () => {
 <template>
   <div class="bg-[#FFF1E9] flex flex-col justify-start px-5 py-8 mt-15">
     <div class="relative w-full p-8 mx-auto mb-6 bg-[#FF8238] rounded-3xl shadow-lg">
-      <div class="mb-6 text-white">
-        <h1 class="mb-3 text-3xl font-bold">Vos idées, vos espaces</h1>
+      <div class="mb-6">
+        <h1 class="mb-3 text-3xl font-bold text-white">Vos idées, vos espaces</h1>
       </div>
 
       <div class="flex flex-col gap-4 md:flex-row">
         <div class="relative flex-1">
           <svg
-            class="absolute w-5 h-5 text-gray-400 transform -translate-y-1/2 pointer-events-none left-3 top-1/2"
+            class="absolute w-5 h-5 text-black transform -translate-y-1/2 pointer-events-none left-3 top-1/2"
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
@@ -159,7 +159,7 @@ onMounted(async () => {
 
         <div class="relative flex-1">
           <svg
-            class="absolute w-5 h-5 text-gray-400 transform -translate-y-1/2 pointer-events-none left-3 top-1/2"
+            class="absolute w-5 h-5 text-black transform -translate-y-1/2 pointer-events-none left-3 top-1/2"
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
@@ -185,6 +185,7 @@ onMounted(async () => {
 
         <button
           @click="search"
+          aria-label="Rechercher des espaces de coworking"
           class="px-6 py-4 font-semibold text-gray-800 bg-white shadow rounded-xl hover:bg-gray-100"
         >
           <svg
@@ -214,6 +215,7 @@ onMounted(async () => {
       <button
         class="px-3 py-2 text-sm font-medium transition-colors bg-gray-200 rounded-xl hover:bg-gray-300"
         @click="resetCategory"
+        aria-label="Réinitialiser les filtres de catégorie"
       >
         ×
       </button>
@@ -227,6 +229,8 @@ onMounted(async () => {
           'bg-white text-gray-700 border-gray-300 hover:bg-orange-50':
             selectedCategory !== category.id,
         }"
+        :aria-label="'Filtrer par catégorie ' + category.name"
+        :aria-pressed="selectedCategory === category.id"
       >
         {{ category.name }}
       </button>
