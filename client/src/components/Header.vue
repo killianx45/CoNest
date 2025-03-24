@@ -1,40 +1,124 @@
 <script setup lang="ts">
-import type { Category } from '@/services/api'
-import { getAllCategories } from '@/services/api'
-import { onMounted, ref } from 'vue'
+import type { Category, Produit } from '@/services/api'
+import { getAllCategories, getAllProduits } from '@/services/api'
+import { onMounted, ref, watch } from 'vue'
 
 const categories = ref<Category[]>([])
+const produits = ref<Produit[]>([])
+const filteredProduits = ref<Produit[]>([])
 const loading = ref(true)
-const searchLocation = ref('')
 const searchDate = ref('')
+const maxPrice = ref<number | null>(null)
 
-const emit = defineEmits(['filterCategory', 'search'])
+const emit = defineEmits(['filterCategory', 'search', 'filteredProducts'])
 
 const selectedCategory = ref<number | null>(null)
 
 function filterByCategory(categoryId: number) {
   selectedCategory.value = selectedCategory.value === categoryId ? null : categoryId
   emit('filterCategory', selectedCategory.value)
+  applyFilters()
 }
 
 function resetCategory() {
   selectedCategory.value = null
   emit('filterCategory', null)
+  applyFilters()
 }
 
 function search() {
+  applyFilters()
   emit('search', {
-    location: searchLocation.value,
-    date: searchDate.value,
+    availabilityDate: searchDate.value,
+    maxPrice: maxPrice.value,
   })
 }
 
+function handlePriceInput(event: Event) {
+  const target = event.target as HTMLInputElement
+  const value = target.value ? parseInt(target.value) : null
+  maxPrice.value = isNaN(value as number) ? null : value
+}
+
+function applyFilters() {
+  let result = [...produits.value]
+
+  if (selectedCategory.value !== null) {
+    result = result.filter((produit) => {
+      if (produit.categories) {
+        return produit.categories.some((cat) => {
+          if (typeof cat === 'string') {
+            const categoryId = parseInt((cat as string).split('/').pop() || '0', 10)
+            return categoryId === selectedCategory.value
+          } else if (typeof cat === 'object' && cat !== null) {
+            return cat.id === selectedCategory.value
+          }
+          return false
+        })
+      }
+      return false
+    })
+  }
+
+  if (searchDate.value) {
+    result = result.filter((produit) => {
+      if (!produit.disponibilite) return false
+
+      try {
+        const dates = produit.disponibilite.split('-')
+        if (dates.length < 2) return false
+
+        let dateDebut, dateFin
+
+        if (dates.length === 2) {
+          dateDebut = new Date(dates[0])
+          dateFin = new Date(dates[1])
+        } else if (dates.length >= 6) {
+          dateDebut = new Date(`${dates[0]}-${dates[1]}-${dates[2]}`)
+          dateFin = new Date(`${dates[3]}-${dates[4]}-${dates[5]}`)
+        } else {
+          return false
+        }
+
+        const dateRecherche = new Date(searchDate.value)
+
+        return dateRecherche >= dateDebut && dateRecherche <= dateFin
+      } catch (e) {
+        console.error('Erreur de parsing de date:', e)
+        return false
+      }
+    })
+  }
+
+  if (maxPrice.value !== null) {
+    result = result.filter((produit) => {
+      const prix = typeof produit.prix === 'string' ? parseFloat(produit.prix) : produit.prix
+      return prix <= maxPrice.value!
+    })
+  }
+
+  filteredProduits.value = result
+  emit('filteredProducts', result)
+}
+
+watch([searchDate, maxPrice], () => {
+  applyFilters()
+})
+
 onMounted(async () => {
   try {
-    categories.value = await getAllCategories()
+    const [categoriesData, produitsData] = await Promise.all([getAllCategories(), getAllProduits()])
+
+    categories.value = categoriesData
+    produits.value = produitsData
+    filteredProduits.value = produitsData
+
+    emit('filteredProducts', produitsData)
   } catch (err) {
-    console.error('Erreur lors du chargement des catégories:', err)
+    console.error('Erreur lors du chargement des données:', err)
     categories.value = []
+    produits.value = []
+    filteredProduits.value = []
   } finally {
     loading.value = false
   }
@@ -45,34 +129,10 @@ onMounted(async () => {
   <div class="bg-[#FFF1E9] flex flex-col justify-start px-5 py-8 mt-15">
     <div class="relative w-full p-8 mx-auto mb-6 bg-[#FF8238] rounded-3xl shadow-lg">
       <div class="mb-6 text-white">
-        <h3 class="mb-3 text-2xl font-semibold">Trouvez votre espace idéal</h3>
-        <p>Recherchez par localisation et date pour découvrir les meilleures offres</p>
+        <h1 class="mb-3 text-3xl font-bold">Vos idées, vos espaces</h1>
       </div>
 
       <div class="flex flex-col gap-4 md:flex-row">
-        <div class="relative flex-1">
-          <svg
-            class="absolute w-5 h-5 text-gray-400 transform -translate-y-1/2 pointer-events-none left-3 top-1/2"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M12 2C8.13 2 5 5.13 5 9c0 4.8 7 11 7 11s7-6.2 7-11c0-3.87-3.13-7-7-7z"
-            />
-          </svg>
-          <input
-            v-model="searchLocation"
-            type="text"
-            class="w-full p-4 pl-10 border rounded-xl"
-            placeholder="Localisation"
-          />
-        </div>
-
         <div class="relative flex-1">
           <svg
             class="absolute w-5 h-5 text-gray-400 transform -translate-y-1/2 pointer-events-none left-3 top-1/2"
@@ -92,6 +152,34 @@ onMounted(async () => {
             v-model="searchDate"
             type="date"
             class="w-full px-3 py-4 pl-10 border rounded-xl"
+            placeholder="Début"
+            aria-label="Date de disponibilité"
+          />
+        </div>
+
+        <div class="relative flex-1">
+          <svg
+            class="absolute w-5 h-5 text-gray-400 transform -translate-y-1/2 pointer-events-none left-3 top-1/2"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          <input
+            :value="maxPrice !== null ? maxPrice : ''"
+            @input="handlePriceInput"
+            type="number"
+            min="0"
+            class="w-full p-4 pl-10 border rounded-xl"
+            placeholder="Budget max"
+            aria-label="Prix maximum"
           />
         </div>
 
@@ -99,10 +187,9 @@ onMounted(async () => {
           @click="search"
           class="px-6 py-4 font-semibold text-gray-800 bg-white shadow rounded-xl hover:bg-gray-100"
         >
-          Rechercher
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            class="inline-block w-5 h-5 ml-2"
+            class="inline-block w-5 h-5"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -117,6 +204,8 @@ onMounted(async () => {
         </button>
       </div>
     </div>
+
+    <h2 class="mb-4 text-2xl font-bold">Vos meilleurs espaces</h2>
 
     <div
       v-if="!loading"
