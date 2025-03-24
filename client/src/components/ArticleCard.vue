@@ -48,7 +48,7 @@ function voirProduit(produitId: number) {
         </div>
       </section>
 
-      <p class="mb-1 text-sm text-gray-400 line-clamp-2">{{ produit.description }}</p>
+      <p class="mb-1 text-sm text-gray-600 line-clamp-2">{{ produit.description }}</p>
       <p class="mb-5 font-semibold text-gray-700">{{ formatPrix(produit.prix) }} €</p>
     </div>
   </div>

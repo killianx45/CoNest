@@ -59,7 +59,11 @@ getCurrentUser().then((user) => {
       <router-link to="/">
         <img src="../assets/logo_CoNest.svg" alt="Conest logo" class="m-1 h-9" />
       </router-link>
-      <button @click="toggleMenu" class="p-2 rounded-xl focus:outline-none hover:bg-white/30">
+      <button
+        @click="toggleMenu"
+        aria-label="Ouvrir le menu principal"
+        class="p-2 rounded-xl focus:outline-none hover:bg-white/30"
+      >
         <span class="block w-6 h-0.5 bg-gray-800 mb-1.5"></span>
         <span class="block w-6 h-0.5 bg-gray-800 mb-1.5"></span>
         <span class="block w-6 h-0.5 bg-gray-800"></span>
@@ -70,6 +74,7 @@ getCurrentUser().then((user) => {
       <router-link to="/produit/create">
         <button
           type="button"
+          aria-label="Mettre une annonce"
           class="bg-[#FF8238] hover:bg-[#e67530] text-white border-none py-2.5 px-5 rounded-xl cursor-pointer w-full mx-auto block mb-3 font-medium"
         >
           + mettre une annonce
@@ -144,6 +149,7 @@ getCurrentUser().then((user) => {
           <router-link to="/produit/create">
             <button
               type="button"
+              aria-label="Mettre une annonce"
               class="bg-[#FF8238] hover:bg-[#e67530] text-white border-none py-2 px-5 rounded-xl cursor-pointer font-medium transition-colors"
             >
               + mettre une annonce

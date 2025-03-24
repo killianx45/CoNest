@@ -49,6 +49,7 @@ const handleMapLoad = () => {
         referrerpolicy="no-referrer-when-downgrade"
         crossorigin="anonymous"
         @load="handleMapLoad"
+        title="CoNest sur carte"
       >
       </iframe>
     </div>
