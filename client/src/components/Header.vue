@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Category, Produit } from '@/services/api'
 import { getAllCategories, getAllProduits } from '@/services/api'
-import { onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 
 const categories = ref<Category[]>([])
 const produits = ref<Produit[]>([])
@@ -13,6 +13,10 @@ const maxPrice = ref<number | null>(null)
 const emit = defineEmits(['filterCategory', 'search', 'filteredProducts'])
 
 const selectedCategory = ref<number | null>(null)
+
+const categoriesCache = computed(() => {
+  return categories.value.slice(0, 10)
+})
 
 function filterByCategory(categoryId: number) {
   selectedCategory.value = selectedCategory.value === categoryId ? null : categoryId
@@ -26,18 +30,27 @@ function resetCategory() {
   applyFilters()
 }
 
+let searchTimeout: number | null = null
 function search() {
-  applyFilters()
-  emit('search', {
-    availabilityDate: searchDate.value,
-    maxPrice: maxPrice.value,
-  })
+  if (searchTimeout) {
+    clearTimeout(searchTimeout)
+  }
+
+  searchTimeout = window.setTimeout(() => {
+    applyFilters()
+    emit('search', {
+      availabilityDate: searchDate.value,
+      maxPrice: maxPrice.value,
+    })
+    searchTimeout = null
+  }, 300)
 }
 
 function handlePriceInput(event: Event) {
   const target = event.target as HTMLInputElement
   const value = target.value ? parseInt(target.value) : null
   maxPrice.value = isNaN(value as number) ? null : value
+  search()
 }
 
 function applyFilters() {
@@ -101,25 +114,33 @@ function applyFilters() {
   emit('filteredProducts', result)
 }
 
-watch([searchDate, maxPrice], () => {
-  applyFilters()
+watch([searchDate], () => {
+  search()
 })
 
 onMounted(async () => {
   try {
-    const [categoriesData, produitsData] = await Promise.all([getAllCategories(), getAllProduits()])
-
-    categories.value = categoriesData
+    const produitsData = await getAllProduits()
     produits.value = produitsData
     filteredProduits.value = produitsData
-
     emit('filteredProducts', produitsData)
+
+    setTimeout(async () => {
+      try {
+        const categoriesData = await getAllCategories()
+        categories.value = categoriesData
+      } catch (err) {
+        console.error('Erreur lors du chargement des catégories:', err)
+        categories.value = []
+      } finally {
+        loading.value = false
+      }
+    }, 100)
   } catch (err) {
     console.error('Erreur lors du chargement des données:', err)
     categories.value = []
     produits.value = []
     filteredProduits.value = []
-  } finally {
     loading.value = false
   }
 })
@@ -137,9 +158,12 @@ onMounted(async () => {
           <svg
             class="absolute w-5 h-5 text-black transform -translate-y-1/2 pointer-events-none left-3 top-1/2"
             xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
+            aria-hidden="true"
           >
             <path
               stroke-linecap="round"
@@ -161,9 +185,12 @@ onMounted(async () => {
           <svg
             class="absolute w-5 h-5 text-black transform -translate-y-1/2 pointer-events-none left-3 top-1/2"
             xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
+            aria-hidden="true"
           >
             <path
               stroke-linecap="round"
@@ -191,9 +218,12 @@ onMounted(async () => {
           <svg
             xmlns="http://www.w3.org/2000/svg"
             class="inline-block w-5 h-5"
+            width="20"
+            height="20"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
+            aria-hidden="true"
           >
             <path
               stroke-linecap="round"
@@ -220,7 +250,7 @@ onMounted(async () => {
         ×
       </button>
       <button
-        v-for="category in categories"
+        v-for="category in categoriesCache"
         :key="category.id"
         @click="filterByCategory(category.id)"
         class="px-4 py-2 text-sm font-medium transition-colors border rounded-full"

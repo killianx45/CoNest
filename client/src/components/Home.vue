@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import type { Category, Produit } from '@/services/api'
 import { getAllCategories, getAllProduits } from '@/services/api'
-import { onMounted, ref } from 'vue'
+import { defineAsyncComponent, onMounted, ref } from 'vue'
 import ArticleGrid from './ArticleGrid.vue'
-import Carte from './Carte.vue'
-import FAQ from './FAQ.vue'
 import Header from './Header.vue'
 import NavBar from './NavBar.vue'
+
+const Carte = defineAsyncComponent(() => import('./Carte.vue'))
+const FAQ = defineAsyncComponent(() => import('./FAQ.vue'))
 
 const produits = ref<Produit[]>([])
 const filteredProduits = ref<Produit[]>([])
@@ -18,6 +19,9 @@ const searchFilters = ref({
   availabilityDate: '',
   maxPrice: null as number | null,
 })
+
+const showCarteSection = ref(false)
+const showFAQSection = ref(false)
 
 function handleFilterCategory(categoryId: number | null) {
   selectedCategory.value = categoryId
@@ -31,6 +35,33 @@ function handleFilteredProducts(products: Produit[]) {
   filteredProduits.value = products
 }
 
+function setupLazyLoading() {
+  const observerOptions = {
+    root: null,
+    rootMargin: '100px',
+    threshold: 0.1,
+  }
+
+  const carteSection = document.querySelector('#carte-section')
+  const faqSection = document.querySelector('#faq-section')
+
+  const sectionObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        if (entry.target.id === 'carte-section') {
+          showCarteSection.value = true
+        } else if (entry.target.id === 'faq-section') {
+          showFAQSection.value = true
+        }
+        sectionObserver.unobserve(entry.target)
+      }
+    })
+  }, observerOptions)
+
+  if (carteSection) sectionObserver.observe(carteSection)
+  if (faqSection) sectionObserver.observe(faqSection)
+}
+
 onMounted(async () => {
   try {
     loading.value = true
@@ -42,12 +73,16 @@ onMounted(async () => {
       error.value = 'Erreur lors du chargement des produits. Veuillez réessayer.'
     }
 
-    try {
-      categories.value = await getAllCategories()
-    } catch (err: any) {
-      console.error('Erreur lors du chargement des catégories:', err)
-      categories.value = []
-    }
+    setupLazyLoading()
+
+    setTimeout(async () => {
+      try {
+        categories.value = await getAllCategories()
+      } catch (err: any) {
+        console.error('Erreur lors du chargement des catégories:', err)
+        categories.value = []
+      }
+    }, 200)
   } finally {
     loading.value = false
   }
@@ -73,8 +108,34 @@ onMounted(async () => {
       :loading="loading"
     />
 
-    <Carte :produits="filteredProduits" />
+    <div id="carte-section" class="min-h-[100px]">
+      <Carte v-if="showCarteSection" :produits="filteredProduits" />
+      <div v-else class="w-full max-w-4xl py-8 mx-auto">
+        <h2 class="mb-6 text-3xl font-semibold text-center">CoNest sur carte !</h2>
+        <div class="flex justify-center h-[450px] bg-gray-100 rounded-xl">
+          <div class="flex items-center justify-center">
+            <div
+              class="w-8 h-8 border-t-2 border-b-2 border-orange-500 rounded-full animate-spin"
+            ></div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-    <FAQ />
+    <div id="faq-section" class="min-h-[100px]">
+      <FAQ v-if="showFAQSection" />
+      <div v-else class="py-8 bg-[#FFF1E9]">
+        <div class="max-w-4xl px-4 mx-auto">
+          <h2 class="mb-6 text-3xl font-semibold text-center">FAQ</h2>
+          <div class="w-full p-4 bg-white rounded-lg">
+            <div class="flex items-center justify-center py-8">
+              <div
+                class="w-8 h-8 border-t-2 border-b-2 border-orange-500 rounded-full animate-spin"
+              ></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>

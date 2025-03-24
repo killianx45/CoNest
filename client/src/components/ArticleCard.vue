@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Produit } from '@/services/api'
 import { useRouter } from 'vue-router'
+import OptimizedImage from './OptimizedImage.vue'
 
 const props = defineProps<{
   produit: Produit
@@ -20,10 +21,12 @@ function voirProduit(produitId: number) {
 <template>
   <div class="w-full p-2 mx-auto cursor-pointer" @click="voirProduit(produit.id)">
     <div v-if="produit.images && produit.images.length > 0">
-      <img
-        :src="`http://localhost:8000/${produit.images[0]}`"
+      <OptimizedImage
+        :src="produit.images[0]"
         :alt="produit.nom"
-        class="object-cover w-full aspect-square rounded-3xl"
+        :width="300"
+        :height="300"
+        className="object-cover w-full aspect-square rounded-3xl"
       />
     </div>
 
@@ -37,6 +40,9 @@ function voirProduit(produitId: number) {
             viewBox="0 0 24 24"
             fill="currentColor"
             class="w-4 h-4 text-orange-500"
+            width="16"
+            height="16"
+            aria-hidden="true"
           >
             <path
               fill-rule="evenodd"
