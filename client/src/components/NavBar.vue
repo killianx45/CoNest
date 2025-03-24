@@ -54,117 +54,160 @@ getCurrentUser().then((user) => {
 </script>
 
 <template>
-  <nav class="fixed top-0 left-0 w-full bg-white shadow-md z-[1000]">
-    <div class="flex items-center justify-between p-2 md:hidden">
+  <nav class="fixed top-0 left-0 w-full bg-[#FFF1E9] shadow-lg z-[1000]">
+    <div class="flex items-center justify-between p-3 md:hidden">
       <router-link to="/">
-        <img src="../assets/logo_CoNest.svg" alt="Conest logo" class="h-8 m-1" />
+        <img src="../assets/logo_CoNest.svg" alt="Conest logo" class="m-1 h-9" />
       </router-link>
-      <button @click="toggleMenu" class="p-2 focus:outline-none">
-        <span class="block w-6 h-0.5 bg-gray-800 mb-1"></span>
-        <span class="block w-6 h-0.5 bg-gray-800 mb-1"></span>
+      <button @click="toggleMenu" class="p-2 rounded-xl focus:outline-none hover:bg-white/30">
+        <span class="block w-6 h-0.5 bg-gray-800 mb-1.5"></span>
+        <span class="block w-6 h-0.5 bg-gray-800 mb-1.5"></span>
         <span class="block w-6 h-0.5 bg-gray-800"></span>
       </button>
     </div>
 
-    <div :class="{ hidden: !isMenuOpen }" class="py-2 bg-white md:hidden">
+    <div :class="{ hidden: !isMenuOpen }" class="py-3 px-4 bg-[#FFF1E9] md:hidden">
       <router-link to="/produit/create">
         <button
           type="button"
-          class="bg-[#ff5a5f] hover:bg-[#ff4245] text-white border-none py-2 px-4 rounded-[50px] cursor-pointer w-[90%] mx-auto block mb-2"
+          class="bg-[#FF8238] hover:bg-[#e67530] text-white border-none py-2.5 px-5 rounded-xl cursor-pointer w-full mx-auto block mb-3 font-medium"
         >
           + mettre une annonce
         </button>
       </router-link>
-      <ul class="p-0 m-0 list-none">
-        <li class="p-2 mr-2 border-b border-gray-200">
-          <div @click="toggleAccountMenu" class="flex items-center justify-between cursor-pointer">
-            <span class="no-underline text-[#333] font-bold">Mon compte</span>
-            <span>{{ isAccountMenuOpen ? '▲' : '▼' }}</span>
-          </div>
-          <div v-if="isAccountMenuOpen" class="pl-4 mt-2">
-            <div v-if="isLoggedIn" class="flex flex-col">
-              <span class="text-[#333] py-2">{{ userName }}</span>
-              <router-link to="/commandes" class="no-underline text-[#333] py-2">
-                Commande
-              </router-link>
-              <router-link to="/concours" class="no-underline text-[#333] py-2">
-                Concours Mensuel
-              </router-link>
-              <button
-                @click="handleLogout"
-                class="no-underline text-[#333] text-left py-2 bg-transparent border-none"
-              >
-                Déconnexion
-              </button>
-            </div>
-            <div v-else>
-              <router-link to="/login" class="no-underline text-[#333] py-2 block">
-                Connexion
-              </router-link>
-            </div>
-          </div>
-        </li>
-      </ul>
-    </div>
-    <ul class="hidden md:flex list-none m-0 p-[0.2rem] justify-between items-center">
-      <div class="flex items-center gap-4 p-2 left-menu">
-        <router-link to="/">
-          <img src="../assets/logo_CoNest.svg" alt="Conest logo" class="h-10 m-2" />
-        </router-link>
-        <router-link to="/produit/create">
-          <button
-            type="button"
-            class="bg-[#ff5a5f] hover:bg-[#ff4245] text-white border-none py-2 px-4 rounded-[50px] cursor-pointer annonce-button"
-          >
-            + mettre une annonce
-          </button>
-        </router-link>
-        <li
-          v-for="(item, index) in menuItems.slice(0, 3)"
-          :key="index"
-          class="m-0 hover:border-b-2 hover:border-[#333] transition-all duration-300"
+      <div class="p-3 bg-white shadow-md rounded-xl">
+        <div
+          @click="toggleAccountMenu"
+          class="flex items-center justify-between mb-2 cursor-pointer"
         >
-          <router-link :to="item.route" class="no-underline text-[#333] font-bold">{{
-            item.text
-          }}</router-link>
-        </li>
-      </div>
-      <div class="flex items-center gap-4 p-2 right-menu">
-        <li class="relative m-0">
-          <div
-            @click="toggleAccountMenu"
-            class="flex items-center gap-1 cursor-pointer hover:border-b-2 hover:border-[#333] transition-all duration-300"
+          <span class="font-semibold text-gray-800">Mon compte</span>
+          <span
+            :class="{ 'transform rotate-180': isAccountMenuOpen }"
+            class="transition-transform duration-300"
           >
-            <span class="no-underline text-[#333] font-bold">Mon compte</span>
-            <span>{{ isAccountMenuOpen ? '▲' : '▼' }}</span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="w-5 h-5"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </span>
+        </div>
+        <div v-if="isAccountMenuOpen" class="pt-2 pl-2 mt-2 border-t">
+          <div v-if="isLoggedIn" class="flex flex-col">
+            <span class="py-2 text-gray-700">{{ userName }}</span>
+            <router-link to="/commandes" class="py-2 text-gray-700 hover:text-gray-900">
+              Commande
+            </router-link>
+            <router-link to="/concours" class="py-2 text-gray-700 hover:text-gray-900">
+              Concours Mensuel
+            </router-link>
+            <button
+              @click="handleLogout"
+              class="py-2 text-left text-gray-700 bg-transparent border-none hover:text-gray-900"
+            >
+              Déconnexion
+            </button>
           </div>
-          <div
-            v-if="isAccountMenuOpen"
-            class="absolute right-0 z-10 w-48 py-1 mt-2 mr-2 bg-white rounded-md shadow-lg"
+          <div v-else>
+            <router-link to="/login" class="block py-2 text-gray-700 hover:text-gray-900">
+              Connexion
+            </router-link>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hidden px-6 py-3 md:block">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-5">
+          <router-link to="/">
+            <img src="../assets/logo_CoNest.svg" alt="Conest logo" class="h-10" />
+          </router-link>
+          <router-link
+            v-for="(item, index) in menuItems"
+            :key="index"
+            :to="item.route"
+            class="font-medium text-gray-800 hover:text-[#FF8238] transition-colors"
           >
-            <div v-if="isLoggedIn">
-              <span class="text-[#333] px-4 py-2">{{ userName }}</span>
-              <router-link to="/commandes" class="block px-4 py-2 text-[#333] hover:bg-gray-100">
-                Commande
-              </router-link>
-              <router-link to="/concours" class="block px-4 py-2 text-[#333] hover:bg-gray-100">
-                Concours Mensuel
-              </router-link>
-              <button
-                @click="handleLogout"
-                class="block w-full text-left px-4 py-2 text-[#333] hover:bg-gray-100 bg-transparent border-none"
+            {{ item.text }}
+          </router-link>
+        </div>
+
+        <div class="flex items-center gap-5">
+          <router-link to="/produit/create">
+            <button
+              type="button"
+              class="bg-[#FF8238] hover:bg-[#e67530] text-white border-none py-2 px-5 rounded-xl cursor-pointer font-medium transition-colors"
+            >
+              + mettre une annonce
+            </button>
+          </router-link>
+
+          <div class="relative">
+            <div
+              @click="toggleAccountMenu"
+              class="flex items-center gap-1 cursor-pointer font-medium text-gray-800 hover:text-[#FF8238] transition-colors"
+            >
+              <span>Mon compte</span>
+              <span
+                :class="{ 'transform rotate-180': isAccountMenuOpen }"
+                class="transition-transform duration-300"
               >
-                Déconnexion
-              </button>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="w-5 h-5"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+              </span>
             </div>
-            <div v-else>
-              <router-link to="/login" class="block px-4 py-2 text-[#333] hover:bg-gray-100">
-                Connexion
-              </router-link>
+            <div
+              v-if="isAccountMenuOpen"
+              class="absolute right-0 z-10 w-48 mt-2 overflow-hidden bg-white shadow-lg rounded-xl"
+            >
+              <div v-if="isLoggedIn" class="py-1">
+                <span class="block px-4 py-2 font-medium text-gray-700">{{ userName }}</span>
+                <router-link
+                  to="/commandes"
+                  class="block px-4 py-2 text-gray-700 hover:bg-[#FFF1E9]"
+                >
+                  Commande
+                </router-link>
+                <router-link
+                  to="/concours"
+                  class="block px-4 py-2 text-gray-700 hover:bg-[#FFF1E9]"
+                >
+                  Concours Mensuel
+                </router-link>
+                <button
+                  @click="handleLogout"
+                  class="block w-full text-left px-4 py-2 text-gray-700 hover:bg-[#FFF1E9] bg-transparent border-none"
+                >
+                  Déconnexion
+                </button>
+              </div>
+              <div v-else>
+                <router-link to="/login" class="block px-4 py-2 text-gray-700 hover:bg-[#FFF1E9]">
+                  Connexion
+                </router-link>
+              </div>
             </div>
           </div>
-        </li>
+        </div>
       </div>
-    </ul>
+    </div>
   </nav>
 </template>
