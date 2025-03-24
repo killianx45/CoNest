@@ -55,30 +55,28 @@ function toggleSection(id: number) {
 </script>
 
 <template>
-  <div class="bg-[#FFF1E9] py-20 px-4">
+  <div class="flex items-center justify-center min-h-screen bg-[#FFF1E9]">
     <fieldset
-      class="relative w-full max-w-6xl mx-auto bg-[#FF8238] p-8 md:p-10 rounded-[3rem] shadow-lg"
+      class="fieldset w-full max-w-3xl mx-auto bg-[#FDF9F6] border border-base-200 p-8 md:p-16 my-10 rounded-box"
     >
-      <div class="flex flex-col items-start justify-between md:flex-row">
-        <h2 class="mb-8 text-2xl font-semibold text-white md:text-3xl lg:text-4xl">
-          Vos idées, vos espaces
-        </h2>
-      </div>
+      <img class="mx-auto mb-8 logoconest h-14" src="@/assets/logo_CoNest.svg" alt="Logo" />
+
+      <h1 class="mb-8 text-2xl font-semibold text-center">Informations et Conditions Requises</h1>
 
       <div class="space-y-4">
         <div
           v-for="section in sections"
           :key="section.id"
-          class="overflow-hidden bg-white rounded-xl"
+          class="overflow-hidden bg-white shadow-sm rounded-xl"
         >
           <div
-            class="flex items-center justify-between p-4 cursor-pointer"
+            class="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50"
             @click="toggleSection(section.id)"
           >
-            <h3 class="font-semibold">{{ section.titre }}</h3>
+            <h3 class="font-semibold text-[#FF8238]">{{ section.titre }}</h3>
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              class="w-5 h-5 transition-transform duration-300"
+              class="w-5 h-5 transition-transform duration-300 text-[#FF8238]"
               :class="{ 'rotate-180': section.isOpen }"
               viewBox="0 0 20 20"
               fill="currentColor"
@@ -90,77 +88,28 @@ function toggleSection(id: number) {
               />
             </svg>
           </div>
-          <div v-show="section.isOpen" class="p-4 border-t bg-white/80">
+          <div v-show="section.isOpen" class="p-4 text-gray-700 border-t bg-white/80">
             <p>{{ section.contenu }}</p>
           </div>
         </div>
       </div>
 
-      <div class="mt-8">
-        <div class="flex flex-col gap-4 sm:flex-row">
-          <div class="relative flex-1">
-            <svg
-              class="absolute w-5 h-5 text-gray-400 transform -translate-y-1/2 pointer-events-none left-3 top-1/2"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 2C8.13 2 5 5.13 5 9c0 4.8 7 11 7 11s7-6.2 7-11c0-3.87-3.13-7-7-7z"
-              />
-            </svg>
-            <input
-              type="text"
-              class="w-full p-4 pl-10 border rounded-xl"
-              placeholder="Localisation"
-            />
-          </div>
-
-          <div class="relative flex-1">
-            <svg
-              class="absolute w-5 h-5 text-gray-400 transform -translate-y-1/2 pointer-events-none left-3 top-1/2"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M8 7V3m8 4V3m-9 8h10m-10 4h5m-7 4h10m-5-8h2m2 8h2m-2-4h2"
-              />
-            </svg>
-            <input type="date" class="w-full px-3 py-4 pl-10 border rounded-xl" />
-          </div>
-        </div>
-
-        <div class="flex justify-center mt-6">
-          <button
-            class="px-6 py-3 font-semibold text-gray-800 bg-white rounded-full shadow hover:bg-gray-100"
-          >
-            Rechercher
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="inline-block w-5 h-5 ml-2"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              />
-            </svg>
-          </button>
-        </div>
+      <div class="mt-10 text-center">
+        <router-link
+          to="/"
+          class="px-6 py-3 font-medium text-white bg-[#FF8238] rounded-lg hover:bg-[#e67530] focus:outline-none"
+        >
+          Retour à l'accueil
+        </router-link>
       </div>
     </fieldset>
   </div>
 </template>
+
+<style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
+* {
+  font-family: 'Poppins', sans-serif;
+}
+</style>

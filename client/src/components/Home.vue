@@ -7,7 +7,6 @@ import Carte from './Carte.vue'
 import FAQ from './FAQ.vue'
 import Header from './Header.vue'
 import NavBar from './NavBar.vue'
-import Requis from './Requis.vue'
 
 const produits = ref<Produit[]>([])
 const categories = ref<Category[]>([])
@@ -44,8 +43,6 @@ onMounted(async () => {
 <template>
   <div class="flex flex-col min-h-screen">
     <NavBar />
-
-    <Requis />
 
     <div class="w-full">
       <Header @filter-category="handleFilterCategory" />

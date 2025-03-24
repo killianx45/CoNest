@@ -1,4 +1,6 @@
 import Commandes from '@/components/views/commandes/AllCommande.vue'
+import MentionsLegales from '@/components/views/MentionsLegales.vue'
+import Requis from '@/components/views/Requis.vue'
 import Concours from '@/components/views/users/Concours.vue'
 import Login from '@/components/views/users/Login.vue'
 import Register from '@/components/views/users/Register.vue'
@@ -37,6 +39,16 @@ const router = createRouter({
           next()
         }
       },
+    },
+    {
+      path: '/mentions-legales',
+      name: 'mentionsLegales',
+      component: MentionsLegales,
+    },
+    {
+      path: '/requis',
+      name: 'requis',
+      component: Requis,
     },
     {
       path: '/produit/:id',

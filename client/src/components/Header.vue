@@ -5,8 +5,10 @@ import { onMounted, ref } from 'vue'
 
 const categories = ref<Category[]>([])
 const loading = ref(true)
+const searchLocation = ref('')
+const searchDate = ref('')
 
-const emit = defineEmits(['filterCategory'])
+const emit = defineEmits(['filterCategory', 'search'])
 
 const selectedCategory = ref<number | null>(null)
 
@@ -18,6 +20,13 @@ function filterByCategory(categoryId: number) {
 function resetCategory() {
   selectedCategory.value = null
   emit('filterCategory', null)
+}
+
+function search() {
+  emit('search', {
+    location: searchLocation.value,
+    date: searchDate.value,
+  })
 }
 
 onMounted(async () => {
@@ -33,9 +42,81 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="bg-[#FFF1E9] flex flex-col justify-start px-5 py-8">
-    <h1 class="mb-4 text-4xl font-semibold text-black">Bienvenue sur CoNest</h1>
-    <h2 class="mb-8 text-2xl text-black/80">Les meilleurs espaces pour vos projets</h2>
+  <div class="bg-[#FFF1E9] flex flex-col justify-start px-5 py-8 mt-15">
+    <div class="relative w-full p-8 mx-auto mb-6 bg-[#FF8238] rounded-3xl shadow-lg">
+      <div class="mb-6 text-white">
+        <h3 class="mb-3 text-2xl font-semibold">Trouvez votre espace idéal</h3>
+        <p>Recherchez par localisation et date pour découvrir les meilleures offres</p>
+      </div>
+
+      <div class="flex flex-col gap-4 md:flex-row">
+        <div class="relative flex-1">
+          <svg
+            class="absolute w-5 h-5 text-gray-400 transform -translate-y-1/2 pointer-events-none left-3 top-1/2"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 2C8.13 2 5 5.13 5 9c0 4.8 7 11 7 11s7-6.2 7-11c0-3.87-3.13-7-7-7z"
+            />
+          </svg>
+          <input
+            v-model="searchLocation"
+            type="text"
+            class="w-full p-4 pl-10 border rounded-xl"
+            placeholder="Localisation"
+          />
+        </div>
+
+        <div class="relative flex-1">
+          <svg
+            class="absolute w-5 h-5 text-gray-400 transform -translate-y-1/2 pointer-events-none left-3 top-1/2"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M8 7V3m8 4V3m-9 8h10m-10 4h5m-7 4h10m-5-8h2m2 8h2m-2-4h2"
+            />
+          </svg>
+          <input
+            v-model="searchDate"
+            type="date"
+            class="w-full px-3 py-4 pl-10 border rounded-xl"
+          />
+        </div>
+
+        <button
+          @click="search"
+          class="px-6 py-4 font-semibold text-gray-800 bg-white shadow rounded-xl hover:bg-gray-100"
+        >
+          Rechercher
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="inline-block w-5 h-5 ml-2"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+            />
+          </svg>
+        </button>
+      </div>
+    </div>
 
     <div
       v-if="!loading"
