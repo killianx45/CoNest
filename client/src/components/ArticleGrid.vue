@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { Produit } from '@/services/api'
-import { computed } from 'vue'
 import ArticleCard from './ArticleCard.vue'
 
 const props = defineProps<{
@@ -9,20 +8,6 @@ const props = defineProps<{
   error: string | null
   loading: boolean
 }>()
-
-const filteredProduits = computed(() => {
-  if (!props.selectedCategory) return props.produits
-  return props.produits.filter((produit) => {
-    return produit.categories?.some((cat) => {
-      if (typeof cat === 'string') {
-        const categoryId = parseInt((cat as string).split('/').pop() || '0', 10)
-        return categoryId === props.selectedCategory
-      } else {
-        return (cat as any).id === props.selectedCategory
-      }
-    })
-  })
-})
 </script>
 
 <template>
@@ -37,11 +22,8 @@ const filteredProduits = computed(() => {
       ></div>
     </div>
 
-    <div
-      v-else-if="filteredProduits.length"
-      class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
-    >
-      <ArticleCard v-for="produit in filteredProduits" :key="produit.id" :produit="produit" />
+    <div v-else-if="produits.length" class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <ArticleCard v-for="produit in produits" :key="produit.id" :produit="produit" />
     </div>
 
     <p v-else class="py-8 text-center text-gray-500">
