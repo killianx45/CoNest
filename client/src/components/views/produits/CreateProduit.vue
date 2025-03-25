@@ -171,26 +171,26 @@ onMounted(async () => {
 <template>
   <NavBar />
   <section class="flex items-center justify-center min-h-screen bg-[#FFF1E9] formu">
-    <div class="w-full max-w-3xl p-12 mx-8 mt-10 mb-10 bg-orange-100 rounded-lg shadow-md">
+    <div class="w-full max-w-3xl p-12 mx-8 mt-10 mb-10 bg-orange-100 shadow-md rounded-xl">
       <a href="/" class="block mb-4 text-gray-500"><p>&lt; retour</p></a>
       <h1 class="mb-10 text-2xl font-semibold text-center text-blue-950">
         Ajouter un nouveau bien
       </h1>
 
       <div v-if="loading" class="flex justify-center my-10">
-        <div class="w-12 h-12 border-b-2 border-orange-500 rounded-full animate-spin"></div>
+        <div class="w-12 h-12 border-b-2 border-orange-500 rounded-xl animate-spin"></div>
       </div>
 
       <div
         v-else-if="success"
-        class="px-6 py-4 mb-6 text-green-700 bg-green-100 border border-green-400 rounded"
+        class="px-6 py-4 mb-6 text-green-700 bg-green-100 border border-green-400 rounded-xl"
       >
         <p>Produit créé avec succès ! Redirection en cours...</p>
       </div>
 
       <div
         v-else-if="!hasPermission"
-        class="px-6 py-4 mb-6 text-red-700 bg-red-100 border border-red-400 rounded"
+        class="px-6 py-4 mb-6 text-red-700 bg-red-100 border border-red-400 rounded-xl"
       >
         <p>{{ error }}</p>
         <p class="mt-4">
@@ -202,13 +202,13 @@ onMounted(async () => {
       <div v-else>
         <div
           v-if="error"
-          class="px-6 py-4 mb-6 text-red-700 bg-red-100 border border-red-400 rounded"
+          class="px-6 py-4 mb-6 text-red-700 bg-red-100 border border-red-400 rounded-xl"
         >
           <p>{{ error }}</p>
         </div>
         <div
           v-if="errors.general"
-          class="px-6 py-4 mb-6 text-red-700 bg-red-100 border border-red-400 rounded"
+          class="px-6 py-4 mb-6 text-red-700 bg-red-100 border border-red-400 rounded-xl"
         >
           <p>{{ errors.general }}</p>
         </div>
@@ -354,7 +354,7 @@ onMounted(async () => {
           <div class="flex justify-center pt-4 mt-8">
             <button
               type="submit"
-              class="w-full max-w-md px-10 py-3 text-white transition bg-orange-500 rounded-lg hover:bg-orange-300"
+              class="w-full max-w-md px-10 py-3 text-white transition bg-orange-500 rounded-xl hover:bg-orange-300"
               :disabled="loading"
             >
               {{ loading ? 'Création en cours...' : "Publier l'annonce" }}

@@ -4,12 +4,14 @@ import NavBar from './components/NavBar.vue'
 </script>
 
 <template>
-  <div class="flex flex-col min-h-screen">
+  <div class="flex flex-col min-h-screen bg-[#FFF1E9]">
     <NavBar />
-    <main class="flex-1">
+    <main class="flex-1 mt-32">
       <router-view />
     </main>
-    <Footer />
+    <div class="bg-[#FFF1E9]">
+      <Footer />
+    </div>
   </div>
 </template>
 
@@ -19,6 +21,5 @@ body {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  background: #ffffff;
 }
 </style>

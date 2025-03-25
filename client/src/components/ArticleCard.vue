@@ -19,14 +19,14 @@ function voirProduit(produitId: number) {
 </script>
 
 <template>
-  <div class="w-full p-2 mx-auto cursor-pointer" @click="voirProduit(produit.id)">
+  <div class="w-[90%] p-2 mx-auto cursor-pointer" @click="voirProduit(produit.id)">
     <div v-if="produit.images && produit.images.length > 0">
       <OptimizedImage
         :src="produit.images[0]"
         :alt="produit.nom"
-        :width="300"
-        :height="300"
-        className="object-cover w-full aspect-square rounded-3xl"
+        :width="200"
+        :height="200"
+        className="object-cover w-full aspect-square rounded-xl"
       />
     </div>
 

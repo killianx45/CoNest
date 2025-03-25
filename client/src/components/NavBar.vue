@@ -8,8 +8,8 @@ const currentLanguage = ref('FR')
 const isMenuOpen = ref(false)
 const isAccountMenuOpen = ref(false)
 const menuItems = ref([
-  { text: 'contact', route: '#' },
-  { text: 'carte', route: '#' },
+  { text: 'contact', route: '/#faq-section' },
+  { text: 'carte', route: '/#carte-section' },
 ])
 
 const isLoggedIn = computed(() => isAuthenticated())
@@ -24,6 +24,18 @@ function toggleMenu() {
 
 function toggleAccountMenu() {
   isAccountMenuOpen.value = !isAccountMenuOpen.value
+}
+
+function handleClick(route: string) {
+  if (route.startsWith('/#')) {
+    const targetId = route.substring(2)
+    const element = document.getElementById(targetId)
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' })
+    } else if (window.location.pathname !== '/') {
+      router.push(route)
+    }
+  }
 }
 
 async function handleLogout() {
@@ -140,6 +152,7 @@ getCurrentUser().then((user) => {
             :key="index"
             :to="item.route"
             class="font-medium text-gray-800 hover:text-[#FF8238] transition-colors"
+            @click.native.prevent="handleClick(item.route)"
           >
             {{ item.text }}
           </router-link>

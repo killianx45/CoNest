@@ -108,31 +108,29 @@ onMounted(async () => {
       :loading="loading"
     />
 
-    <div id="carte-section" class="min-h-[100px]">
+    <div id="carte-section" class="min-h-[100px] bg-white">
       <Carte v-if="showCarteSection" :produits="filteredProduits" />
       <div v-else class="w-full max-w-4xl py-8 mx-auto">
         <h2 class="mb-6 text-3xl font-semibold text-center">CoNest sur carte !</h2>
         <div class="flex justify-center h-[450px] bg-gray-100 rounded-xl">
           <div class="flex items-center justify-center">
             <div
-              class="w-8 h-8 border-t-2 border-b-2 border-orange-500 rounded-full animate-spin"
+              class="w-8 h-8 border-t-2 border-b-2 border-orange-500 rounded-xl animate-spin"
             ></div>
           </div>
         </div>
       </div>
     </div>
 
-    <div id="faq-section" class="min-h-[100px]">
+    <div id="faq-section" class="min-h-[100px] bg-white">
       <FAQ v-if="showFAQSection" />
-      <div v-else class="py-8 bg-[#FFF1E9]">
-        <div class="max-w-4xl px-4 mx-auto">
-          <h2 class="mb-6 text-3xl font-semibold text-center">FAQ</h2>
-          <div class="w-full p-4 bg-white rounded-lg">
-            <div class="flex items-center justify-center py-8">
-              <div
-                class="w-8 h-8 border-t-2 border-b-2 border-orange-500 rounded-full animate-spin"
-              ></div>
-            </div>
+      <div v-else class="w-full max-w-4xl py-8 mx-auto">
+        <h2 class="mb-6 text-3xl font-semibold text-center">FAQ</h2>
+        <div class="flex justify-center">
+          <div class="flex items-center justify-center">
+            <div
+              class="w-8 h-8 border-t-2 border-b-2 border-orange-500 rounded-xl animate-spin"
+            ></div>
           </div>
         </div>
       </div>

@@ -153,7 +153,7 @@ async function checkConcoursStatus() {
 <template>
   <div class="min-h-screen pt-24 bg-[#FFF1E9]">
     <div class="container px-4 mx-auto">
-      <div class="p-6 mb-6 text-center bg-orange-100 rounded-lg shadow-md">
+      <div class="p-6 mb-6 text-center bg-orange-100 shadow-md rounded-xl">
         <h2 class="text-2xl font-bold text-blue-950">Tirage dans</h2>
         <div class="flex justify-center gap-4 mt-4">
           <div class="text-3xl font-bold text-blue-950">{{ jours }} Jours</div>
@@ -170,7 +170,7 @@ async function checkConcoursStatus() {
       </div>
 
       <div class="flex flex-col gap-6 md:flex-row">
-        <div class="w-full p-6 bg-orange-100 rounded-lg shadow-md md:w-1/2">
+        <div class="w-full p-6 bg-orange-100 shadow-md rounded-xl md:w-1/2">
           <h2 class="mb-4 text-2xl font-semibold text-blue-950">Bonjour {{ userName }}</h2>
           <div
             class="p-4 mb-4 transition-colors duration-500"
@@ -202,7 +202,7 @@ async function checkConcoursStatus() {
             <button
               ref="buttonRef"
               @click="updateStatus"
-              class="w-full px-6 py-3 mt-6 text-white transition-colors duration-300 bg-orange-500 rounded-lg hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 disabled:opacity-50"
+              class="w-full px-6 py-3 mt-6 text-white transition-colors duration-300 bg-orange-500 rounded-xl hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 disabled:opacity-50"
               :disabled="isUpdating"
             >
               {{ isUpdating ? 'Mise à jour en cours...' : 'Mettre à jour mon statut' }}
@@ -224,19 +224,19 @@ async function checkConcoursStatus() {
 
           <div
             v-if="message"
-            class="p-4 mt-6 mb-4 text-blue-700 transition-all duration-300 bg-blue-100 rounded-lg"
+            class="p-4 mt-6 mb-4 text-blue-700 transition-all duration-300 bg-blue-100 rounded-xl"
           >
             {{ message }}
           </div>
           <div
             v-if="error"
-            class="p-4 mt-6 mb-4 text-red-700 transition-all duration-300 bg-red-100 rounded-lg"
+            class="p-4 mt-6 mb-4 text-red-700 transition-all duration-300 bg-red-100 rounded-xl"
           >
             {{ error }}
           </div>
         </div>
 
-        <div class="w-full p-6 bg-orange-100 rounded-lg shadow-md md:w-1/2">
+        <div class="w-full p-6 bg-orange-100 shadow-md rounded-xl md:w-1/2">
           <h2 class="mb-4 text-2xl font-semibold text-blue-950">À propos du concours</h2>
           <p class="mb-3 text-blue-950">
             Chaque mois, nous organisons un concours exclusif pour nos utilisateurs les plus actifs.
@@ -266,7 +266,7 @@ async function checkConcoursStatus() {
           <div
             v-for="produit in produits"
             :key="produit.id"
-            class="p-6 transition-transform bg-orange-100 rounded-lg shadow-md hover:scale-105"
+            class="p-6 transition-transform bg-orange-100 shadow-md rounded-xl hover:scale-105"
           >
             <h3 class="font-bold text-blue-950">{{ produit.nom }}</h3>
             <p class="my-2 text-blue-900">{{ produit.description }}</p>
@@ -275,7 +275,7 @@ async function checkConcoursStatus() {
               v-if="produit.images && produit.images.length > 0"
               :src="`http://localhost:8000/${produit.images[0]}`"
               alt="Image du produit"
-              class="object-cover w-full h-40 mt-4 rounded-lg"
+              class="object-cover w-full h-40 mt-4 rounded-xl"
             />
           </div>
         </div>

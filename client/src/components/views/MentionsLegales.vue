@@ -7,7 +7,7 @@ const contactEmail = ref('contact@conest.fr')
 <template>
   <div class="flex items-center justify-center min-h-screen bg-[#FFF1E9]">
     <fieldset
-      class="fieldset w-full max-w-3xl mx-auto bg-[#FDF9F6] border border-base-200 p-8 md:p-16 rounded-box"
+      class="fieldset w-full max-w-3xl mx-auto bg-[#FDF9F6] border border-base-200 p-8 md:p-16 rounded-xl"
     >
       <img class="mx-auto mb-8 logoconest h-14" src="@/assets/logo_CoNest.svg" alt="Logo" />
 
@@ -60,7 +60,7 @@ const contactEmail = ref('contact@conest.fr')
       <div class="mt-10 text-center">
         <router-link
           to="/"
-          class="px-6 py-3 font-medium text-white bg-[#FF8238] rounded-lg hover:bg-[#e67530] focus:outline-none"
+          class="px-6 py-3 font-medium text-white bg-[#FF8238] rounded-xl hover:bg-[#e67530] focus:outline-none"
         >
           Retour à l'accueil
         </router-link>
