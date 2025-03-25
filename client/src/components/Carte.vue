@@ -71,7 +71,7 @@ const handleMapLoad = () => {
       <iframe
         v-else
         src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d428.6700538934743!2d4.847028601583465!3d45.75407641976787!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47f4eb6e87293eeb%3A0xb63d3b822421846b!2sLudilyon!5e0!3m2!1sfr!2sfr!4v1742738539387!5m2!1sfr!2sfr"
-        class="w-full h-[450px] rounded-xl shadow-md google-map-iframe"
+        class="w-[90%] h-[450px] rounded-xl shadow-md google-map-iframe"
         style="border: 0"
         width="800"
         height="450"
