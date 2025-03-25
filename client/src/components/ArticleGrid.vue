@@ -55,14 +55,15 @@ onMounted(() => {
 
 <template>
   <div class="py-8 px-4 md:p-12 bg-[#FFF1E9] rounded-xl">
-    <div v-if="error" class="px-4 py-3 mb-4 text-red-700 bg-red-100 border border-red-400 rounded">
+    <div
+      v-if="error"
+      class="px-4 py-3 mb-4 text-red-700 bg-red-100 border border-red-400 rounded-xl"
+    >
       {{ error }}
     </div>
 
     <div v-if="loading" class="flex items-center justify-center py-8">
-      <div
-        class="w-12 h-12 border-t-2 border-b-2 border-orange-500 rounded-full animate-spin"
-      ></div>
+      <div class="w-12 h-12 border-t-2 border-b-2 border-orange-500 rounded-xl animate-spin"></div>
     </div>
 
     <div v-else-if="produits.length" class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -79,7 +80,7 @@ onMounted(() => {
     <div v-if="!loading && visibleCount < produits.length" class="flex justify-center mt-6">
       <button
         @click="loadMoreItems"
-        class="px-4 py-2 text-white transition-colors bg-orange-500 rounded-lg hover:bg-orange-600"
+        class="z-10 px-4 py-2 text-white transition-colors bg-orange-400 rounded-xl hover:bg-orange-500"
       >
         Voir plus
       </button>
@@ -93,8 +94,10 @@ onMounted(() => {
       }}
     </p>
 
-    <div class="relative mt-8">
-      <div class="w-full h-16 bg-gradient-to-b from-transparent to-white/80 rounded-b-3xl"></div>
+    <div v-if="visibleCount < produits.length" class="relative mt-8">
+      <div
+        class="absolute bottom-0 left-0 w-full h-160 bg-gradient-to-t from-[#FFF1E9] to-transparent pointer-events-none"
+      ></div>
     </div>
   </div>
 </template>

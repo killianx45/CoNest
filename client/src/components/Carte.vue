@@ -41,7 +41,7 @@ const handleMapLoad = () => {
 </script>
 
 <template>
-  <div class="w-full max-w-4xl py-8 mx-auto">
+  <div class="w-full max-w-6xl py-8 mx-auto">
     <h2 class="mb-6 text-3xl font-semibold text-center">CoNest sur carte !</h2>
     <div class="flex justify-center mx-auto map-container rounded-xl" style="min-height: 450px">
       <div
@@ -62,7 +62,7 @@ const handleMapLoad = () => {
       >
         <div class="text-center">
           <div
-            class="w-8 h-8 mx-auto mb-4 border-t-2 border-b-2 border-orange-500 rounded-full animate-spin"
+            class="w-8 h-8 mx-auto mb-4 border-t-2 border-b-2 border-orange-500 rounded-xl animate-spin"
           ></div>
           <p class="text-gray-600">Chargement de la carte...</p>
         </div>

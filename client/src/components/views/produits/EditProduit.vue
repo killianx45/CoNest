@@ -279,24 +279,24 @@ onMounted(async () => {
 <template>
   <NavBar />
   <section class="flex items-center justify-center min-h-screen bg-[#FFF1E9] formu">
-    <div class="w-full max-w-3xl p-12 mx-8 mt-10 mb-10 bg-orange-100 rounded-lg shadow-md">
+    <div class="w-full max-w-3xl p-12 mx-8 mt-10 mb-10 bg-orange-100 shadow-md rounded-xl">
       <a :href="'/produit/' + produitId" class="block mb-4 text-gray-500"><p>&lt; retour</p></a>
       <h1 class="mb-10 text-2xl font-semibold text-center text-blue-950">Modifier un bien</h1>
 
       <div v-if="loading" class="flex justify-center my-10">
-        <div class="w-12 h-12 border-b-2 border-orange-500 rounded-full animate-spin"></div>
+        <div class="w-12 h-12 border-b-2 border-orange-500 rounded-xl animate-spin"></div>
       </div>
 
       <div
         v-else-if="success"
-        class="px-6 py-4 mb-6 text-green-700 bg-green-100 border border-green-400 rounded"
+        class="px-6 py-4 mb-6 text-green-700 bg-green-100 border border-green-400 rounded-xl"
       >
         <p>Produit modifié avec succès ! Redirection en cours...</p>
       </div>
 
       <div
         v-else-if="!hasPermission"
-        class="px-6 py-4 mb-6 text-red-700 bg-red-100 border border-red-400 rounded"
+        class="px-6 py-4 mb-6 text-red-700 bg-red-100 border border-red-400 rounded-xl"
       >
         <p>{{ error }}</p>
         <p class="mt-4">
@@ -308,14 +308,14 @@ onMounted(async () => {
       <div v-else>
         <div
           v-if="error"
-          class="px-6 py-4 mb-6 text-red-700 bg-red-100 border border-red-400 rounded"
+          class="px-6 py-4 mb-6 text-red-700 bg-red-100 border border-red-400 rounded-xl"
         >
           <p>{{ error }}</p>
         </div>
 
         <div
           v-if="errors.general"
-          class="px-6 py-4 mb-6 text-red-700 bg-red-100 border border-red-400 rounded"
+          class="px-6 py-4 mb-6 text-red-700 bg-red-100 border border-red-400 rounded-xl"
         >
           <p>{{ errors.general }}</p>
         </div>
@@ -327,7 +327,7 @@ onMounted(async () => {
               type="text"
               id="nom"
               v-model="form.nom"
-              class="w-full p-3 border border-gray-300 rounded-md bg-orange-50 focus:outline-none focus:ring-1 focus:ring-primary"
+              class="w-full p-3 border border-gray-300 rounded-xl bg-orange-50 focus:outline-none focus:ring-1 focus:ring-primary"
               :class="{ 'border-red-500': errors.nom }"
             />
             <p v-if="errors.nom" class="mt-2 text-sm text-red-600">Le nom est requis</p>
@@ -339,7 +339,7 @@ onMounted(async () => {
               type="text"
               id="adresse"
               v-model="form.adresse"
-              class="w-full p-3 border border-gray-300 rounded-md bg-orange-50 focus:outline-none focus:ring-1 focus:ring-primary"
+              class="w-full p-3 border border-gray-300 rounded-xl bg-orange-50 focus:outline-none focus:ring-1 focus:ring-primary"
               :class="{ 'border-red-500': errors.adresse }"
             />
             <p v-if="errors.adresse" class="mt-2 text-sm text-red-600">L'adresse est requise</p>
@@ -355,7 +355,7 @@ onMounted(async () => {
               v-model="form.prix"
               min="0"
               step="0.01"
-              class="w-full p-3 border border-gray-300 rounded-md bg-orange-50 focus:outline-none focus:ring-1 focus:ring-primary"
+              class="w-full p-3 border border-gray-300 rounded-xl bg-orange-50 focus:outline-none focus:ring-1 focus:ring-primary"
               :class="{ 'border-red-500': errors.prix }"
             />
             <p v-if="errors.prix" class="mt-2 text-sm text-red-600">
@@ -373,7 +373,7 @@ onMounted(async () => {
                       type="checkbox"
                       :value="category.id"
                       v-model="form.categories"
-                      class="w-5 h-5 text-orange-600 border-gray-300 rounded"
+                      class="w-5 h-5 text-orange-600 border-gray-300 rounded-xl"
                     />
                     <span class="ml-2">{{ category.name }}</span>
                   </label>
@@ -393,7 +393,7 @@ onMounted(async () => {
               id="description"
               v-model="form.description"
               rows="4"
-              class="w-full p-3 border border-gray-300 rounded-md bg-orange-50 focus:outline-none focus:ring-1 focus:ring-primary"
+              class="w-full p-3 border border-gray-300 rounded-xl bg-orange-50 focus:outline-none focus:ring-1 focus:ring-primary"
               :class="{ 'border-red-500': errors.description }"
             ></textarea>
             <p v-if="errors.description" class="mt-2 text-sm text-red-600">
@@ -409,7 +409,7 @@ onMounted(async () => {
               accept="image/*"
               @change="handleImageChange"
               multiple
-              class="w-full p-3 border border-gray-300 rounded-md bg-orange-50 focus:outline-none focus:ring-1 focus:ring-primary"
+              class="w-full p-3 border border-gray-300 rounded-xl bg-orange-50 focus:outline-none focus:ring-1 focus:ring-primary"
               :class="{ 'border-red-500': errors.images }"
             />
             <p v-if="imageChanged && errors.images" class="mt-2 text-sm text-red-600">
@@ -422,7 +422,7 @@ onMounted(async () => {
                 :key="index"
                 :src="preview"
                 alt="Prévisualisation"
-                class="object-cover w-full h-48 mb-4 rounded-md"
+                class="object-cover w-full h-48 mb-4 rounded-xl"
               />
             </div>
           </div>
@@ -436,7 +436,7 @@ onMounted(async () => {
                 type="date"
                 id="date_debut"
                 v-model="form.date_debut"
-                class="w-full p-3 border border-gray-300 rounded-md bg-orange-50 focus:outline-none focus:ring-1 focus:ring-primary"
+                class="w-full p-3 border border-gray-300 rounded-xl bg-orange-50 focus:outline-none focus:ring-1 focus:ring-primary"
                 :class="{ 'border-red-500': errors.date_debut }"
               />
               <p v-if="errors.date_debut" class="mt-2 text-sm text-red-600">
@@ -450,7 +450,7 @@ onMounted(async () => {
                 type="date"
                 id="date_fin"
                 v-model="form.date_fin"
-                class="w-full p-3 border border-gray-300 rounded-md bg-orange-50 focus:outline-none focus:ring-1 focus:ring-primary"
+                class="w-full p-3 border border-gray-300 rounded-xl bg-orange-50 focus:outline-none focus:ring-1 focus:ring-primary"
                 :class="{ 'border-red-500': errors.date_fin }"
               />
               <p v-if="errors.date_fin" class="mt-2 text-sm text-red-600">
@@ -462,14 +462,14 @@ onMounted(async () => {
           <div class="flex justify-between pt-4 mt-8">
             <button
               type="button"
-              class="px-6 py-3 text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 focus:outline-none"
+              class="px-6 py-3 text-gray-700 bg-gray-200 rounded-xl hover:bg-gray-300 focus:outline-none"
               @click="router.push(`/produit/${produitId}`)"
             >
               Annuler
             </button>
             <button
               type="submit"
-              class="px-6 py-3 text-white transition bg-orange-500 rounded-lg hover:bg-orange-300"
+              class="px-6 py-3 text-white transition bg-orange-500 rounded-xl hover:bg-orange-300"
               :disabled="loading"
             >
               {{ loading ? 'Modification en cours...' : 'Enregistrer' }}

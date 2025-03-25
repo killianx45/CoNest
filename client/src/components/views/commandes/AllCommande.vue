@@ -57,12 +57,12 @@ onMounted(() => {
   <NavBar />
   <div class="min-h-screen bg-[#FFF1E9] py-10">
     <div class="max-w-6xl px-4 mx-auto">
-      <fieldset class="fieldset bg-[#FDF9F6] border border-base-200 p-8 md:p-12 rounded-box">
+      <fieldset class="fieldset bg-[#FDF9F6] border border-base-200 p-8 md:p-12 rounded-xl">
         <div class="flex items-center justify-between mb-8">
           <h1 class="text-3xl font-semibold text-gray-800">Mes réservations</h1>
           <router-link
             to="/commandes/create"
-            class="px-6 py-3 text-white bg-[#FF8238] rounded-lg hover:bg-[#f87625] transition-colors duration-200 flex items-center"
+            class="px-6 py-3 text-white bg-[#FF8238] rounded-xl hover:bg-[#f87625] transition-colors duration-200 flex items-center"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -81,32 +81,32 @@ onMounted(() => {
         </div>
 
         <div v-if="loading" class="flex items-center justify-center my-16">
-          <div class="w-16 h-16 border-b-4 border-[#FF8238] rounded-full animate-spin"></div>
+          <div class="w-16 h-16 border-b-4 border-[#FF8238] rounded-xl animate-spin"></div>
           <p class="ml-4 text-lg text-gray-600">Chargement des réservations...</p>
         </div>
 
         <div
           v-else-if="error"
-          class="p-4 my-8 text-red-700 bg-red-100 border border-red-400 rounded-lg"
+          class="p-4 my-8 text-red-700 bg-red-100 border border-red-400 rounded-xl"
         >
           <p>{{ error }}</p>
         </div>
 
         <div
           v-else-if="commandes.length === 0"
-          class="p-8 text-center bg-white rounded-lg shadow-sm"
+          class="p-8 text-center bg-white shadow-sm rounded-xl"
         >
           <p class="text-lg text-gray-600">Vous n'avez pas encore de réservations.</p>
           <router-link
             to="/commandes/create"
-            class="inline-block px-6 py-3 mt-4 text-white bg-[#FF8238] rounded-lg hover:bg-[#f87625] transition-colors duration-200"
+            class="inline-block px-6 py-3 mt-4 text-white bg-[#FF8238] rounded-xl hover:bg-[#f87625] transition-colors duration-200"
           >
             Créer votre première réservation
           </router-link>
         </div>
 
         <div v-else class="overflow-x-auto">
-          <table class="w-full bg-white rounded-lg shadow-sm">
+          <table class="w-full bg-white shadow-sm rounded-xl">
             <thead class="bg-gray-50">
               <tr>
                 <th
@@ -145,7 +145,7 @@ onMounted(() => {
                 <td class="px-6 py-4 text-sm text-gray-700 whitespace-nowrap">
                   <router-link
                     :to="`/commandes/${commande.id}`"
-                    class="inline-flex items-center justify-center px-4 py-2 mr-2 text-sm font-medium text-blue-600 transition-colors duration-200 bg-blue-100 rounded-md hover:bg-blue-200"
+                    class="inline-flex items-center justify-center px-4 py-2 mr-2 text-sm font-medium text-blue-600 transition-colors duration-200 bg-blue-100 rounded-xl hover:bg-blue-200"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"

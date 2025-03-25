@@ -5,12 +5,12 @@ const getCurrentYear = () => {
 </script>
 
 <template>
-  <footer class="bg-[#FFF1E9] mt-auto">
-    <div class="px-4 py-8 mx-auto">
+  <footer class="bg-[#FF8238] mt-auto">
+    <div class="max-w-4xl px-4 py-8 mx-auto">
       <div class="flex flex-col items-center mb-8 md:hidden">
-        <img src="../assets/logo_CoNest.svg" alt="Logo CoNest" class="mb-6 h-14" />
+        <img src="../assets/logo_noir.svg" alt="Logo CoNest" class="mb-6 h-14" />
         <div class="flex justify-center space-x-5">
-          <a href="#" aria-label="Facebook" class="text-gray-700 hover:text-[#FF8238]">
+          <a href="#" aria-label="Facebook" class="text-black hover:text-[#FF8238]">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               class="w-6 h-6"
@@ -22,7 +22,7 @@ const getCurrentYear = () => {
               />
             </svg>
           </a>
-          <a href="#" aria-label="Instagram" class="text-gray-700 hover:text-[#FF8238]">
+          <a href="#" aria-label="Instagram" class="text-black hover:text-[#FF8238]">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               class="w-6 h-6"
@@ -34,7 +34,7 @@ const getCurrentYear = () => {
               />
             </svg>
           </a>
-          <a href="#" aria-label="LinkedIn" class="text-gray-700 hover:text-[#FF8238]">
+          <a href="#" aria-label="LinkedIn" class="text-black hover:text-[#FF8238]">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               class="w-6 h-6"
@@ -53,7 +53,7 @@ const getCurrentYear = () => {
         <h2 class="mb-4 text-lg font-semibold text-gray-800">L'ENTREPRISE</h2>
         <ul class="space-y-2">
           <li>
-            <router-link to="/requis" class="text-gray-700 hover:text-[#FF8238] transition-colors"
+            <router-link to="/requis" class="text-black hover:text-[#FF8238] transition-colors"
               >REQUIS</router-link
             >
           </li>
@@ -67,11 +67,11 @@ const getCurrentYear = () => {
         </ul>
       </div>
 
-      <div class="hidden md:flex md:justify-between md:items-start">
+      <div class="hidden md:flex md:justify-between md:items-start md:gap-x-16">
         <div class="flex flex-col items-start">
-          <img src="../assets/logo_CoNest.svg" alt="Logo CoNest" class="h-16 mb-6" />
+          <img src="../assets/logo_noir.svg" alt="Logo CoNest" class="h-16 mb-6" />
           <div class="flex space-x-5">
-            <a href="#" aria-label="Facebook" class="text-gray-700 hover:text-[#FF8238]">
+            <a href="#" aria-label="Facebook" class="text-black hover:text-[#FF8238]">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 class="w-6 h-6"
@@ -83,7 +83,7 @@ const getCurrentYear = () => {
                 />
               </svg>
             </a>
-            <a href="#" aria-label="Instagram" class="text-gray-700 hover:text-[#FF8238]">
+            <a href="#" aria-label="Instagram" class="text-black hover:text-[#FF8238]">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 class="w-6 h-6"
@@ -95,7 +95,7 @@ const getCurrentYear = () => {
                 />
               </svg>
             </a>
-            <a href="#" aria-label="LinkedIn" class="text-gray-700 hover:text-[#FF8238]">
+            <a href="#" aria-label="LinkedIn" class="text-black hover:text-[#FF8238]">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 class="w-6 h-6"
@@ -114,14 +114,14 @@ const getCurrentYear = () => {
           <h2 class="mb-4 text-lg font-semibold text-gray-800">L'ENTREPRISE</h2>
           <ul class="space-y-2">
             <li>
-              <router-link to="/requis" class="text-gray-700 hover:text-[#FF8238] transition-colors"
+              <router-link to="/requis" class="text-black hover:text-[#FF8238] transition-colors"
                 >REQUIS</router-link
               >
             </li>
             <li>
               <router-link
                 to="/mentions-legales"
-                class="text-gray-700 hover:text-[#FF8238] transition-colors"
+                class="text-black hover:text-[#FF8238] transition-colors"
                 >MENTIONS LÉGALES</router-link
               >
             </li>
@@ -131,8 +131,8 @@ const getCurrentYear = () => {
     </div>
 
     <div class="py-3 text-center border-t border-gray-200">
-      <p class="text-sm text-gray-700 md:text-base">
-        {{ getCurrentYear() }} CoNest. Inc - All Copyrights To CoNest
+      <p class="text-sm text-black md:text-base">
+        {{ getCurrentYear() }} CoNest. Tous droits réservés
       </p>
     </div>
   </footer>

@@ -147,10 +147,19 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="bg-[#FFF1E9] flex flex-col justify-start px-5 py-8 mt-15">
-    <div class="relative w-full p-8 mx-auto mb-6 bg-[#FF8238] rounded-3xl shadow-lg">
-      <div class="mb-6">
-        <h1 class="mb-3 text-3xl font-bold text-white">Vos idées, vos espaces</h1>
+  <div class="bg-[#FFF1E9] px-4 md:pl-[1vw] py-8 md:py-[5vh] lg:py-[5vh] mt-10">
+    <fieldset
+      class="relative fieldset w-full md:w-[86vw] mx-auto bg-[#FF8238] p-6 md:pl-20 md:pr-100 md:py-10 rounded-xl shadow-lg"
+    >
+      <div class="flex flex-col md:flex-row md:justify-between md:items-start">
+        <h2 class="text-2xl md:text-[3vw] font-semibold mb-6 md:mb-10 text-white">
+          Vos idées, vos espaces
+        </h2>
+        <img
+          class="hidden md:block z-[10] absolute bottom-10 right-[-50px] w-[20vw] h-auto"
+          src="@/assets/img_header.png"
+          alt="Image d'en-tête"
+        />
       </div>
 
       <div class="flex flex-col gap-4 md:flex-row">
@@ -158,12 +167,9 @@ onMounted(async () => {
           <svg
             class="absolute w-5 h-5 text-black transform -translate-y-1/2 pointer-events-none left-3 top-1/2"
             xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="20"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
-            aria-hidden="true"
           >
             <path
               stroke-linecap="round"
@@ -175,105 +181,90 @@ onMounted(async () => {
           <input
             v-model="searchDate"
             type="date"
-            class="w-full px-3 py-4 pl-10 border rounded-xl"
-            placeholder="Début"
-            aria-label="Date de disponibilité"
+            class="w-full px-3 py-3 pl-10 border input rounded-xl md:py-2 bg-orange-50"
           />
         </div>
 
         <div class="relative flex-1">
-          <svg
+          <img
+            src="@/assets/coin.svg"
+            alt="Icône de pièce"
             class="absolute w-5 h-5 text-black transform -translate-y-1/2 pointer-events-none left-3 top-1/2"
-            xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="20"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            aria-hidden="true"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-            />
-          </svg>
+          />
           <input
             :value="maxPrice !== null ? maxPrice : ''"
             @input="handlePriceInput"
             type="number"
             min="0"
-            class="w-full p-4 pl-10 border rounded-xl"
-            placeholder="Budget max"
-            aria-label="Prix maximum"
+            class="w-full px-3 py-3 pl-10 text-black border input rounded-xl md:py-2 bg-orange-50"
+            placeholder="Budget (€)"
           />
         </div>
 
-        <button
-          @click="search"
-          aria-label="Rechercher des espaces de coworking"
-          class="px-6 py-4 font-semibold text-gray-800 bg-white shadow rounded-xl hover:bg-gray-100"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="inline-block w-5 h-5"
-            width="20"
-            height="20"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            aria-hidden="true"
+        <div class="flex justify-center">
+          <button
+            @click="search"
+            class="w-full px-6 py-3 transition-colors bg-orange-50 md:w-auto md:py-2 rounded-xl"
           >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-            />
-          </svg>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="w-6 h-6 mx-auto"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </fieldset>
+
+    <div class="mt-8 w-full md:w-[86vw] mx-auto px-4 md:px-0">
+      <h2 class="mb-4 text-xl font-bold md:text-2xl">Vos meilleurs espaces</h2>
+
+      <div
+        v-if="!loading"
+        class="flex items-center gap-3 p-4 mb-6 overflow-x-auto bg-white shadow-lg flex-nowrap md:flex-wrap filter rounded-xl"
+      >
+        <button
+          class="px-3 py-2 text-sm font-medium transition-colors bg-gray-200 rounded-xl hover:bg-gray-300 whitespace-nowrap"
+          @click="resetCategory"
+          aria-label="Réinitialiser les filtres de catégorie"
+        >
+          ×
+        </button>
+        <button
+          v-for="category in categoriesCache"
+          :key="category.id"
+          @click="filterByCategory(category.id)"
+          class="px-4 py-2 text-sm font-medium transition-colors border rounded-xl whitespace-nowrap"
+          :class="{
+            'bg-orange-500 text-white border-orange-500': selectedCategory === category.id,
+            'bg-white text-gray-700 border-gray-300 hover:bg-orange-50':
+              selectedCategory !== category.id,
+          }"
+          :aria-label="'Filtrer par catégorie ' + category.name"
+          :aria-pressed="selectedCategory === category.id"
+        >
+          {{ category.name }}
         </button>
       </div>
-    </div>
 
-    <h2 class="mb-4 text-2xl font-bold">Vos meilleurs espaces</h2>
-
-    <div
-      v-if="!loading"
-      class="flex flex-wrap items-center justify-start gap-3 p-4 mb-6 overflow-x-auto bg-white shadow-lg filter rounded-xl"
-    >
-      <button
-        class="px-3 py-2 text-sm font-medium transition-colors bg-gray-200 rounded-xl hover:bg-gray-300"
-        @click="resetCategory"
-        aria-label="Réinitialiser les filtres de catégorie"
+      <div
+        v-else
+        class="flex flex-wrap items-center justify-start gap-3 p-4 mb-6 bg-white shadow-lg filter rounded-xl"
       >
-        ×
-      </button>
-      <button
-        v-for="category in categoriesCache"
-        :key="category.id"
-        @click="filterByCategory(category.id)"
-        class="px-4 py-2 text-sm font-medium transition-colors border rounded-full"
-        :class="{
-          'bg-orange-500 text-white border-orange-500': selectedCategory === category.id,
-          'bg-white text-gray-700 border-gray-300 hover:bg-orange-50':
-            selectedCategory !== category.id,
-        }"
-        :aria-label="'Filtrer par catégorie ' + category.name"
-        :aria-pressed="selectedCategory === category.id"
-      >
-        {{ category.name }}
-      </button>
-    </div>
-
-    <div
-      v-else
-      class="flex flex-wrap items-center justify-start gap-3 p-4 mb-6 bg-white shadow-lg filter rounded-xl"
-    >
-      <div class="flex items-center justify-center w-full py-4">
-        <div
-          class="w-8 h-8 border-t-2 border-b-2 border-orange-500 rounded-full animate-spin"
-        ></div>
+        <div class="flex items-center justify-center w-full py-4">
+          <div
+            class="w-8 h-8 border-t-2 border-b-2 border-orange-500 rounded-xl animate-spin"
+          ></div>
+        </div>
       </div>
     </div>
   </div>

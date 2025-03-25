@@ -99,16 +99,14 @@ const setActiveImage = (index: number) => {
       </div>
 
       <div v-if="loading" class="flex items-center justify-center py-16">
-        <div
-          class="w-16 h-16 border-t-2 border-b-2 border-[#FF8238] rounded-full animate-spin"
-        ></div>
+        <div class="w-16 h-16 border-t-2 border-b-2 border-[#FF8238] rounded-xl animate-spin"></div>
       </div>
 
-      <div v-else-if="produit" class="p-6 bg-white shadow-md rounded-3xl">
+      <div v-else-if="produit" class="p-6 bg-white shadow-md rounded-xl">
         <div class="grid grid-cols-1 gap-8 md:grid-cols-2">
           <div>
             <div v-if="produit.images && produit.images.length > 0" class="mb-4">
-              <div class="overflow-hidden bg-white shadow-md rounded-3xl aspect-square">
+              <div class="overflow-hidden bg-white shadow-md rounded-xl aspect-square">
                 <img
                   :src="`http://localhost:8000/${produit.images[activeImageIndex]}`"
                   :alt="produit.nom"
@@ -134,7 +132,7 @@ const setActiveImage = (index: number) => {
             </div>
             <div
               v-else
-              class="flex items-center justify-center bg-gray-100 rounded-3xl aspect-square"
+              class="flex items-center justify-center bg-gray-100 rounded-xl aspect-square"
             >
               <span class="text-gray-500">Aucune image disponible</span>
             </div>
@@ -205,7 +203,7 @@ const setActiveImage = (index: number) => {
           </div>
         </div>
       </div>
-      <div v-else class="p-8 text-center text-gray-500 bg-white rounded-3xl">
+      <div v-else class="p-8 text-center text-gray-500 bg-white rounded-xl">
         Produit non trouvé.
       </div>
     </div>

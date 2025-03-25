@@ -41,9 +41,7 @@ async function handleSubmit() {
 
 <template>
   <div class="flex items-center justify-center min-h-screen bg-[#FFF1E9]">
-    <fieldset
-      class="fieldset w-lg bg-[#FDF9F6] border border-base-200 p-20 rounded-box text-center"
-    >
+    <fieldset class="fieldset w-lg bg-[#FDF9F6] border border-base-100 p-20 rounded-xl text-center">
       <img class="mx-auto mb-8 logoconest" src="@/assets/logoconest.svg" alt="Logo" />
 
       <h1 class="mx-auto mb-6 text-2xl font-semibold">Connexion</h1>
