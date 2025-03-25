@@ -179,6 +179,7 @@ onMounted(async () => {
             />
           </svg>
           <input
+            :aria-label="'Rechercher par date'"
             v-model="searchDate"
             type="date"
             class="w-full px-3 py-3 pl-10 border input rounded-xl md:py-2 bg-orange-50"
@@ -193,6 +194,7 @@ onMounted(async () => {
           />
           <input
             :value="maxPrice !== null ? maxPrice : ''"
+            :aria-label="'Rechercher par budget'"
             @input="handlePriceInput"
             type="number"
             min="0"
@@ -205,6 +207,7 @@ onMounted(async () => {
           <button
             @click="search"
             class="w-full px-6 py-3 transition-colors bg-orange-50 md:w-auto md:py-2 rounded-xl"
+            aria-label="Rechercher"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
