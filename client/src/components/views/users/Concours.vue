@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ArticleCard from '@/components/ArticleCard.vue'
 import type { Produit } from '@/services/api'
 import {
   getAllProduits,
@@ -263,21 +264,7 @@ async function checkConcoursStatus() {
           heures d'espaces de coworking pendant le mois en cours.
         </p>
         <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-          <div
-            v-for="produit in produits"
-            :key="produit.id"
-            class="p-6 transition-transform bg-orange-100 shadow-md rounded-xl hover:scale-105"
-          >
-            <h3 class="font-bold text-blue-950">{{ produit.nom }}</h3>
-            <p class="my-2 text-blue-900">{{ produit.description }}</p>
-            <p class="text-lg font-semibold text-orange-600">{{ produit.prix }} €/h</p>
-            <img
-              v-if="produit.images && produit.images.length > 0"
-              :src="`http://localhost:8000/${produit.images[0]}`"
-              alt="Image du produit"
-              class="object-cover w-full h-40 mt-4 rounded-xl"
-            />
-          </div>
+          <ArticleCard v-for="produit in produits" :key="produit.id" :produit="produit" />
         </div>
       </div>
     </div>
