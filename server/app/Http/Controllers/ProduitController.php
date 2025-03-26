@@ -83,8 +83,80 @@ class ProduitController extends Controller
         if (Auth::user()->role === 'ROLE_USER') {
             abort(403, 'Accès non autorisé');
         }
+
+        list($dateDebut, $dateFin) = $this->extraireDatesDisponibilite($produit->disponibilite);
+
         $categories = Category::all();
-        return view('produits.edit', compact('produit', 'categories'));
+        return view('produits.edit', compact('produit', 'categories', 'dateDebut', 'dateFin'));
+    }
+
+    /**
+     * Extrait les dates de début et de fin à partir de la chaîne de disponibilité
+     * 
+     * @param string|null $disponibilite
+     * @return array [dateDebut, dateFin]
+     */
+    private function extraireDatesDisponibilite(?string $disponibilite): array
+    {
+        $dateDebut = '';
+        $dateFin = '';
+
+        if (!empty($disponibilite)) {
+            try {
+                if (preg_match('/^(\d{4}-\d{2}-\d{2})-(\d{4}-\d{2}-\d{2})$/', $disponibilite, $matches)) {
+                    $dateDebut = $matches[1];
+                    $dateFin = $matches[2];
+                } else {
+                    $disponibiliteParts = explode('-', $disponibilite);
+
+                    if (count($disponibiliteParts) === 6) {
+                        $dateDebut = $disponibiliteParts[0] . '-' . $disponibiliteParts[1] . '-' . $disponibiliteParts[2];
+                        $dateFin = $disponibiliteParts[3] . '-' . $disponibiliteParts[4] . '-' . $disponibiliteParts[5];
+                    } else if (count($disponibiliteParts) === 2) {
+                        if (isset($disponibiliteParts[0])) {
+                            $dateTemp = trim($disponibiliteParts[0]);
+                            if (strpos($dateTemp, '/') !== false) {
+                                $dateParts = explode('/', $dateTemp);
+                                if (count($dateParts) === 3) {
+                                    $dateDebut = $dateParts[2] . '-' . $dateParts[1] . '-' . $dateParts[0];
+                                }
+                            } else if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $dateTemp)) {
+                                $dateDebut = $dateTemp;
+                            } else {
+                                try {
+                                    $date = \Carbon\Carbon::parse($dateTemp);
+                                    $dateDebut = $date->format('Y-m-d');
+                                } catch (\Exception $e) {
+                                    $dateDebut = '';
+                                }
+                            }
+                        }
+
+                        if (isset($disponibiliteParts[1])) {
+                            $dateTemp = trim($disponibiliteParts[1]);
+                            if (strpos($dateTemp, '/') !== false) {
+                                $dateParts = explode('/', $dateTemp);
+                                if (count($dateParts) === 3) {
+                                    $dateFin = $dateParts[2] . '-' . $dateParts[1] . '-' . $dateParts[0];
+                                }
+                            } else if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $dateTemp)) {
+                                $dateFin = $dateTemp;
+                            } else {
+                                try {
+                                    $date = \Carbon\Carbon::parse($dateTemp);
+                                    $dateFin = $date->format('Y-m-d');
+                                } catch (\Exception $e) {
+                                    $dateFin = '';
+                                }
+                            }
+                        }
+                    }
+                }
+            } catch (\Exception $e) {
+            }
+        }
+
+        return [$dateDebut, $dateFin];
     }
 
     /**

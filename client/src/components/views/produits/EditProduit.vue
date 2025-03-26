@@ -86,45 +86,99 @@ const fetchProduit = async () => {
     form.adresse = produit.value.adresse || ''
 
     if (produit.value.disponibilite) {
-      const dates = produit.value.disponibilite.split('-')
-      if (dates.length >= 2) {
-        const formatDate = (dateStr: string) => {
-          dateStr = dateStr.trim()
-          if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
-            return dateStr
-          }
+      try {
+        const regex = /^(\d{4}-\d{2}-\d{2})-(\d{4}-\d{2}-\d{2})$/
+        const matches = produit.value.disponibilite.match(regex)
 
-          if (/^\d{8}$/.test(dateStr)) {
-            return `${dateStr.substring(0, 4)}-${dateStr.substring(4, 6)}-${dateStr.substring(6, 8)}`
-          }
-          try {
-            const parts = dateStr.match(/(\d{4})(\d{2})(\d{2})/)
-            if (parts && parts.length >= 4) {
-              return `${parts[1]}-${parts[2]}-${parts[3]}`
-            }
-            const date = new Date(dateStr)
-            if (!isNaN(date.getTime())) {
-              const year = date.getFullYear()
-              const month = String(date.getMonth() + 1).padStart(2, '0')
-              const day = String(date.getDate()).padStart(2, '0')
-              return `${year}-${month}-${day}`
-            }
-          } catch (e) {
-            console.error('Erreur lors du formatage de la date:', e)
-          }
+        if (matches && matches.length >= 3) {
+          form.date_debut = matches[1]
+          form.date_fin = matches[2]
+        } else {
+          const disponibiliteParts = produit.value.disponibilite.split('-')
 
-          return ''
+          if (disponibiliteParts.length === 6) {
+            form.date_debut = `${disponibiliteParts[0]}-${disponibiliteParts[1]}-${disponibiliteParts[2]}`
+            form.date_fin = `${disponibiliteParts[3]}-${disponibiliteParts[4]}-${disponibiliteParts[5]}`
+          } else if (disponibiliteParts.length >= 2) {
+            if (disponibiliteParts[0]) {
+              const dateTemp = disponibiliteParts[0].trim()
+              if (dateTemp.includes('/')) {
+                const dateParts = dateTemp.split('/')
+                if (dateParts.length === 3) {
+                  form.date_debut = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`
+                }
+              } else if (/^\d{4}-\d{2}-\d{2}$/.test(dateTemp)) {
+                form.date_debut = dateTemp
+              } else {
+                try {
+                  const date = new Date(dateTemp)
+                  if (!isNaN(date.getTime())) {
+                    form.date_debut = date.toISOString().split('T')[0]
+                  }
+                } catch (e) {}
+              }
+            }
+
+            if (disponibiliteParts[1]) {
+              const dateTemp = disponibiliteParts[1].trim()
+              if (dateTemp.includes('/')) {
+                const dateParts = dateTemp.split('/')
+                if (dateParts.length === 3) {
+                  form.date_fin = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`
+                }
+              } else if (/^\d{4}-\d{2}-\d{2}$/.test(dateTemp)) {
+                form.date_fin = dateTemp
+              } else {
+                try {
+                  const date = new Date(dateTemp)
+                  if (!isNaN(date.getTime())) {
+                    form.date_fin = date.toISOString().split('T')[0]
+                  }
+                } catch (e) {}
+              }
+            }
+          }
         }
-
-        form.date_debut = formatDate(dates[0])
-        form.date_fin = formatDate(dates[1])
+      } catch (e) {
+        form.date_debut = ''
+        form.date_fin = ''
       }
     }
 
-    if (produit.value.categories && Array.isArray(produit.value.categories)) {
-      form.categories = produit.value.categories
-        .filter((cat: any) => cat && cat.id)
-        .map((cat: Category) => cat.id)
+    if (produit.value.categories) {
+      let categoryIds: number[] = []
+
+      if (typeof produit.value.categories === 'string') {
+        try {
+          const parsedCategories = JSON.parse(produit.value.categories)
+          categoryIds = parsedCategories
+            .map((cat: any) => (typeof cat === 'number' ? cat : cat.id || null))
+            .filter((id: number | null) => id !== null)
+        } catch (e) {}
+      } else if (Array.isArray(produit.value.categories)) {
+        categoryIds = produit.value.categories
+          .map((cat: any) => {
+            if (typeof cat === 'number') {
+              return cat
+            }
+
+            if (typeof cat === 'object' && cat !== null && cat.id) {
+              return cat.id
+            }
+
+            if (typeof cat === 'string' && cat.includes('/api/categories/')) {
+              const matches = cat.match(/\/api\/categories\/(\d+)/)
+              if (matches && matches[1]) {
+                return parseInt(matches[1], 10)
+              }
+            }
+
+            return null
+          })
+          .filter((id: number | null): id is number => id !== null)
+      }
+
+      form.categories = categoryIds
     } else {
       form.categories = []
     }
@@ -319,7 +373,6 @@ onMounted(async () => {
         >
           <p>{{ errors.general }}</p>
         </div>
-
         <form @submit.prevent="submitForm" class="space-y-8">
           <div>
             <label class="block mb-2 font-medium text-blue-950" for="nom">Nom du bien</label>

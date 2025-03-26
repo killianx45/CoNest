@@ -40,7 +40,7 @@
         <label for="categories" class="block mb-2 font-semibold text-black">Catégories</label>
         <select name="categories[]" id="categories" class="w-full p-2 border border-orange-200 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-300" multiple>
           @foreach ($categories as $categorie)
-          <option value="{{ $categorie->id }}">{{ $categorie->name }}</option>
+          <option value="{{ $categorie->id }}" {{ in_array($categorie->id, $produit->categories->pluck('id')->toArray()) ? 'selected' : '' }}>{{ $categorie->name }}</option>
           @endforeach
         </select>
       </div>
@@ -50,11 +50,6 @@
         <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
           <div>
             <label for="date_debut" class="block mb-1 text-sm font-medium text-gray-700">Date de début</label>
-            @php
-            $dates = explode('-', $produit->disponibilite);
-            $dateDebut = isset($dates[0]) ? $dates[0] : '';
-            $dateFin = isset($dates[1]) ? $dates[1] : '';
-            @endphp
             <input type="date" name="date_debut" id="date_debut" value="{{ $dateDebut }}" class="w-full p-2 border border-orange-200 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-300" required>
           </div>
           <div>
