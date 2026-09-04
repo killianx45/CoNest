@@ -12,6 +12,9 @@ updates:
         applies-to: version-updates
         patterns:
           - "*"
+        update-types:
+          - minor
+          - patch
       client-security-updates:
         applies-to: security-updates
         patterns:
@@ -29,6 +32,9 @@ updates:
         applies-to: version-updates
         patterns:
           - "*"
+        update-types:
+          - minor
+          - patch
       server-assets-security-updates:
         applies-to: security-updates
         patterns:
@@ -46,6 +52,9 @@ updates:
         applies-to: version-updates
         patterns:
           - "*"
+        update-types:
+          - minor
+          - patch
       backend-security-updates:
         applies-to: security-updates
         patterns:
