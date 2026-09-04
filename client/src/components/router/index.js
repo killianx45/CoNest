@@ -88,7 +88,7 @@ const router = createRouter({
     {
       path: '/commandes/create',
       name: 'createCommande',
-      component: () => import('../views/commandes/CreateCommande.vue'),
+      component: () => import('../views/commandes/createCommande.vue'),
     },
     {
       path: '/concours',
