@@ -1,0 +1,52 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /client
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: Europe/Paris
+    groups:
+      client-version-updates:
+        applies-to: version-updates
+        patterns:
+          - "*"
+      client-security-updates:
+        applies-to: security-updates
+        patterns:
+          - "*"
+
+  - package-ecosystem: npm
+    directory: /server
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:15"
+      timezone: Europe/Paris
+    groups:
+      server-assets-version-updates:
+        applies-to: version-updates
+        patterns:
+          - "*"
+      server-assets-security-updates:
+        applies-to: security-updates
+        patterns:
+          - "*"
+
+  - package-ecosystem: composer
+    directory: /server
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:30"
+      timezone: Europe/Paris
+    groups:
+      backend-version-updates:
+        applies-to: version-updates
+        patterns:
+          - "*"
+      backend-security-updates:
+        applies-to: security-updates
+        patterns:
+          - "*"

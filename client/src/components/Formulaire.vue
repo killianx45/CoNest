@@ -5,14 +5,14 @@
 
       <h1 class="mx-auto mb-6 text-2xl font-semibold">{{ titre }}</h1>
 
-      <form @submit.prevent="$emit('submit')" class="flex flex-col items-center">
+      <form @submit.prevent="emit('submit')" class="flex flex-col items-center">
         <div v-if="showName" class="w-full max-w-[400px] mb-5">
           <label for="name" class="block mb-2 text-left text-gray-700">Nom</label>
           <input
             type="text"
             id="name"
             :value="name"
-            @input="$emit('update:name', $event.target.value)"
+            @input="emit('update:name', inputValue($event))"
             class="w-full px-4 py-3 placeholder-black border border-gray-300 rounded-lg input"
             placeholder="Votre nom"
             required
@@ -25,7 +25,7 @@
             type="email"
             id="email"
             :value="email"
-            @input="$emit('update:email', $event.target.value)"
+            @input="emit('update:email', inputValue($event))"
             class="w-full px-4 py-3 placeholder-black border border-gray-300 rounded-lg input"
             placeholder="Votre email"
             required
@@ -38,7 +38,7 @@
             type="tel"
             id="telephone"
             :value="telephone"
-            @input="$emit('update:telephone', $event.target.value)"
+            @input="emit('update:telephone', inputValue($event))"
             class="w-full px-4 py-3 placeholder-black border border-gray-300 rounded-lg input"
             placeholder="Votre téléphone"
             required
@@ -51,7 +51,7 @@
             type="password"
             id="password"
             :value="password"
-            @input="$emit('update:password', $event.target.value)"
+            @input="emit('update:password', inputValue($event))"
             class="w-full px-4 py-3 placeholder-black border border-gray-300 rounded-lg input"
             placeholder="Votre mot de passe"
             required
@@ -85,6 +85,8 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({ name: 'AuthForm' })
+
 defineProps({
   titre: {
     type: String,
@@ -140,7 +142,17 @@ defineProps({
   },
 })
 
-defineEmits(['submit', 'update:email', 'update:password', 'update:name', 'update:telephone'])
+const emit = defineEmits<{
+  submit: []
+  'update:email': [value: string]
+  'update:password': [value: string]
+  'update:name': [value: string]
+  'update:telephone': [value: string]
+}>()
+
+function inputValue(event: Event): string {
+  return (event.target as HTMLInputElement).value
+}
 </script>
 
 <style>
