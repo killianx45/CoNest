@@ -4,7 +4,6 @@ import { computed, onBeforeUnmount, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
-const currentLanguage = ref('FR')
 const isMenuOpen = ref(false)
 const isAccountMenuOpen = ref(false)
 const menuItems = ref([
@@ -13,10 +12,6 @@ const menuItems = ref([
 ])
 
 const isLoggedIn = computed(() => isAuthenticated())
-
-function toggleLanguage() {
-  currentLanguage.value = currentLanguage.value === 'FR' ? 'EN' : 'FR'
-}
 
 function toggleMenu() {
   isMenuOpen.value = !isMenuOpen.value
@@ -152,7 +147,7 @@ getCurrentUser().then((user) => {
             :key="index"
             :to="item.route"
             class="font-medium text-gray-800 hover:text-[#FF8238] transition-colors"
-            @click.native.prevent="handleClick(item.route)"
+            @click.prevent="handleClick(item.route)"
           >
             {{ item.text }}
           </router-link>

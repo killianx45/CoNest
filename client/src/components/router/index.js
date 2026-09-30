@@ -1,12 +1,12 @@
 import Commandes from '@/components/views/commandes/AllCommande.vue'
 import MentionsLegales from '@/components/views/MentionsLegales.vue'
-import Requis from '@/components/views/Requis.vue'
-import Concours from '@/components/views/users/Concours.vue'
-import Login from '@/components/views/users/Login.vue'
-import Register from '@/components/views/users/Register.vue'
+import Requis from '@/components/views/RequisView.vue'
+import Concours from '@/components/views/users/ConcoursView.vue'
+import Login from '@/components/views/users/LoginView.vue'
+import Register from '@/components/views/users/RegisterView.vue'
 import { isAuthenticated } from '@/services/api'
 import { createRouter, createWebHistory } from 'vue-router'
-import Home from '../Home.vue'
+import Home from '../HomeView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),

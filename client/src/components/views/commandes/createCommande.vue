@@ -4,10 +4,11 @@ import { useRoute, useRouter } from 'vue-router'
 import {
   createCommande,
   getAllProduits,
+  getApiErrorMessage,
   isAuthenticated,
-  verifierDisponibilite,
   type CommandeCreateData,
   type Produit,
+  verifierDisponibilite,
 } from '../../../services/api'
 import NavBar from '../../NavBar.vue'
 
@@ -193,12 +194,9 @@ const submitForm = async () => {
     setTimeout(() => {
       router.push('/commandes')
     }, 2000)
-  } catch (err: any) {
-    if (err.response && err.response.data && err.response.data.message) {
-      error.value = err.response.data.message
-    } else {
-      error.value = 'Une erreur est survenue lors de la création de la réservation.'
-    }
+  } catch (err) {
+    error.value =
+      getApiErrorMessage(err) || 'Une erreur est survenue lors de la création de la réservation.'
     console.error(err)
   } finally {
     loading.value = false

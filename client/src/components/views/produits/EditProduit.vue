@@ -3,13 +3,15 @@ import { onMounted, reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import {
   getAllCategories,
+  getApiErrorMessage,
   getCurrentUser,
+  getErrorMessage,
   getProduitById,
   isAuthenticated,
-  updateProduit,
   type Category,
   type Produit,
   type ProduitUpdateData,
+  updateProduit,
 } from '../../../services/api'
 import NavBar from '../../NavBar.vue'
 
@@ -67,7 +69,7 @@ const checkUserPermission = async () => {
         "Vous n'avez pas les droits nécessaires pour modifier un produit. Seuls les loueurs et administrateurs peuvent le faire."
       hasPermission.value = false
     }
-  } catch (err) {
+  } catch {
     error.value = "Impossible de vérifier vos droits d'accès."
     hasPermission.value = false
   }
@@ -115,7 +117,9 @@ const fetchProduit = async () => {
                   if (!isNaN(date.getTime())) {
                     form.date_debut = date.toISOString().split('T')[0]
                   }
-                } catch (e) {}
+                } catch {
+                  // date illisible, champ laissé vide
+                }
               }
             }
 
@@ -134,12 +138,14 @@ const fetchProduit = async () => {
                   if (!isNaN(date.getTime())) {
                     form.date_fin = date.toISOString().split('T')[0]
                   }
-                } catch (e) {}
+                } catch {
+                  // date illisible, champ laissé vide
+                }
               }
             }
           }
         }
-      } catch (e) {
+      } catch {
         form.date_debut = ''
         form.date_fin = ''
       }
@@ -152,18 +158,22 @@ const fetchProduit = async () => {
         try {
           const parsedCategories = JSON.parse(produit.value.categories)
           categoryIds = parsedCategories
-            .map((cat: any) => (typeof cat === 'number' ? cat : cat.id || null))
+            .map((cat: number | { id?: number }) =>
+              typeof cat === 'number' ? cat : cat.id || null,
+            )
             .filter((id: number | null) => id !== null)
-        } catch (e) {}
+        } catch {
+          // catégories illisibles, aucune présélection
+        }
       } else if (Array.isArray(produit.value.categories)) {
         categoryIds = produit.value.categories
-          .map((cat: any) => {
+          .map((cat: unknown) => {
             if (typeof cat === 'number') {
               return cat
             }
 
-            if (typeof cat === 'object' && cat !== null && cat.id) {
-              return cat.id
+            if (typeof cat === 'object' && cat !== null && 'id' in cat && cat.id) {
+              return cat.id as number
             }
 
             if (typeof cat === 'string' && cat.includes('/api/categories/')) {
@@ -188,8 +198,8 @@ const fetchProduit = async () => {
         (img: string) => `http://localhost:8000/${img}`,
       )
     }
-  } catch (err: any) {
-    error.value = err.message || `Erreur lors de la récupération du produit #${produitId}`
+  } catch (err) {
+    error.value = getErrorMessage(err) || `Erreur lors de la récupération du produit #${produitId}`
   } finally {
     loading.value = false
   }
@@ -199,8 +209,9 @@ const fetchCategories = async () => {
   try {
     loading.value = true
     categories.value = await getAllCategories()
-  } catch (err: any) {
-    error.value = err.message || 'Erreur lors du chargement des catégories. Veuillez réessayer.'
+  } catch (err) {
+    error.value =
+      getErrorMessage(err) || 'Erreur lors du chargement des catégories. Veuillez réessayer.'
   } finally {
     loading.value = false
   }
@@ -309,14 +320,11 @@ const submitForm = async () => {
     setTimeout(() => {
       router.push(`/produit/${produitId}`)
     }, 2000)
-  } catch (err: any) {
-    if (err.response && err.response.data && err.response.data.message) {
-      error.value = err.response.data.message
-    } else if (err.message) {
-      error.value = err.message
-    } else {
-      error.value = 'Une erreur est survenue lors de la modification du produit.'
-    }
+  } catch (err) {
+    error.value =
+      getApiErrorMessage(err) ||
+      getErrorMessage(err) ||
+      'Une erreur est survenue lors de la modification du produit.'
   } finally {
     loading.value = false
   }
