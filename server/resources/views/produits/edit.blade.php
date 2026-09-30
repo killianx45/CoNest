@@ -13,32 +13,32 @@
 
       <div class="mb-4">
         <label for="nom" class="block mb-2 font-semibold text-black">Nom</label>
-        <input type="text" name="nom" id="nom" value="{{ $produit->nom }}" class="w-full p-2 border border-orange-200 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-300">
+        <input type="text" name="nom" id="nom" value="{{ $produit->nom }}" class="w-full p-2 border border-orange-200 rounded-md focus:outline-hidden focus:ring-2 focus:ring-orange-300">
       </div>
 
       <div class="mb-4">
         <label for="description" class="block mb-2 font-semibold text-black">Description</label>
-        <textarea name="description" id="description" class="w-full h-32 p-2 border border-orange-200 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-300">{{ $produit->description }}</textarea>
+        <textarea name="description" id="description" class="w-full h-32 p-2 border border-orange-200 rounded-md focus:outline-hidden focus:ring-2 focus:ring-orange-300">{{ $produit->description }}</textarea>
       </div>
 
       <div class="mb-4">
         <label for="prix" class="block mb-2 font-semibold text-black">Prix</label>
-        <input type="number" name="prix" id="prix" value="{{ $produit->prix }}" class="w-full p-2 border border-orange-200 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-300">
+        <input type="number" name="prix" id="prix" value="{{ $produit->prix }}" class="w-full p-2 border border-orange-200 rounded-md focus:outline-hidden focus:ring-2 focus:ring-orange-300">
       </div>
 
       <div class="mb-4">
         <label for="adresse" class="block mb-2 font-semibold text-black">Adresse</label>
-        <input type="text" name="adresse" id="adresse" value="{{ $produit->adresse }}" class="w-full p-2 border border-orange-200 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-300">
+        <input type="text" name="adresse" id="adresse" value="{{ $produit->adresse }}" class="w-full p-2 border border-orange-200 rounded-md focus:outline-hidden focus:ring-2 focus:ring-orange-300">
       </div>
 
       <div class="mb-4">
         <label for="images" class="block mb-2 font-semibold text-black">Images</label>
-        <input type="file" name="images[]" id="images" class="w-full p-2 bg-white border border-orange-200 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-300" multiple>
+        <input type="file" name="images[]" id="images" class="w-full p-2 bg-white border border-orange-200 rounded-md focus:outline-hidden focus:ring-2 focus:ring-orange-300" multiple>
       </div>
 
       <div class="mb-4">
         <label for="categories" class="block mb-2 font-semibold text-black">Catégories</label>
-        <select name="categories[]" id="categories" class="w-full p-2 border border-orange-200 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-300" multiple>
+        <select name="categories[]" id="categories" class="w-full p-2 border border-orange-200 rounded-md focus:outline-hidden focus:ring-2 focus:ring-orange-300" multiple>
           @foreach ($categories as $categorie)
           <option value="{{ $categorie->id }}" {{ in_array($categorie->id, $produit->categories->pluck('id')->toArray()) ? 'selected' : '' }}>{{ $categorie->name }}</option>
           @endforeach
@@ -50,11 +50,11 @@
         <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
           <div>
             <label for="date_debut" class="block mb-1 text-sm font-medium text-gray-700">Date de début</label>
-            <input type="date" name="date_debut" id="date_debut" value="{{ $dateDebut }}" class="w-full p-2 border border-orange-200 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-300" required>
+            <input type="date" name="date_debut" id="date_debut" value="{{ $dateDebut }}" class="w-full p-2 border border-orange-200 rounded-md focus:outline-hidden focus:ring-2 focus:ring-orange-300" required>
           </div>
           <div>
             <label for="date_fin" class="block mb-1 text-sm font-medium text-gray-700">Date de fin</label>
-            <input type="date" name="date_fin" id="date_fin" value="{{ $dateFin }}" class="w-full p-2 border border-orange-200 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-300" required>
+            <input type="date" name="date_fin" id="date_fin" value="{{ $dateFin }}" class="w-full p-2 border border-orange-200 rounded-md focus:outline-hidden focus:ring-2 focus:ring-orange-300" required>
           </div>
         </div>
         <p class="mt-1 text-sm text-gray-500">La période de disponibilité sera enregistrée au format "JJ/MM/AAAA-JJ/MM/AAAA"</p>
