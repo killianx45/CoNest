@@ -7,6 +7,10 @@ updates:
       day: monday
       time: "06:00"
       timezone: Europe/Paris
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - version-update:semver-major
     groups:
       client-version-updates:
         applies-to: version-updates
@@ -27,6 +31,10 @@ updates:
       day: monday
       time: "06:15"
       timezone: Europe/Paris
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - version-update:semver-major
     groups:
       server-assets-version-updates:
         applies-to: version-updates
@@ -47,6 +55,10 @@ updates:
       day: monday
       time: "06:30"
       timezone: Europe/Paris
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - version-update:semver-major
     groups:
       backend-version-updates:
         applies-to: version-updates
