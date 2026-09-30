@@ -3,10 +3,10 @@ import type { Category, Produit } from '@/services/api'
 import { getAllCategories, getAllProduits } from '@/services/api'
 import { defineAsyncComponent, onMounted, ref } from 'vue'
 import ArticleGrid from './ArticleGrid.vue'
-import Header from './Header.vue'
+import HomeHeader from './HomeHeader.vue'
 import NavBar from './NavBar.vue'
 
-const Carte = defineAsyncComponent(() => import('./Carte.vue'))
+const CarteSection = defineAsyncComponent(() => import('./CarteSection.vue'))
 const FAQ = defineAsyncComponent(() => import('./FAQ.vue'))
 
 const produits = ref<Produit[]>([])
@@ -68,7 +68,7 @@ onMounted(async () => {
     try {
       produits.value = await getAllProduits()
       filteredProduits.value = produits.value
-    } catch (err: any) {
+    } catch (err) {
       console.error('Erreur lors du chargement des produits:', err)
       error.value = 'Erreur lors du chargement des produits. Veuillez réessayer.'
     }
@@ -78,7 +78,7 @@ onMounted(async () => {
     setTimeout(async () => {
       try {
         categories.value = await getAllCategories()
-      } catch (err: any) {
+      } catch (err) {
         console.error('Erreur lors du chargement des catégories:', err)
         categories.value = []
       }
@@ -94,7 +94,7 @@ onMounted(async () => {
     <NavBar />
 
     <div class="w-full">
-      <Header
+      <HomeHeader
         @filter-category="handleFilterCategory"
         @search="handleSearch"
         @filtered-products="handleFilteredProducts"
@@ -109,7 +109,7 @@ onMounted(async () => {
     />
 
     <div id="carte-section" class="min-h-[100px] bg-white">
-      <Carte v-if="showCarteSection" :produits="filteredProduits" />
+      <CarteSection v-if="showCarteSection" :produits="filteredProduits" />
       <div v-else class="w-full max-w-4xl py-8 mx-auto">
         <h2 class="mb-6 text-3xl font-semibold text-center">CoNest sur carte !</h2>
         <div class="flex justify-center h-[450px] bg-gray-100 rounded-xl">

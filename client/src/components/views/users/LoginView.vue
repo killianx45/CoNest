@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { login } from '@/services/api'
+import { getApiErrorMessage, login } from '@/services/api'
 import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import Formulaire from '@/components/Formulaire.vue'
@@ -31,8 +31,8 @@ async function handleSubmit() {
 
     await login(email.value, password.value)
     router.push(redirectPath.value)
-  } catch (error: any) {
-    errorMessage.value = error.response?.data?.message || 'Erreur lors de la connexion'
+  } catch (error) {
+    errorMessage.value = getApiErrorMessage(error) || 'Erreur lors de la connexion'
     console.error('Erreur de connexion:', error)
   } finally {
     isLoading.value = false

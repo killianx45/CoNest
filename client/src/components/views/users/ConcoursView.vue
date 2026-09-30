@@ -3,6 +3,7 @@ import ArticleCard from '@/components/ArticleCard.vue'
 import type { Produit } from '@/services/api'
 import {
   getAllProduits,
+  getApiErrorMessage,
   getConcoursEligibleCount,
   getConcoursStatus,
   updateConcoursStatus,
@@ -114,7 +115,6 @@ async function updateStatus() {
   isUpdating.value = true
   message.value = ''
   error.value = ''
-  const prevStatus = concoursStatus.value
 
   try {
     const response = await updateConcoursStatus()
@@ -122,8 +122,8 @@ async function updateStatus() {
     message.value = response.message || 'Statut mis à jour avec succès'
     await fetchEligibleCount()
     triggerConfetti()
-  } catch (err: any) {
-    error.value = err.response?.data?.message || 'Erreur lors de la mise à jour du statut'
+  } catch (err) {
+    error.value = getApiErrorMessage(err) || 'Erreur lors de la mise à jour du statut'
     console.error('Erreur:', err)
   } finally {
     isUpdating.value = false
@@ -141,9 +141,8 @@ async function checkConcoursStatus() {
     setTimeout(() => {
       triggerConfetti()
     }, 500)
-  } catch (err: any) {
-    error.value =
-      err.response?.data?.message || 'Erreur lors de la récupération du statut du concours'
+  } catch (err) {
+    error.value = getApiErrorMessage(err) || 'Erreur lors de la récupération du statut du concours'
     console.error('Erreur:', err)
   } finally {
     isLoading.value = false

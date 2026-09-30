@@ -4,6 +4,19 @@ import axios from 'axios'
 const API_URL = 'http://localhost:8000/api'
 const TOKEN_KEY = 'auth_token'
 
+/** Message renvoyé par l'API (`response.data.message`), s'il existe. */
+export function getApiErrorMessage(error: unknown): string | undefined {
+  if (axios.isAxiosError<{ message?: string }>(error)) {
+    return error.response?.data?.message || undefined
+  }
+  return undefined
+}
+
+/** Message de l'erreur JS, s'il existe. */
+export function getErrorMessage(error: unknown): string | undefined {
+  return error instanceof Error ? error.message || undefined : undefined
+}
+
 export const api: AxiosInstance = axios.create({
   baseURL: API_URL,
   headers: {

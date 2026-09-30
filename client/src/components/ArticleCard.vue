@@ -3,7 +3,7 @@ import type { Produit } from '@/services/api'
 import { useRouter } from 'vue-router'
 import OptimizedImage from './OptimizedImage.vue'
 
-const props = defineProps<{
+defineProps<{
   produit: Produit
 }>()
 

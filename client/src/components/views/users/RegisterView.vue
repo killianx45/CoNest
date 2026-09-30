@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { register } from '@/services/api'
+import { getApiErrorMessage, register } from '@/services/api'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import Formulaire from '@/components/Formulaire.vue'
@@ -25,8 +25,8 @@ async function handleSubmit() {
 
     await register(email.value, password.value, name.value, telephone.value)
     router.push('/login')
-  } catch (error: any) {
-    errorMessage.value = error.response?.data?.message || "Erreur lors de l'inscription"
+  } catch (error) {
+    errorMessage.value = getApiErrorMessage(error) || "Erreur lors de l'inscription"
     console.error("Erreur d'inscription:", error)
   } finally {
     isLoading.value = false
