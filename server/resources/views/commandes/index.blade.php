@@ -7,11 +7,11 @@
 
   <div class="py-12">
     <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
-      <div class="overflow-hidden bg-white shadow-sm dark:bg-gray-800 sm:rounded-lg">
+      <div class="overflow-hidden bg-white shadow-xs dark:bg-gray-800 sm:rounded-lg">
         <div class="p-6 text-gray-900 dark:text-gray-100">
           <div class="p-6 bg-white rounded-lg">
             <h1 class="mb-6 text-3xl font-bold text-black">Commandes</h1>
-            <a href="{{ route('commandes.create') }}" class="inline-block px-4 py-2 mb-4 text-black bg-orange-100 border border-orange-300 rounded hover:bg-orange-200">Ajouter une commande</a>
+            <a href="{{ route('commandes.create') }}" class="inline-block px-4 py-2 mb-4 text-black bg-orange-100 border border-orange-300 rounded-sm hover:bg-orange-200">Ajouter une commande</a>
             <div class="overflow-x-auto">
               <table class="w-full text-black bg-white border-collapse">
                 <thead>
@@ -37,12 +37,12 @@
                       @endif
                     </td>
                     <td class="p-3 space-y-2">
-                      <a href="{{ route('commandes.show', $commande->id) }}" class="inline-block px-3 py-1 mr-2 text-black bg-orange-100 border border-orange-300 rounded hover:bg-orange-200">Voir</a>
-                      <a href="{{ route('commandes.edit', $commande->id) }}" class="inline-block px-3 py-1 mr-2 text-black bg-orange-100 border border-orange-300 rounded hover:bg-orange-200">Modifier</a>
+                      <a href="{{ route('commandes.show', $commande->id) }}" class="inline-block px-3 py-1 mr-2 text-black bg-orange-100 border border-orange-300 rounded-sm hover:bg-orange-200">Voir</a>
+                      <a href="{{ route('commandes.edit', $commande->id) }}" class="inline-block px-3 py-1 mr-2 text-black bg-orange-100 border border-orange-300 rounded-sm hover:bg-orange-200">Modifier</a>
                       <form action="{{ route('commandes.destroy', $commande->id) }}" method="POST" class="inline">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="px-3 py-1 text-black bg-orange-100 border border-orange-300 rounded hover:bg-orange-200">Supprimer</button>
+                        <button type="submit" class="px-3 py-1 text-black bg-orange-100 border border-orange-300 rounded-sm hover:bg-orange-200">Supprimer</button>
                       </form>
                     </td>
                   </tr>
