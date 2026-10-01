@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Footer from './components/Footer.vue'
+import AppFooter from './components/AppFooter.vue'
 import NavBar from './components/NavBar.vue'
 </script>
 
@@ -10,7 +10,7 @@ import NavBar from './components/NavBar.vue'
       <router-view />
     </main>
     <div class="bg-[#FFF1E9]">
-      <Footer />
+      <AppFooter />
     </div>
   </div>
 </template>

@@ -1,39 +1,33 @@
 <script setup lang="ts">
-import { login } from '@/services/api'
-import { onMounted, ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { getApiErrorMessage, register } from '@/services/api'
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import Formulaire from '@/components/Formulaire.vue'
 
 const router = useRouter()
-const route = useRoute()
 const email = ref('')
 const password = ref('')
+const name = ref('')
+const telephone = ref('')
 const errorMessage = ref('')
 const isLoading = ref(false)
-const redirectPath = ref('/')
-
-onMounted(() => {
-  if (route.query.redirect) {
-    redirectPath.value = route.query.redirect as string
-  }
-})
 
 async function handleSubmit() {
   isLoading.value = true
   errorMessage.value = ''
 
   try {
-    if (!email.value || !password.value) {
+    if (!email.value || !password.value || !name.value || !telephone.value) {
       errorMessage.value = 'Veuillez remplir tous les champs'
       isLoading.value = false
       return
     }
 
-    await login(email.value, password.value)
-    router.push(redirectPath.value)
-  } catch (error: any) {
-    errorMessage.value = error.response?.data?.message || 'Erreur lors de la connexion'
-    console.error('Erreur de connexion:', error)
+    await register(email.value, password.value, name.value, telephone.value)
+    router.push('/login')
+  } catch (error) {
+    errorMessage.value = getApiErrorMessage(error) || "Erreur lors de l'inscription"
+    console.error("Erreur d'inscription:", error)
   } finally {
     isLoading.value = false
   }
@@ -42,17 +36,19 @@ async function handleSubmit() {
 
 <template>
   <Formulaire
-    titre="Connexion"
+    titre="Inscription"
     v-model:email="email"
     v-model:password="password"
-    :showName="false"
-    :showTelephone="false"
+    v-model:name="name"
+    v-model:telephone="telephone"
+    :showName="true"
+    :showTelephone="true"
     :errorMessage="errorMessage"
     :isLoading="isLoading"
-    buttonText="Se connecter"
-    redirectText="Pas encore membre ?"
-    redirectPath="/register"
-    redirectLinkText="Inscrivez-vous"
+    buttonText="S'inscrire"
+    redirectText="Vous êtes déjà membre ?"
+    redirectPath="/login"
+    redirectLinkText="Connectez-vous"
     @submit="handleSubmit"
   />
 </template>

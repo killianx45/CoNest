@@ -27,7 +27,7 @@
             <div class="grid grid-cols-1 gap-4 mb-4 md:grid-cols-2">
               <div>
                 <label for="produits[0]" class="block mb-1 text-sm font-medium text-gray-700">Espace de travail</label>
-                <select class="w-full border-gray-300 rounded-md shadow-sm produit-select focus:border-orange-300 focus:ring focus:ring-orange-200 focus:ring-opacity-50" name="produits[]" required data-index="0">
+                <select class="w-full border-gray-300 rounded-md shadow-xs produit-select focus:border-orange-300 focus:ring-3 focus:ring-orange-200/50" name="produits[]" required data-index="0">
                   <option value="">Sélectionnez un espace</option>
                   @foreach($produits as $produit)
                   <option value="{{ $produit->id }}" data-prix="{{ $produit->prix }}">
@@ -38,17 +38,17 @@
               </div>
               <div>
                 <label for="dates[0]" class="block mb-1 text-sm font-medium text-gray-700">Date de réservation</label>
-                <input type="date" class="w-full border-gray-300 rounded-md shadow-sm date-input focus:border-orange-300 focus:ring focus:ring-orange-200 focus:ring-opacity-50" name="dates[]" required data-index="0" min="{{ date('Y-m-d') }}">
+                <input type="date" class="w-full border-gray-300 rounded-md shadow-xs date-input focus:border-orange-300 focus:ring-3 focus:ring-orange-200/50" name="dates[]" required data-index="0" min="{{ date('Y-m-d') }}">
               </div>
             </div>
             <div class="grid grid-cols-1 gap-4 mb-2 md:grid-cols-2">
               <div>
                 <label for="heures_debut[0]" class="block mb-1 text-sm font-medium text-gray-700">Heure de début</label>
-                <input type="time" class="w-full border-gray-300 rounded-md shadow-sm heure-debut-input focus:border-orange-300 focus:ring focus:ring-orange-200 focus:ring-opacity-50" name="heures_debut[]" required data-index="0" min="08:00" max="20:00" step="1800">
+                <input type="time" class="w-full border-gray-300 rounded-md shadow-xs heure-debut-input focus:border-orange-300 focus:ring-3 focus:ring-orange-200/50" name="heures_debut[]" required data-index="0" min="08:00" max="20:00" step="1800">
               </div>
               <div>
                 <label for="heures_fin[0]" class="block mb-1 text-sm font-medium text-gray-700">Heure de fin</label>
-                <input type="time" class="w-full border-gray-300 rounded-md shadow-sm heure-fin-input focus:border-orange-300 focus:ring focus:ring-orange-200 focus:ring-opacity-50" name="heures_fin[]" required data-index="0" min="09:00" max="21:00" step="1800">
+                <input type="time" class="w-full border-gray-300 rounded-md shadow-xs heure-fin-input focus:border-orange-300 focus:ring-3 focus:ring-orange-200/50" name="heures_fin[]" required data-index="0" min="09:00" max="21:00" step="1800">
               </div>
             </div>
             <div class="flex items-center justify-between">

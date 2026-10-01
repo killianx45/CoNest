@@ -4,7 +4,9 @@ import { useRouter } from 'vue-router'
 import {
   createProduit,
   getAllCategories,
+  getApiErrorMessage,
   getCurrentUser,
+  getErrorMessage,
   isAuthenticated,
   type Category,
   type ProduitCreateData,
@@ -55,7 +57,7 @@ const checkUserPermission = async () => {
         "Vous n'avez pas les droits nécessaires pour créer un produit. Seuls les loueurs et administrateurs peuvent le faire."
       hasPermission.value = false
     }
-  } catch (err) {
+  } catch {
     error.value = "Impossible de vérifier vos droits d'accès."
     hasPermission.value = false
   }
@@ -65,8 +67,9 @@ const fetchCategories = async () => {
   try {
     loading.value = true
     categories.value = await getAllCategories()
-  } catch (err: any) {
-    error.value = err.message || 'Erreur lors du chargement des catégories. Veuillez réessayer.'
+  } catch (err) {
+    error.value =
+      getErrorMessage(err) || 'Erreur lors du chargement des catégories. Veuillez réessayer.'
     console.error(err)
   } finally {
     loading.value = false
@@ -148,12 +151,9 @@ const submitForm = async () => {
     setTimeout(() => {
       router.push('/')
     }, 2000)
-  } catch (err: any) {
-    if (err.response && err.response.data && err.response.data.message) {
-      error.value = err.response.data.message
-    } else {
-      error.value = 'Une erreur est survenue lors de la création du produit.'
-    }
+  } catch (err) {
+    error.value =
+      getApiErrorMessage(err) || 'Une erreur est survenue lors de la création du produit.'
     console.error(err)
   } finally {
     loading.value = false
