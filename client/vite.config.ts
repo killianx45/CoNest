@@ -22,14 +22,18 @@ export default defineConfig({
         drop_debugger: true,
       },
     },
-    rollupOptions: {
+    rolldownOptions: {
       output: {
-        manualChunks: {
-          'vue-vendor': ['vue', 'vue-router'],
-          'ui-components': [
-            './src/components/Header.vue',
-            './src/components/Footer.vue',
-            './src/components/NavBar.vue',
+        codeSplitting: {
+          groups: [
+            {
+              name: 'vue-vendor',
+              test: /node_modules[\\/](\.pnpm[\\/])?(@vue|vue|vue-router)[\\/@]/,
+            },
+            {
+              name: 'ui-components',
+              test: /src[\\/]components[\\/](HomeHeader|AppFooter|NavBar)\.vue/,
+            },
           ],
         },
       },

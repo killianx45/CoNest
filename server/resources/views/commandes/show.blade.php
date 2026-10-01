@@ -7,7 +7,7 @@
 
   <div class="py-12">
     <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
-      <div class="overflow-hidden bg-white shadow-sm dark:bg-gray-800 sm:rounded-lg">
+      <div class="overflow-hidden bg-white shadow-xs dark:bg-gray-800 sm:rounded-lg">
         <div class="p-6 text-gray-900 dark:text-gray-100">
           <div class="max-w-4xl p-6 mx-auto bg-white border-2 border-orange-300 rounded-lg shadow-md">
             <h1 class="pb-2 mb-6 text-3xl font-bold text-black border-b-2 border-orange-200">Commande #{{ $commande->id }}</h1>
@@ -39,11 +39,11 @@
             </div>
 
             <div class="flex mt-6 space-x-4">
-              <a href="{{ route('commandes.edit', $commande->id) }}" class="inline-block px-4 py-2 text-black bg-orange-100 border border-orange-300 rounded hover:bg-orange-200">Modifier</a>
+              <a href="{{ route('commandes.edit', $commande->id) }}" class="inline-block px-4 py-2 text-black bg-orange-100 border border-orange-300 rounded-sm hover:bg-orange-200">Modifier</a>
               <form action="{{ route('commandes.destroy', $commande->id) }}" method="POST" class="inline">
                 @csrf
                 @method('DELETE')
-                <button type="submit" class="px-4 py-2 text-black bg-orange-100 border border-orange-300 rounded hover:bg-orange-200">Supprimer</button>
+                <button type="submit" class="px-4 py-2 text-black bg-orange-100 border border-orange-300 rounded-sm hover:bg-orange-200">Supprimer</button>
               </form>
             </div>
           </div>
